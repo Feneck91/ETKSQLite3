@@ -1,0 +1,59 @@
+// Structure data implementation
+$STRUCT_IMPLEMENTATION${//Constructor
+$PREFIX_STRUCT$$TABLE_NAME$::$PREFIX_STRUCT$$TABLE_NAME$()
+{
+$IMPLEMENT_VARIABLES_CONSTRUCTOR$}
+
+// Destructor
+$PREFIX_STRUCT$$TABLE_NAME$::~$PREFIX_STRUCT$$TABLE_NAME$()
+{   // Nothing to do
+}}
+
+// Class implementation
+const wxString $PREFIX_TABLE$$TABLE_NAME$::STR_TABLE_CONSTRUCTION =
+    _T(
+        "CREATE TABLE $TABLE_NAME$($SQL_TABLE_CONSTRUCTION$);"
+      );
+
+const wxString $PREFIX_TABLE$$TABLE_NAME$::TABLE_NAME  = _T("$TABLE_NAME$");
+$COLUMNS_IMPLEMENTATION$
+
+$PREFIX_TABLE$$TABLE_NAME$::$PREFIX_TABLE$$TABLE_NAME$()
+    : wxETKSQLite3Record(TABLE_NAME)
+{
+$COLUMNS_ADD$
+}
+
+$PREFIX_TABLE$$TABLE_NAME$::$PREFIX_TABLE$$TABLE_NAME$(const $PREFIX_STRUCT$$TABLE_NAME$ &_rDatas)
+    : $PREFIX_STRUCT$$TABLE_NAME$(_rDatas)
+    , wxETKSQLite3Record(TABLE_NAME)
+{
+$COLUMNS_ADD$
+}
+
+$PREFIX_TABLE$$TABLE_NAME$::~$PREFIX_TABLE$$TABLE_NAME$()
+{
+}
+
+const $PREFIX_TABLE$$TABLE_NAME$ & $PREFIX_TABLE$$TABLE_NAME$::operator=(const $PREFIX_STRUCT$$TABLE_NAME$ &$PREFIX_ARGUMENTS_REFERENCE$Value)
+{   // Only assigment to base class, other attributes not change
+    $PREFIX_STRUCT$$TABLE_NAME$::operator=(_rValue);
+    return *this;
+}
+
+$PREFIX_TABLE$$TABLE_NAME$::operator const $PREFIX_STRUCT$$TABLE_NAME$ &() const
+{
+    return *this;
+}
+
+const $PREFIX_TABLE$$TABLE_NAME$::tdTypeStruct & $PREFIX_TABLE$$TABLE_NAME$::GetStruct() const
+{
+    return *this;
+}
+
+wxString $PREFIX_TABLE$$TABLE_NAME$::GetSQLTableConstruction()
+{
+    return STR_TABLE_CONSTRUCTION;
+}
+
+$IMPLEMENT_VARIABLES_GETTER_SETTER$

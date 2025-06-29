@@ -1,0 +1,93 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:        wxETKSQLite3ResultSetBase.cpp
+// Library:     wxETKSQLite3
+// Purpose:     Code for database resultset with automatic binding (base class)
+// Author:      Stéphane Château (Feneck91@free.fr)
+// Modified by:
+// Created:     2011/09/30
+// Licence:     wxWindows licence
+/////////////////////////////////////////////////////////////////////////////
+#include "wxETKSQLite3ResultSetBase.h"
+
+wxETKSQLite3ResultSetBase::wxETKSQLite3ResultSetBase()
+    : wxSQLite3ResultSet()
+    , m_bBindDone(false)
+{
+}
+
+wxETKSQLite3ResultSetBase::~wxETKSQLite3ResultSetBase()
+{
+}
+
+wxETKSQLite3ResultSetBase::wxETKSQLite3ResultSetBase(const wxETKSQLite3ResultSetBase& _rResultSet)
+    : wxSQLite3ResultSet(_rResultSet)
+    , m_arrayBindIndex(_rResultSet.m_arrayBindIndex)
+    , m_bBindDone(_rResultSet.m_bBindDone)
+{
+}
+
+wxETKSQLite3ResultSetBase::wxETKSQLite3ResultSetBase(const wxSQLite3ResultSet & _rResultSet)
+    : wxSQLite3ResultSet(_rResultSet)
+    , m_bBindDone(false)
+{
+}
+
+const wxETKSQLite3ResultSetBase & wxETKSQLite3ResultSetBase::operator=(const wxETKSQLite3ResultSetBase & _rResultSet)
+{
+    wxSQLite3ResultSet::operator=(_rResultSet);
+    m_arrayBindIndex = _rResultSet.m_arrayBindIndex;
+    m_bBindDone      = _rResultSet.m_bBindDone;
+
+    return *this;
+}
+
+const wxETKSQLite3ResultSetBase & wxETKSQLite3ResultSetBase::operator=(const wxSQLite3ResultSet &_rResultSet)
+{
+    wxSQLite3ResultSet::operator=(_rResultSet);
+    m_bBindDone = false;
+    m_arrayBindIndex.clear();
+
+    return *this;
+}
+
+bool wxETKSQLite3ResultSetBase::NextRow()
+{
+    bool bRet = wxSQLite3ResultSet::NextRow();
+    if (bRet)
+    {
+        if (!m_bBindDone)
+        {
+            bRet = InitBindFrom();
+        }
+        else if (m_arrayBindIndex.size() == 0)
+        {
+            bRet = false; // If binding ok and bind array is empty, it is an error (strange to call twice on error)
+            wxFAIL_MSG(wxT("NextRow() called more than once with binding error"));
+        }
+        if (bRet)
+        {
+            BindFrom();
+        }
+    }
+    return bRet;
+}
+
+int wxETKSQLite3ResultSetBase::FindColumnIndex(const wxETKSQLite3Column &_rColumn) throw(wxSQLite3Exception)
+{
+    if (_rColumn.HasColumnIndex())
+    {
+        return _rColumn.GetColumnIndex();
+    }
+    else
+    {
+        for (int iIndexColumn=0;iIndexColumn<wxSQLite3ResultSet::GetColumnCount();++iIndexColumn)
+        {
+            if (   wxSQLite3ResultSet::GetColumnName(iIndexColumn) == _rColumn.GetColumnName()
+                && wxSQLite3ResultSet::GetTableName(iIndexColumn) == _rColumn.GetTableName())
+            {
+                return iIndexColumn;
+            }
+        }
+    }
+    throw wxSQLite3Exception(WXSQLITE_ERROR, wxT("Invalid field index"));
+}

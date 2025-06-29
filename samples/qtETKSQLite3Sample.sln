@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qtETKSQLite3", "..\build\qtETKSQLite3.vcproj", "{C1AC90B8-3011-41CC-9B68-B7EDD63C9FFF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qtETKSQLite3Sample", "qtETKSQLite3Sample\qtETKSQLite3Sample.vcproj", "{53C5B201-AA27-43E7-B071-FFA9D2F78C6C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1AC90B8-3011-41CC-9B68-B7EDD63C9FFF} = {C1AC90B8-3011-41CC-9B68-B7EDD63C9FFF}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1AC90B8-3011-41CC-9B68-B7EDD63C9FFF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C1AC90B8-3011-41CC-9B68-B7EDD63C9FFF}.Debug|Win32.Build.0 = Debug|Win32
+		{C1AC90B8-3011-41CC-9B68-B7EDD63C9FFF}.Release|Win32.ActiveCfg = Release|Win32
+		{C1AC90B8-3011-41CC-9B68-B7EDD63C9FFF}.Release|Win32.Build.0 = Release|Win32
+		{53C5B201-AA27-43E7-B071-FFA9D2F78C6C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{53C5B201-AA27-43E7-B071-FFA9D2F78C6C}.Debug|Win32.Build.0 = Debug|Win32
+		{53C5B201-AA27-43E7-B071-FFA9D2F78C6C}.Release|Win32.ActiveCfg = Release|Win32
+		{53C5B201-AA27-43E7-B071-FFA9D2F78C6C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="qtETKSQLite3Sample/qtETKSQLite3Sample.cbp">
+			<Depends filename="../build/qtETKSQLite3.cbp" />
+		</Project>
+		<Project filename="../build/qtETKSQLite3.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>

@@ -1,0 +1,190 @@
+/***************************************************************
+ * Name:      $FILENAME$
+ * Library:
+ * Purpose:   Code for database structure for all tables
+ * Author:    Stéphane Château
+ * Created:   2011-08-01
+ * Copyright:
+ * License:
+ **************************************************************/
+
+$ONLY_HEADER_FILE$
+{
+#ifndef DATABASE_DATAS_H
+#define DATABASE_DATAS_H
+#include <limits>
+#include "wxETKSQLite3Include.h"
+
+// Define value for NULL column
+#define DBL_NULL_VALUE                  (std::numeric_limits<double>::min())
+enum eSexe
+{
+    eSexeUnknown,
+    eSexeMale,
+    eSexeFemale
+};
+}
+$ONLY_SOURCE_FILE$
+{
+#include "$FILENAME_H$"
+
+template<> void wxETKSQLite3ValueBindOther<eSexe>::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bAddForInsertRequest,bool _bForInsertRequest) const
+{
+    int iValue; // Get value from enum: get independance from this enum into database
+                // to correctly explain, Male will be 59 / Female will be 87 / unknown will be 11 or other
+    // Strange ? Yes, it is just an example to show that the binding between database values and C++ values are correctly
+    // binded, taking 0,1,2 values demonstrate nothing.
+    switch(*m_pDataPtr)
+    {
+        case eSexeMale:
+            iValue = 59;
+            break;
+        case eSexeFemale:
+            iValue = 87;
+            break;
+        default:
+            wxFAIL_MSG(wxT("Unknown value for eSexe enum"));
+            // break; // <-- NO break!
+        case eSexeUnknown:
+            iValue = 11;
+            break;
+    }
+    _rstmt.Bind(_iIndex,iValue);
+}
+
+
+template<> void wxETKSQLite3ValueBindOther<eSexe>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
+{
+    int iValue; // Get value from enum: get independance from this enum into database
+                // to correctly explain, Male will be 59 / Female will be 87 / unknown will be 11 or other
+    switch(_rResultSet.GetInt(_iIndex,(int) 0)) // Get value from enum: get independance from this enum into database
+    {
+        case 59:
+            *m_pDataPtr = eSexeMale;
+            break;
+        case 87:
+            *m_pDataPtr = eSexeFemale;
+            break;
+        default:
+            wxFAIL_MSG(wxT("Unknown value for eSexe value of enum"));
+            // break; // <-- NO break!
+        case 11:
+            *m_pDataPtr = eSexeUnknown;
+            break;
+    }
+}
+}
+$REMOVE_BLOC$
+{   // This bloc is removed from both .h and .cpp files
+    $PREFIX_TABLE$      {CRecord}  // Add before the class name
+    $PREFIX_STRUCT$     {CData}    // Add before the struct name
+
+    // Bind of SEXE type
+    $TYPE_MEMBERS$      {SEXE,eSexe}
+    $TYPE_DATABASE$     {SEXE,ENUM}
+    $TYPE_BIND$         {SEXE,wxETKSQLite3ValueBindOther<eSexe>}
+    $PREFIX_COPY$       {SEXE,eSexe}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                       //
+//                                             TGeneral                                                  //
+//                                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$ONLY_HEADER_FILE$
+{
+/**
+ * Class used to record general informations about the database.
+ *
+ * It's record the database schema version and the creation date.
+ *
+ * @author Stéphane Château
+ * @version Name : TTGestLib<br>
+ *          Revision : <b>1.0</b>
+ */
+}
+WX_ETK_SQLITE3_DECLARE_TABLE(TGeneral)
+{
+    DECLARE_COLUMN      Version         INTEGER     [ = 0]
+    DECLARE_COLUMN      CreationDate    DATETIME    [ = wxInvalidDateTime]
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                       //
+//                                             Customer                                                  //
+//                                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$ONLY_HEADER_FILE$
+{
+/**
+ * Class used to customers.
+ *
+ * It's record the name / first name, etc.
+ *
+ * @author Stéphane Château
+ */
+}
+WX_ETK_SQLITE3_DECLARE_TABLE(TCustomer)
+{
+    DECLARE_COLUMN      id              INTEGER     PRIMARY_KEY                     [ = 0]
+    DECLARE_COLUMN      Name            VARCHAR     NOT_NULL                        [ = ""]
+    DECLARE_COLUMN      FirstName       VARCHAR     NOT_NULL                        [ = ""]
+    DECLARE_COLUMN      Sexe            SEXE                                        [ = eSexeUnknown]
+    DECLARE_COLUMN      Birthday        DATE
+    DECLARE_COLUMN      BirthdayTime    TIME
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                       //
+//                                               Item                                                    //
+//                                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$ONLY_HEADER_FILE$
+{
+/**
+ * Class used to record all items.
+ *
+ * @author Stéphane Château
+ */
+}
+WX_ETK_SQLITE3_DECLARE_TABLE(TItem)
+{
+    DECLARE_COLUMN      id              INTEGER     PRIMARY_KEY                         [ = 0]
+    DECLARE_COLUMN      Name            VARCHAR     UNIQUE      NOT_NULL                [ = ""]
+    DECLARE_COLUMN      Price           DOUBLE      NOT_NULL                            [ = 0]
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                       //
+//                                             Purchase                                                  //
+//                                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$ONLY_HEADER_FILE$
+{
+/**
+ * Class used to record all items.
+ *
+ * @author Stéphane Château
+ */
+}
+WX_ETK_SQLITE3_DECLARE_TABLE(TPurchase)
+{
+    DECLARE_COLUMN                      id          INTEGER     PRIMARY_KEY AUTOINCREMENT [ = 0]
+    DECLARE_FOREIGN_KEY(TCustomer.id)   idCustomer  INTEGER                               [ = 0] ON_DELETE_CASCADE ON_UPDATE_CASCADE
+    DECLARE_FOREIGN_KEY(TItem.id)       idItem      INTEGER                               [ = 0] ON_UPDATE_CASCADE
+}
+
+
+$ONLY_HEADER_FILE$
+{
+#endif // DATABASE_DATAS_H
+}

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>qtETKSQLite3SampleClass</class>
+ <widget class="QMainWindow" name="qtETKSQLite3SampleClass">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>733</width>
+    <height>659</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>1</horstretch>
+    <verstretch>1</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>qtETKSQLite3Sample</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QWidget" name="verticalWidget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>731</width>
+      <height>561</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+      <horstretch>1</horstretch>
+      <verstretch>1</verstretch>
+     </sizepolicy>
+    </property>
+    <layout class="QVBoxLayout" name="MainLayoutV">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMaximumSize</enum>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="DatabaseLayoutV">
+       <item>
+        <layout class="QHBoxLayout" name="DatabaseLayoutHButtons">
+         <item>
+          <widget class="QPushButton" name="m_pbtnCreate">
+           <property name="text">
+            <string>Create...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_pbtnClose">
+           <property name="text">
+            <string>Close</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_pbtnOpen">
+           <property name="text">
+            <string>Open...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="DatabaseLayoutHStatus">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Database path</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="m_pLabelDatabaseName">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QTableWidget" name="m_pTableCustomer">
+         <column>
+          <property name="text">
+           <string>ID</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>First Name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Sexe</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Birthday</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Birthday Time</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Buy</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Price</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>733</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="qtetksqlite3sample.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>m_pbtnCreate</sender>
+   <signal>clicked()</signal>
+   <receiver>qtETKSQLite3SampleClass</receiver>
+   <slot>OnCreateDatabase()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>47</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>160</x>
+     <y>460</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_pbtnClose</sender>
+   <signal>clicked()</signal>
+   <receiver>qtETKSQLite3SampleClass</receiver>
+   <slot>OnCloseDatabase()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>126</x>
+     <y>55</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>297</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_pbtnOpen</sender>
+   <signal>clicked()</signal>
+   <receiver>qtETKSQLite3SampleClass</receiver>
+   <slot>OnOpenDatabase()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>206</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>347</x>
+     <y>488</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_pTableCustomer</sender>
+   <signal>itemChanged(QTableWidgetItem*)</signal>
+   <receiver>qtETKSQLite3SampleClass</receiver>
+   <slot>OnItemChanged(QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>247</x>
+     <y>514</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>377</x>
+     <y>623</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>OnCloseDatabase()</slot>
+  <slot>OnOpenDatabase()</slot>
+  <slot>OnCreateDatabase()</slot>
+  <slot>OnItemChanged(QTableWidgetItem*)</slot>
+ </slots>
+</ui>

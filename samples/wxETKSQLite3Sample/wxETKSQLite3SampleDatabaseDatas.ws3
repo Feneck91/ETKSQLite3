@@ -1,0 +1,65 @@
+/***************************************************************
+ * Name:      $FILENAME$
+ * Purpose:   Code for sample database datas
+ * Author:    Stéphane Château (Feneck91@free.fr)
+ * Created:   2011-08-11
+ * Copyright: Stéphane Château ()
+ * License:
+ **************************************************************/
+
+$ONLY_HEADER_FILE$
+{
+#ifndef WX_ETKSQLITE3_SAMPLE_DATABASE_DATAS_H
+#define WX_ETKSQLITE3_SAMPLE_DATABASE_DATAS_H
+}
+$PREFIX_TABLE${wxETKSQLite3SampleData}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                       //
+//                                    wxETKSQLite3SampleDataTName                                        //
+//                                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+$ONLY_HEADER_FILE$
+{
+/**
+ * Class used to record all player informations.
+ *
+ * @author Stéphane Château
+ * @version Name : wxETKSQlite3Sample<br>
+ *          Revision : <b>1.0</b>
+ */
+}
+$ONLY_SOURCE_FILE$
+{
+#include "$FILENAME_H$"
+}
+
+WX_ETK_SQLITE3_DECLARE_TABLE(TName)
+{
+    DECLARE_COLUMN                ID            INTEGER      PRIMARY_KEY            [ = 0]
+    DECLARE_FOREIGN_KEY(TClub.ID) ClubID        INTEGER      ON_DELETE_CASCADE      [ = 0]
+    DECLARE_COLUMN                FirstName     VARCHAR
+    DECLARE_COLUMN                Name          VARCHAR
+    DECLARE_COLUMN                Birthday      DATETIME                            [ = wxInvalidDateTime]
+}
+
+/**
+ * Class used to record all player's club.
+ *
+ * @author Stéphane Château
+ * @version Name : wxETKSQlite3Sample<br>
+ *          Revision : <b>1.0</b>
+ */
+WX_ETK_SQLITE3_DECLARE_TABLE(TClub)
+{
+    DECLARE_COLUMN                ID            INTEGER      PRIMARY_KEY            [ = 0]
+    DECLARE_COLUMN                ClubName      VARCHAR
+    DECLARE_COLUMN                ClubCity      VARCHAR
+}
+
+$ONLY_HEADER_FILE$
+{
+#endif // WX_ETKSQLITE3_SAMPLE_DATABASE_DATAS_H
+}

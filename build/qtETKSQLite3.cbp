@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="qtETKSQLite3" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Win32 Unicode Debug">
+				<Option platforms="Windows;" />
+				<Option output="../lib/wxETKSQLite3d" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Win32UnicodeDebug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D__WXDEBUG__" />
+					<Add option="-D__WXMSW__" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DwxUSE_UNICODE" />
+					<Add option="-DWXUSINGDLL" />
+					<Add option="-DMAKING_WX_ETK_SQLITE3_DLL" />
+				</Compiler>
+				<Linker>
+					<Add library="QtCored4" />
+					<Add library="QtGuid4" />
+				</Linker>
+				<Environment>
+					<Variable name="TARGETDIR_NAME" value="Debug" />
+				</Environment>
+			</Target>
+			<Target title="Win32 Unicode Release">
+				<Option platforms="Windows;" />
+				<Option output="../lib/wxETKSQLite3" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Win32UnicodeRelease/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DwxDEBUG_LEVEL=0" />
+					<Add option="-D__WXMSW__" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DwxUSE_UNICODE" />
+					<Add option="-DWXUSINGDLL" />
+					<Add option="-DMAKING_WX_ETK_SQLITE3_DLL" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="QtCore4" />
+					<Add library="QtGui4" />
+				</Linker>
+				<Environment>
+					<Variable name="TARGETDIR_NAME" value="Release" />
+				</Environment>
+			</Target>
+			<Target title="Win32 Unicode Debug Static">
+				<Option platforms="Windows;" />
+				<Option output="../lib/StaticwxETKSQLite3d" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Win32UnicodeDebugStatic/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D__WXDEBUG__" />
+					<Add option="-D__WXMSW__" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DwxUSE_UNICODE" />
+					<Add option="-DWXUSINGDLL" />
+					<Add option="-DMAKING_WX_ETK_SQLITE3_LIB" />
+				</Compiler>
+				<Linker>
+					<Add library="QtCored" />
+					<Add library="QtGuid4" />
+				</Linker>
+				<Environment>
+					<Variable name="TARGETDIR_NAME" value="Debug" />
+				</Environment>
+			</Target>
+			<Target title="Win32 Unicode Release Static">
+				<Option platforms="Windows;" />
+				<Option output="../lib/StaticwxETKSQLite3" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Win32UnicodeReleaseStatic/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DwxDEBUG_LEVEL=0" />
+					<Add option="-D__WXMSW__" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DwxUSE_UNICODE" />
+					<Add option="-DWXUSINGDLL" />
+					<Add option="-DMAKING_WX_ETK_SQLITE3_LIB" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="QtCore4" />
+					<Add library="QtGui4" />
+				</Linker>
+				<Environment>
+					<Variable name="TARGETDIR_NAME" value="Release" />
+				</Environment>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-pipe" />
+			<Add option="-mthreads" />
+			<Add option='[[if (PLATFORM == PLATFORM_MSW &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) print(_T(&quot;-Wno-attributes&quot;));]]' />
+			<Add option="-Winvalid-pch" />
+			<Add option="-include ../include/wx/wxETKSQLite3_pch.h" />
+			<Add option="-D__GNUWIN32__" />
+			<Add option="-D__WXMSW__" />
+			<Add option="-DWXUSINGDLL" />
+			<Add option="-DwxUSE_UNICODE" />
+			<Add option="-DWX_PRECOMP" />
+			<Add option="-DQT_CORE_LIB" />
+			<Add directory="../include/wx" />
+			<Add directory="../include/wx4qt" />
+			<Add directory="$(#wxsqlite3)/include" />
+			<Add directory="$(#wxsqlite3)/src" />
+			<Add directory="$(#wxsqlite3)/sqlite3/include" />
+			<Add directory="$(#qtdir.include)" />
+			<Add directory="$(#qtdir.include)/QtGui" />
+			<Add directory="$(#qtdir.include)/QtCore" />
+		</Compiler>
+		<Linker>
+			<Add option="-mthreads" />
+			<Add directory="$(#qtdir.lib)" />
+			<Add directory="C:/Qt/4.8.4/lib" />
+		</Linker>
+		<Unit filename="../include/wx4qt/wx/arrstr.h" />
+		<Unit filename="../include/wx4qt/wx/buffer.h" />
+		<Unit filename="../include/wx4qt/wx/confbase.h" />
+		<Unit filename="../include/wx4qt/wx/datetime.h" />
+		<Unit filename="../include/wx4qt/wx/dynlib.h" />
+		<Unit filename="../include/wx4qt/wx/file.h" />
+		<Unit filename="../include/wx4qt/wx/filename.h" />
+		<Unit filename="../include/wx4qt/wx/hashmap.h" />
+		<Unit filename="../include/wx4qt/wx/implements.cpp" />
+		<Unit filename="../include/wx4qt/wx/regex.h" />
+		<Unit filename="../include/wx4qt/wx/string.h" />
+		<Unit filename="../include/wx4qt/wx/tokenzr.h" />
+		<Unit filename="../include/wx4qt/wx/variant.h" />
+		<Unit filename="../include/wx4qt/wx/wx.h" />
+		<Unit filename="../include/wx4qt/wx/wxprec.h" />
+		<Unit filename="../include/wx4qt/wx/wxtype.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Column.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Criterion.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Database.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Include.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Record.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Request.h" />
+		<Unit filename="../include/wx/wxETKSQLite3RequestDeleter.h" />
+		<Unit filename="../include/wx/wxETKSQLite3RequestInserter.h" />
+		<Unit filename="../include/wx/wxETKSQLite3RequestSelector.h" />
+		<Unit filename="../include/wx/wxETKSQLite3RequestUpdater.h" />
+		<Unit filename="../include/wx/wxETKSQLite3ResultSet.h" />
+		<Unit filename="../include/wx/wxETKSQLite3ResultSetBase.h" />
+		<Unit filename="../include/wx/wxETKSQLite3SharedPtr.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Types.h" />
+		<Unit filename="../include/wx/wxETKSQLite3ValueBind.h" />
+		<Unit filename="../include/wx/wxETKSQLite3VariantDatas.h" />
+		<Unit filename="../include/wx/wxETKSQLite3Version.h" />
+		<Unit filename="../include/wx/wxETKSQLite3_pch.h">
+			<Option compile="1" />
+		</Unit>
+		<Unit filename="../scripts/compile_ws3.script" />
+		<Unit filename="../scripts/wxETKSQLite3TableTemplate.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../scripts/wxETKSQLite3TableTemplate.h" />
+		<Unit filename="../src/wxETKSQLite3Column.cpp" />
+		<Unit filename="../src/wxETKSQLite3Criterion.cpp" />
+		<Unit filename="../src/wxETKSQLite3Database.cpp" />
+		<Unit filename="../src/wxETKSQLite3Record.cpp" />
+		<Unit filename="../src/wxETKSQLite3Request.cpp" />
+		<Unit filename="../src/wxETKSQLite3RequestDeleter.cpp" />
+		<Unit filename="../src/wxETKSQLite3RequestInserter.cpp" />
+		<Unit filename="../src/wxETKSQLite3RequestSelector.cpp" />
+		<Unit filename="../src/wxETKSQLite3RequestUpdater.cpp" />
+		<Unit filename="../src/wxETKSQLite3ResultSetBase.cpp" />
+		<Unit filename="../src/wxETKSQLite3ValueBind.cpp" />
+		<Unit filename="../src/wxETKSQLite3VariantDatas.cpp" />
+		<Unit filename="../src/wxETKSQLite3WxSQLite3.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<AutoVersioning>
+				<Scheme minor_max="100" build_max="0" rev_max="0" rev_rand_max="100" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" use_define="0" update_manifest="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="include/wx/wxETKSQLite3Version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="WX_ETK_SQLITE3_VERSION_HEADER" namespace="wxETKSQLite3AutoVersion" prefix="" />
+			</AutoVersioning>
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project project_number="0.4.301" output_directory="docs" use_auto_version="1" />
+				<doxyfile_build extract_static="1" />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot class_diagrams="1" />
+				<general use_at_in_tags="1" />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

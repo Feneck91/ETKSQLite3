@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="qtETKSQLite3Sample" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Script file="$(#wxetksqlite3)/scripts/compile_ws3.script" />
+			<Target title="Win32 Unicode Debug">
+				<Option output="Debug/qtETKSQLite3Sampled" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Win32UnicodeDebug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DUNICODE" />
+					<Add option="-DwxUSE_UNICODE" />
+					<Add option="-D__GNUWIN32__" />
+				</Compiler>
+				<Linker>
+					<Add library="qtmaind" />
+					<Add library="QtCored4" />
+					<Add library="QtGuid4" />
+					<Add library="wxETKSQLite3d" />
+				</Linker>
+				<ExtraCommands>
+					<Add after='Win32CopyFile.bat &quot;$(#qtdir)\bin\QtCored4.dll&quot; &quot;Debug&quot;' />
+					<Add after='Win32CopyFile.bat &quot;$(#qtdir)\bin\QtGuid4.dll&quot; &quot;Debug&quot;' />
+					<Add after='Win32CopyFile.bat &quot;$(#qtdir)\bin\libgcc_s_dw2-1.dll&quot; &quot;Debug&quot;' />
+					<Add after='Win32CopyFile.bat &quot;..\..\lib\wxETKSQLite3d.dll&quot; &quot;Debug&quot;' />
+					<Add after='Win32CopyFile.bat &quot;$(#wxsqlite3)\sqlite3\lib\sqlite3.dll&quot; &quot;Debug&quot;' />
+					<Mode after="always" />
+				</ExtraCommands>
+			</Target>
+			<Target title="Win32 Unicode Release">
+				<Option output="Release/qtETKSQLite3Sampled" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Win32UnicodeRelease/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DUNICODE" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="qtmain" />
+					<Add library="QtCore4" />
+					<Add library="QtGui4" />
+					<Add library="wxETKSQLite3" />
+				</Linker>
+				<ExtraCommands>
+					<Add after='Win32CopyFile.bat &quot;$(#qtdir)\bin\QtCore4.dll&quot; &quot;Release&quot;' />
+					<Add after='Win32CopyFile.bat &quot;$(#qtdir)\bin\QtGui4.dll&quot; &quot;Release&quot;' />
+					<Add after='Win32CopyFile.bat &quot;$(#qtdir)\bin\libgcc_s_dw2-1.dll&quot; &quot;Release&quot;' />
+					<Add after='Win32CopyFile.bat &quot;../../lib/wxETKSQLite3.dll&quot; &quot;Release&quot;' />
+					<Add after='Win32CopyFile.bat &quot;$(#wxsqlite3)\sqlite3\lib\sqlite3.dll&quot; &quot;Release&quot;' />
+					<Mode after="always" />
+				</ExtraCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="./GeneratedFiles" />
+			<Add directory="$(#qtdir.include)/QtGui" />
+			<Add directory="$(#qtdir.include)/QtCore" />
+			<Add directory="$(#qtdir.include)" />
+			<Add directory="$(#wxetksqlite3.include)/wx4qt" />
+			<Add directory="$(#wxetksqlite3.include)/wx" />
+			<Add directory="$(#wxsqlite3)/include" />
+			<Add directory="$(#wxsqlite3)/sqlite3/include" />
+		</Compiler>
+		<Linker>
+			<Add option="-mthreads" />
+			<Add directory="$(#qtdir.lib)" />
+			<Add directory="$(#wxetksqlite3.lib)" />
+		</Linker>
+		<Unit filename="Database.cpp" />
+		<Unit filename="Database.h" />
+		<Unit filename="Database.ws3">
+			<Option compile="1" />
+			<Option weight="10" />
+			<Option compiler="gcc" use="1" buildCommand='&quot;$(#wxetksqlite3)/build/Win32/lua52.exe&quot; &quot;$(#wxetksqlite3)/scripts/compile_ws3.lua&quot; $file qt Database.h Database.cpp' />
+		</Unit>
+		<Unit filename="ETKSQlite3SampleDatabase.cpp" />
+		<Unit filename="ETKSQlite3SampleDatabase.h" />
+		<Unit filename="GeneratedFiles/moc_qtetksqlite3sample.cpp" />
+		<Unit filename="GeneratedFiles/qrc_qtetksqlite3sample.cpp" />
+		<Unit filename="GeneratedFiles/ui_qtetksqlite3sample.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="qtetksqlite3sample.cpp" />
+		<Unit filename="qtetksqlite3sample.h">
+			<Option compile="1" />
+			<Option compiler="gcc" use="1" buildCommand='&quot;$(#qtdir)\bin\moc.exe&quot; &quot;$file&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$file_name.cpp&quot;' />
+		</Unit>
+		<Unit filename="qtetksqlite3sample.qrc">
+			<Option compile="1" />
+			<Option weight="10" />
+			<Option compiler="gcc" use="1" buildCommand='&quot;$(#qtdir)\bin\rcc.exe&quot; -name &quot;$file_name.qrc&quot; -no-compress &quot;$file&quot; -o &quot;.\GeneratedFiles\qrc_$file_name.cpp&quot;' />
+		</Unit>
+		<Unit filename="qtetksqlite3sample.ui">
+			<Option compile="1" />
+			<Option weight="0" />
+			<Option compiler="gcc" use="1" buildCommand='&quot;$(#qtdir)\bin\uic.exe&quot; -o &quot;.\GeneratedFiles\ui_$file_name.h&quot; &quot;$file&quot;' />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

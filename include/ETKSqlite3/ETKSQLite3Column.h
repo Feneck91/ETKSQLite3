@@ -8,8 +8,8 @@
 // Copyright:   © Stéphane Château
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
-#ifndef INCLUDE_WX_ETK_SQLITE3_COLUMN_H
-#define INCLUDE_WX_ETK_SQLITE3_COLUMN_H
+#ifndef INCLUDE_ETK_SQLITE3_COLUMN_H
+#define INCLUDE_ETK_SQLITE3_COLUMN_H
 
 #include "ETKSQLite3Types.h"
 #include "ETKSQLite3SharedPtr.h"
@@ -51,7 +51,7 @@ private:
     /**
      * Class used to bind datas.
      */
-    tdETKSQLite3ValueBindBasePtr      m_pBindValue;
+    tdETKSQLite3ValueBindBasePtr        m_pBindValue;
 
 protected:
     /// @name Constructor / Destructor.
@@ -131,7 +131,7 @@ public:
      * @param _rColumnAttributes Column to copy into this.
      * @return This.
      */
-    const ETKSQLite3ColumnAttributes &operator=(const ETKSQLite3ColumnAttributes &_rColumnAttributes);
+    const ETKSQLite3ColumnAttributes &  operator=(const ETKSQLite3ColumnAttributes &_rColumnAttributes);
     //@}
 
 #ifdef __WXDEBUG__
@@ -183,7 +183,7 @@ private:
     /**
      * Contains all needed columns attributes.
      */
-    ETKSQLite3ColumnAttributes        m_ColumnAttributes;
+    ETKSQLite3ColumnAttributes          m_ColumnAttributes;
 
     /**
      * Column index.
@@ -643,4 +643,4 @@ public:
     //@}
 };
 
-#endif // INCLUDE_WX_ETK_SQLITE3_COLUMN_H
+#endif // INCLUDE_ETK_SQLITE3_COLUMN_H

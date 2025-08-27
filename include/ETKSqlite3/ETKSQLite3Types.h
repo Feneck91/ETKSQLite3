@@ -25,6 +25,7 @@
     #ifdef MAKING_ETK_SQLITE3_LIB
         #define             WXMAKINGLIB_WXSQLITE3
         #define             EXPORT_IMPORT
+        #define             SQLITE_API
     #else
         #ifdef USING_ETK_SQLITE3_LIB
             #define         EXPORT_IMPORT
@@ -46,16 +47,19 @@
     #endif
 #endif
 
-#ifdef _MSC_VER
-    // Visual Studio compatibility the precompiler header file don't work like mingw
-    // Must add include into all C++ file ! So, the compiler is defined without precompiler
-    // header file, but in this case the project MUST ADD the following files.
-    #include <wx/wx.h>
-    // Include wxSQLITE3 : database managment
-    #include <wx/wxsqlite3.h>
-#else
-    #include <wx/wx.h>
-#endif
+// Visual Studio compatibility the precompiler header file don't work like mingw
+// Must add include into all C++ file ! So, the compiler is defined without precompiler
+// header file, but in this case the project MUST ADD the following files.
+#include <wx/wx.h>
+
+// Include wxSQLITE3 : database managment: should add this path to project
+// into : Search Directories / Compiler, add :
+// $(#wxsqlite3)\include
+// $(#wxsqlite3)\sqlite3\include
+#include "wx/wxsqlite3.h"
+
+// Include SQLITE3 : database managment: should add this path to project
+#include "sqlite3mc_amalgamation.h"
 
 // Difference with 2.8.x version and later
 #if wxCHECK_VERSION(2,9,0)

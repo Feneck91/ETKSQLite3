@@ -13,14 +13,40 @@ project(ETKSQLite3)
 
 # Options to choose the library type to generate
 # Ask to user the path where wxsqlite3 is installed
-set(WXSQLITE3_DIR "Path where wxsqlite3 is installed (mandatory)" CACHE PATH "Installation path of wxsqlite3")
-set(SQLITE3_DIR "Path where sqlite3 is installed (mandatory)" CACHE PATH "Installation path of sqlite3")
-option(wxETKSQLite3 "Compile the wxWidgets version (wxETKSQLite3)" OFF)
-option(qtETKSQLite3 "Compile the Qt version (qtETKSQLite3)" OFF)
-option(boostETKSQLite3 "Compile the Boost version (boostETKSQLite3)" OFF)
-option(BUILD_SHARED_LIBS "Compile to dynamic library" ON)
+set(WXSQLITE3_DIR       "Path where wxsqlite3 is installed (mandatory)" CACHE PATH      "Installation path of wxsqlite3")
 
+# =============================================================================
+# Target project to generate
+# =============================================================================
+option(BUILD_SHARED_LIBS                "Compile to dynamic library"                    ON)
+option(wxETKSQLite3                     "Compile the wxWidgets version (wxETKSQLite3)"  OFF)
+option(qtETKSQLite3                     "Compile the Qt version (qtETKSQLite3)"         OFF)
+option(boostETKSQLite3                  "Compile the Boost version (boostETKSQLite3)"   OFF)
+
+# =============================================================================
+# SQLite Configuration Options
+# =============================================================================
+# Feature toggles (ON/OFF)
+option(SQLITE_ENABLE_COLUMN_METADATA    "Enable column metadata support"                ON)
+option(SQLITE_ENABLE_JSON1              "Enable JSON1 extension"                        OFF)
+option(SQLITE_ENABLE_FTS3               "Enable FTS3 (Full-Text Search) extension"      ON)
+option(SQLITE_ENABLE_FTS4               "Enable FTS4 extension"                         OFF)
+option(SQLITE_ENABLE_FTS5               "Enable FTS5 extension"                         OFF)
+option(SQLITE_ENABLE_RTREE              "Enable RTREE (R*-tree) extension"              OFF)
+option(SQLITE_ENABLE_GEOPOLY            "Enable GEOPOLY (geopolymer) extension"         OFF)
+option(SQLITE_ENABLE_SESSION            "Enable Session extension"                      ON)
+option(SQLITE_ENABLE_MATH_FUNCTIONS     "Enable math functions"                         OFF)
+option(SQLITE_ENABLE_MONOTONIC_CLOCK    "Enable Monotonic Clock extension"              OFF)
+option(SQLITE_ENABLE_DBSTAT_VTAB        "Enable dbstat virtual table"                   OFF)
+option(SQLITE_ENABLE_EXPLAIN_COMMENTS   "Enable EXPLAIN comments"                       OFF)
+option(SQLITE_ENABLE_STMTVTAB           "Enable stmt virtual tables"                    OFF)
+option(SQLITE_ENABLE_UNLOCK_NOTIFY      "Enable unlock notify"                          OFF)
+option(SQLITE_ENABLE_SERIALIZE          "Enable database serialization"                 OFF)
+option(SQLITE_ENABLE_DESERIALIZE        "Enable database deserialization"               OFF)
+
+# =============================================================================
 # ETKSQLite3 environment variables
+# =============================================================================
 set(CMAKE_CXX_STANDARD 11)
 set(MAKING_STL_SQLITE3_LIB)
 
@@ -35,6 +61,34 @@ endif()
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     add_definitions(-D_WIN32_WINNT=0x0601)
+    add_definitions(-DSQLITE_THREADSAFE=1)
+    add_definitions(-DSQLITE_MAX_ATTACHED=10)
+    add_definitions(-DSQLITE_DQS=0)
+    add_definitions(-DSQLITE_ENABLE_EXPLAIN_COMMENTS=1)
+    add_definitions(-DSQLITE_SOUNDEX=1)
+    add_definitions(-DSQLITE_ENABLE_COLUMN_METADATA=1)
+    add_definitions(-DSQLITE_SECURE_DELETE=1)
+    add_definitions(-DSQLITE_ENABLE_DESERIALIZE=1)
+    add_definitions(-DSQLITE_ENABLE_FTS3=1)
+    add_definitions(-DSQLITE_ENABLE_FTS3_PARENTHESIS=1)
+    add_definitions(-DSQLITE_ENABLE_FTS4=1)
+    add_definitions(-DSQLITE_ENABLE_FTS5=1)
+    add_definitions(-DSQLITE_ENABLE_JSON1=1)
+    add_definitions(-DSQLITE_ENABLE_RTREE=1)
+    add_definitions(-DSQLITE_ENABLE_GEOPOLY=1)
+    add_definitions(-DSQLITE_CORE=1)
+    add_definitions(-DSQLITE_ENABLE_EXTFUNC=1)
+    add_definitions(-DSQLITE_ENABLE_CSV=1)
+    add_definitions(-DSQLITE_ENABLE_VSV=1)
+    add_definitions(-DSQLITE_ENABLE_SHA3=1)
+    add_definitions(-DSQLITE_ENABLE_CARRAY=1)
+    add_definitions(-DSQLITE_ENABLE_FILEIO=1)
+    add_definitions(-DSQLITE_ENABLE_SERIES=1)
+    add_definitions(-DSQLITE_ENABLE_UUID=1)
+    add_definitions(-DSQLITE_ENABLE_REGEXP=1)
+    add_definitions(-DSQLITE_TEMP_STORE=2)
+    add_definitions(-DSQLITE_USE_URI=1)
+    add_definitions(-DSQLITE_USER_AUTHENTICATION=1)
 
     # Active hot reload for MSVC compilers is allowed
     if (POLICY CMP0141)
@@ -97,7 +151,8 @@ set(COMMON_SOURCE_FILES
     ../src/ETKSQLite3/ETKSQLite3ResultSetBase.cpp
     ../src/ETKSQLite3/ETKSQLite3ValueBind.cpp
     ../src/ETKSQLite3/ETKSQLite3VariantDatas.cpp
-    ../src/ETKSQLite3/ETKSQLite3WxSQLite3.cpp    
+    ../src/ETKSQLite3/ETKSQLite3WxSQLite3.cpp
+    ../src/ETKSQLite3/ETKSQLite3WxSQLite3.c
 )
 
 # Define Qt specific header files (wrappers)
@@ -172,19 +227,23 @@ function(create_framework_library framework)
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES})
             find_package(wxWidgets REQUIRED)
             set(FRAMEWORK_LIBS ${wxWidgets_LIBRARIES})
-            set(FRAMEWORK_DEFINITIONS USE_WXWIDGETS)
+            set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_WXWIDGETS)
+            # Madatory options for wxWidgets
+            add_definitions(-DwxUSE_UNICODE=1)
+            add_definitions(-DwxUSE_DATETIME=1)
+            add_definitions(-DwxUSE_STL=1)
         elseif(framework STREQUAL "qtETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${QT_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES} ${QT_HEADER_FILES})
             find_package(Qt5 REQUIRED COMPONENTS Widgets)
             set(FRAMEWORK_LIBS Qt5::Widgets)
-            set(FRAMEWORK_DEFINITIONS USE_QT)
+            set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_QT)
         elseif(framework STREQUAL "boostETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES})
             find_package(Boost REQUIRED)
             set(FRAMEWORK_LIBS Boost::boost)
-            set(FRAMEWORK_DEFINITIONS USE_BOOST)
+            set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_BOOST)
         else()
             message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${framework} is selected but not supported. Error into CMake file!")
         endif()
@@ -225,15 +284,15 @@ function(create_framework_library framework)
         add_library(${LIB_NAME} ${BUILD_SHARED_LIBS_TYPE} ${ETKSQLITE3_SOURCES} ${ETKSQLITE3_HEADERS} ${MODULE_RC_FILE})
 
         # Configure library properties
-        target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src ${SQLITE3_DIR})
-        target_link_libraries(${LIB_NAME} PRIVATE ${FRAMEWORK_LIBS})
+        target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+        target_link_libraries(${LIB_NAME}      PRIVATE ${FRAMEWORK_LIBS})
         target_compile_definitions(${LIB_NAME} PRIVATE ${FRAMEWORK_DEFINITIONS})
 
         # Define suffix depending of library type
         if(BUILD_SHARED_LIBS)
-            set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "-shared${CMAKE_SHARED_LIBRARY_SUFFIX}")
+            set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
         else()
-            set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "-static${CMAKE_STATIC_LIBRARY_SUFFIX}")
+            set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif()
 
         ## Installer la librairie (optionnel)

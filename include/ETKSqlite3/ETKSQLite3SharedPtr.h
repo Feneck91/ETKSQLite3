@@ -61,10 +61,10 @@ protected:
         m_iCounter = 0;
     }
 
-    IRefCountImpl(const IRefCountImpl<T> &_rMe)
+    IRefCountImpl(const IRefCountImpl<T> &)
     {   // Don't copy m_iCounter in copy constructor, it is another instance of this.
         // Counter must be set to 0.
-        // Probleù when creating copy from an item pointer shared by more than on pointer, on copy item
+        // Problem when creating copy from an item pointer shared by more than on pointer, on copy item
         // destructor the counter is not 0 and assert fails
         m_iCounter = 0;
     }

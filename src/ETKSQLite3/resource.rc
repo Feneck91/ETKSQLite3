@@ -1,0 +1,63 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+#include "ETKSQLite3Version.h"
+
+#include <windows.h>
+
+/* ETKSQLITE3_STRINGIZE works as the preprocessor # operator but also works with macros */
+#define ETKSQLITE3_STRINGIZE_HELPER(x)  #x
+#define ETKSQLITE3_STRINGIZE(x)         ETKSQLITE3_STRINGIZE_HELPER(x)
+ 
+#define ETKSQLITE3_MAKE_VERSION_DOT_STRING(x, y, z, w) \
+  ETKSQLITE3_STRINGIZE(x) "." ETKSQLITE3_STRINGIZE(y) "." ETKSQLITE3_STRINGIZE(z) "." ETKSQLITE3_STRINGIZE(w)
+ 
+#define ETKSQLITE3_VERSION_NUM_DOT_STRING \
+  ETKSQLITE3_MAKE_VERSION_DOT_STRING(ETKSQLITE3_MAJOR_VERSION, ETKSQLITE3_MINOR_VERSION, ETKSQLITE3_RELEASE_NUMBER, ETKSQLITE3_SUBRELEASE_NUMBER)
+
+// 0x0409 is US English, 0x04b0 is Unicode and 0x0000 is 7 bit ASCII. see
+// http://msdn.microsoft.com/en-us/library/aa381049(VS.85).aspx for the full
+// list of languages and charsets
+#define LANG 0x0409
+#ifdef _UNICODE
+  #define CHARSET 0x4b0
+  #define LANG_WITH_CHARSET "040904b0"
+#else
+  #define CHARSET 0
+  #define LANG_WITH_CHARSET "04090000"
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+  FILEVERSION ETKSQLITE3_MAJOR_VERSION,ETKSQLITE3_MINOR_VERSION,ETKSQLITE3_RELEASE_NUMBER,ETKSQLITE3_SUBRELEASE_NUMBER
+  PRODUCTVERSION ETKSQLITE3_MAJOR_VERSION,ETKSQLITE3_MINOR_VERSION,ETKSQLITE3_RELEASE_NUMBER,ETKSQLITE3_SUBRELEASE_NUMBER
+  FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+  FILEFLAGS 0x1L
+#else
+  FILEFLAGS 0x0L
+#endif
+  FILEOS VOS_NT_WINDOWS32
+  FILETYPE VFT_DLL
+  FILESUBTYPE 0x0L
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK LANG_WITH_CHARSET
+    BEGIN
+      VALUE "Comments", "ETKSQLite3 - SQLite3 database wrapper around wxSQLite3 for wxWidgets / Qt / Boost applications"
+      VALUE "CompanyName", "ETKSQLite3 Development Team"
+      VALUE "FileDescription", "ETKSQLite3"
+      VALUE "FileVersion", ETKSQLITE3_VERSION_NUM_DOT_STRING
+      VALUE "InternalName", ETKSQLITE3_DLLNAME
+      VALUE "LegalCopyright", "Copyright (C) 2025, Stéphane Château"
+      VALUE "OriginalFilename", ETKSQLITE3_DLLNAME
+      VALUE "ProductName", "ETKSQLite3"
+      VALUE "ProductVersion", ETKSQLITE3_VERSION_NUM_DOT_STRING
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", LANG, CHARSET
+  END
+END

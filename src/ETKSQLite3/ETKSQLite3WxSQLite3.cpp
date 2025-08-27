@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wxETKSQLite3WxSQLite3.h
-// Library:     wxETKSQLite3
+// Name:        ETKSQLite3WxSQLite3.h
+// Library:     ETKSQLite3
 // Purpose:     Code to compile wxSQLite3 into library
 // Author:      Stéphane Château (Feneck91@free.fr)
 // Modified by:
@@ -16,10 +16,7 @@
 // WXSQLITE3_HAVE_CODEC is used to be able to crypt generated database.
 // WXMAKINGDLL_WXSQLITE3 to get table name in ResultSet
 
-#ifdef _MSC_VER
-    // Include wxSQLITE3 : database managment
-    #include <wx/wxsqlite3.h>
-#endif
+//#include "ETKSQLite3Types.h"
 
 #ifndef __WXDEBUG__
     // Database is not crypted in debug mode

@@ -12,13 +12,6 @@
 // Used to call all includes needed to access to all classes of wxETKSQLite3 library
 #include "wx/wx.h"
 #include "ETKSQLite3Types.h"
-
-// Include wxSQLITE3 : database managment: should add this path to project
-// into : Search Directories / Compiler, add :
-// $(#wxsqlite3)\include
-// $(#wxsqlite3)\sqlite3\include
-#include <wx/wxsqlite3.h>
-
 #include "ETKSQLite3Database.h"
 #include "ETKSQLite3Record.h"
 #include "ETKSQLite3VariantDatas.h"

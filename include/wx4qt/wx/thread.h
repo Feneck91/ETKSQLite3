@@ -2,9 +2,9 @@
 // Name:        wx/thread.h
 // Purpose:     Thread implementation
 // Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      StÈphane Ch‚teau
+// Author:      St√©phane Ch√¢teau
 // Modified by:
 // Created:     16/06/2014
-// Copyright:   (c) StÈphane Ch‚teau
+// Copyright:   (c) St√©phane Ch√¢teau
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////

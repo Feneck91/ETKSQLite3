@@ -2,10 +2,10 @@
 // Name:        wx/datetime.h
 // Purpose:     wxDateTime class
 // Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      StÈphane Ch‚teau
+// Author:      St√©phane Ch√¢teau
 // Modified by:
 // Created:     14/06/2012
-// Copyright:   (c) StÈphane Ch‚teau
+// Copyright:   (c) St√©phane Ch√¢teau
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_DATETIME_HEADER
@@ -16,7 +16,7 @@
 #include <QDateTime>
 
 #define wxDateTime          wxQDateTime
-#define wxInvalidDateTime   QDateTime(QDate(-1,-1,-1))
+#define wxInvalidDateTime   QDateTime()
 
 #define MILLISECONDS_PER_DAY 86400000l
 // this is the integral part of JDN of the midnight of Jan 1, 1970
@@ -32,9 +32,14 @@ public :
     wxQDateTime(const wxQDateTime &_rDT) : QDateTime(_rDT)                              {}
     wxQDateTime(const QDateTime &_rDT) : QDateTime(_rDT) {}
     wxQDateTime(wxLongLong &_dt) : QDateTime(QDateTime::fromMSecsSinceEpoch(_dt.GetValue())) {}
-    wxQDateTime(double _dValue) :  QDateTime(QDate::fromJulianDay(_dValue))             {}
-    wxQDateTime(const struct tm &date): QDateTime(QDateTime(QDate(date.tm_year, date.tm_mon, date.tm_mday), QTime(date.tm_hour, date.tm_min,date.tm_sec, 0),Qt::LocalTime)) {}
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    wxQDateTime(double _dValue) : QDateTime(QDate::fromJulianDay(_dValue).startOfDay()) {}
+    wxQDateTime(const QDate & _rDate): QDateTime(_rDate.startOfDay())                   {}
+#else
+    wxQDateTime(double _dValue) : QDateTime(QDate::fromJulianDay(_dValue))              {}
     wxQDateTime(const QDate & _rDate): QDateTime(_rDate)                                {}
+#endif
+    wxQDateTime(const struct tm &date): QDateTime(QDateTime(QDate(date.tm_year, date.tm_mon, date.tm_mday), QTime(date.tm_hour, date.tm_min,date.tm_sec, 0),Qt::LocalTime)) {}
     wxQDateTime(const QTime & _rTime): QDateTime(QDate(2000,10,10),_rTime)              {} // <-- Set Date to dummy to have a valid date / time!
     operator QDate () const;
     operator QTime () const;

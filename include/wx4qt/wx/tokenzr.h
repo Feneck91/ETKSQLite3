@@ -5,7 +5,7 @@
 // Author:      Guilhem Lavaux
 // Modified by:
 // Created:     14/06/2012
-// Copyright:   (c) StÈphane Ch‚teau
+// Copyright:   (c) St√©phane Ch√¢teau
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_TOKENZRH_HEADER

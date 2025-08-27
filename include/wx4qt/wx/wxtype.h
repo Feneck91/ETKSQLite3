@@ -2,10 +2,10 @@
 // Name:        wx/wxtype.h
 // Purpose:     Used to import / export function and classes
 // Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      StÈphane Ch‚teau
+// Author:      St√©phane Ch√¢teau
 // Modified by:
 // Created:     14/06/2012
-// Copyright:   (c) StÈphane Ch‚teau
+// Copyright:   (c) St√©phane Ch√¢teau
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_TYPE_HEADER
@@ -31,6 +31,6 @@
 #    define WXIMPORT
 #endif
 
-#include "wxETKSQLite3Types.h"
+#include "ETKSQLite3Types.h"
 
 #endif // WX_TYPE_HEADER

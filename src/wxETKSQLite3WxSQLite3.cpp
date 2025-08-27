@@ -33,4 +33,4 @@
     #define __WIN32__
 #endif
 
-#include "wxsqlite3.cpp"
+#include "./wxsqlite3.cpp"

@@ -39,7 +39,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;..\include\wx;..\include\wx4qt;&quot;$(WXSQLITE3)\include&quot;;&quot;$(WXSQLITE3)\sqlite3\include&quot;;&quot;$(WXSQLITE3)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;$(QTDIR)\include\QtWidgets&quot;;.\;..\include\wx;..\include\wx4qt;&quot;$(WXSQLITE3)\include&quot;;&quot;$(WXSQLITE3)\sqlite3&quot;;&quot;$(WXSQLITE3)\src&quot;"
 				PreprocessorDefinitions="_UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;MAKING_WX_ETK_SQLITE3_DLL;WX_PRECOMP;QT_DLL"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -111,7 +111,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;..\include\wx;..\include\wx4qt;&quot;$(WXSQLITE3)\include&quot;;&quot;$(WXSQLITE3)\sqlite3\include&quot;;&quot;$(WXSQLITE3)\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;$(QTDIR)\include\QtWidgets&quot;;.\;..\include\wx;..\include\wx4qt;&quot;$(WXSQLITE3)\include&quot;;&quot;$(WXSQLITE3)\sqlite3&quot;;&quot;$(WXSQLITE3)\src&quot;"
 				PreprocessorDefinitions="_UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;MAKING_WX_ETK_SQLITE3_DLL;WX_PRECOMP;_DEBUG;__WXDEBUG__;QT_DLL"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"

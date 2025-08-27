@@ -2,7 +2,7 @@
 #include "ETKSQlite3SampleDatabase.h"
 #include <QFileDialog>
 
-qtETKSQLite3Sample::qtETKSQLite3Sample(QWidget *parent, Qt::WFlags flags)
+qtETKSQLite3Sample::qtETKSQLite3Sample(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
     , m_settings("qtETKSQLite3","qtETKSQLite3Sample")
     , m_bDontUpdate(false)

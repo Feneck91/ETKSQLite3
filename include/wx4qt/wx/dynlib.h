@@ -11,6 +11,7 @@
 #ifndef WX_DYNAMIC_LIBRARY_HEADER
 #define WX_DYNAMIC_LIBRARY_HEADER
 
+#include "wxETKSQLite3Types.h"
 #include "wxtype.h"
 #include <QLibrary>
 

@@ -19,7 +19,7 @@
 #define wxTRANSLATE(x)                          x
 #define wxGetTranslation(x)                     x
 #define __TFILE__                               __FILE__
-#define wxOnAssert(file,line,fn,cond,msg)       Q_ASSERT_X((cond),(QString("%1 in line %2").arg(fn).arg(line)).toAscii(),msg)
+#define wxOnAssert(file,line,fn,cond,msg)       Q_ASSERT_X((cond),(QString("%1 in line %2").arg(fn).arg(line)).toUtf8(),msg)
 #define wxMax(a,b)                              (((a) > (b)) ? (a) : (b))
 #define WXUNUSED(x)
 #define DWORD                                   unsigned long
@@ -31,7 +31,8 @@
 #   ifdef __BORLANDC__
 #       define wxUnusedVar(identifier) identifier
 #   else
-        template <class T> inline void wxUnusedVar(const T& WXUNUSED(t)) { }
+        #define wxUnusedVar(identifier) identifier
+        //template <class T> inline void wxUnusedVar(const T& WXUNUSED(t)) { }
 #   endif
 #endif
 
@@ -147,6 +148,7 @@
 //
 void EXPORT_IMPORT wxLogDebug(const wxChar *_pszMessage);
 void EXPORT_IMPORT wxLogDebug(const wxChar *_pszFormat,const wxChar *_pszMessage);
+void EXPORT_IMPORT wxLogInfo(const wxChar *_pszFormat, const wxChar *_pszCodeErrorMessage, int _iErrorCode, wxQString _strMessage);
 void EXPORT_IMPORT wxLogVerbose(const wxChar *_pszMessage);
 void EXPORT_IMPORT wxLogVerbose(const wxChar *_pszFormat,const wxChar *_pszMessage);
 void EXPORT_IMPORT wxLogError(const wxChar *_pszMessage);
@@ -168,6 +170,7 @@ public:
 
     virtual void LogDebug(QString _strLogString);
     virtual void wxLogDebug(QString _strLogString);
+    virtual void wxLogInfo(QString _strFormat, QString  _strCodeErrorMessage, int _iErrorCode, QString _strMessage);
     virtual void wxLogVerbose(QString _strLogString);
     virtual void wxLogError(QString _strLogString);
     virtual void wxLogFatalError(QString _strLogString);

@@ -1,7 +1,7 @@
 #ifndef QTETKSQLITE3SAMPLE_H
 #define QTETKSQLITE3SAMPLE_H
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 #include <QSettings>
 #include "ui_qtetksqlite3sample.h"
 #include "Database.h"
@@ -22,7 +22,7 @@ private:
     CETKSQlite3SampleDatabase *m_pDatabase;
 
 public:
-    qtETKSQLite3Sample(QWidget *parent = 0, Qt::WFlags flags = 0);
+    qtETKSQLite3Sample(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     ~qtETKSQLite3Sample();
     void InsertItem(const wxETKSQLite3ResultSet<CRecordTCustomer> &_rResultSetTCustomer,long _lRowCount,double _dSumPrices);
 

@@ -8,7 +8,7 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 #include "wxETKSQLite3Database.h"
-#include <../sqlite3/include/sqlite3.h>
+#include <../sqlite3/sqlite3.h>
 #include <wx/confbase.h>
 #include <wx/file.h>
 

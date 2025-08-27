@@ -92,6 +92,10 @@ void wx4qtLogger::wxLogDebug(QString _strLogString)
 {
 }
 
+void wx4qtLogger::wxLogInfo(QString _strFormat, QString  _strCodeErrorMessage, int _iErrorCode, QString _strMessage)
+{
+}
+
 void wx4qtLogger::wxLogVerbose(QString _strLogString)
 {
 }
@@ -115,6 +119,14 @@ void wxLogDebug(const wxChar *_pszMessage)
 void wxLogDebug(const wxChar *_pszFormat,const wxChar *_pszMessage)
 {
     wxLogDebug(wxString::Format(_pszFormat,_pszMessage));
+}
+
+void wxLogInfo(const wxChar *_pszFormat, const wxChar *_pszCodeErrorMessage, int _iErrorCode, wxQString _strMessage)
+{
+    if (wx4qtLogger::Getwx4qtLoggerInstance() != NULL)
+    {
+        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogInfo(QString(_pszFormat), QString(_pszCodeErrorMessage), _iErrorCode, QString(_strMessage));
+    }
 }
 
 void wxLogVerbose(const wxChar *_pszMessage)
@@ -269,65 +281,65 @@ wxString wxQDateTime::Format(const char *_pszFormat) const
     strReturnDT.Replace(wxT("%%"),wxT("¤$£%~ù"));
 
     // %a: Abbreviated weekday name
-    strReturnDT.Replace(wxT("%a"),QDate::shortDayName(qdate.dayOfWeek()).toAscii());
+    strReturnDT.Replace(wxT("%a"),QDate::shortDayName(qdate.dayOfWeek()).toUtf8());
 
     // %A: Full weekday name
-    strReturnDT.Replace(wxT("%A"),QDate::longDayName(qdate.dayOfWeek()).toAscii());
+    strReturnDT.Replace(wxT("%A"),QDate::longDayName(qdate.dayOfWeek()).toUtf8());
 
     // %b: Abbreviated month name
-    strReturnDT.Replace(wxT("%b"),QDate::shortMonthName(qdate.month()).toAscii());
+    strReturnDT.Replace(wxT("%b"),QDate::shortMonthName(qdate.month()).toUtf8());
 
     // %B: Full month name
-    strReturnDT.Replace(wxT("%B"),QDate::longMonthName(qdate.dayOfWeek()).toAscii());
+    strReturnDT.Replace(wxT("%B"),QDate::longMonthName(qdate.dayOfWeek()).toUtf8());
 
     // %c: Date and time representation appropriate for locale
     // Not supported
 
     // %d: Day of month as decimal number (01 – 31)
-    strReturnDT.Replace(wxT("%d"),wxString::Format(wxT("%02d"),qdate.day()).toAscii());
+    strReturnDT.Replace(wxT("%d"),wxString::Format(wxT("%02d"),qdate.day()).toUtf8());
 
     // %H: Hour in 24-hour format (00 – 23)
-    strReturnDT.Replace(wxT("%H"),wxString::Format(wxT("%02d"),qtime.hour()).toAscii());
+    strReturnDT.Replace(wxT("%H"),wxString::Format(wxT("%02d"),qtime.hour()).toUtf8());
 
     // %I: Hour in 12-hour format (01 – 12)
-    strReturnDT.Replace(wxT("%I"),wxString::Format(wxT("%02d"),(qtime.hour() == 0) ? 12 : qtime.hour() % 12).toAscii());
+    strReturnDT.Replace(wxT("%I"),wxString::Format(wxT("%02d"),(qtime.hour() == 0) ? 12 : qtime.hour() % 12).toUtf8());
 
     // %j: Day of year as decimal number (001 – 366)
-    strReturnDT.Replace(wxT("%j"),QString("%1").arg(qdate.dayOfYear()).toAscii());
+    strReturnDT.Replace(wxT("%j"),QString("%1").arg(qdate.dayOfYear()).toUtf8());
 
     // %m: Month as decimal number (01 – 12)
-    strReturnDT.Replace(wxT("%m"),wxString::Format(wxT("%02d"),qdate.month()).toAscii());
+    strReturnDT.Replace(wxT("%m"),wxString::Format(wxT("%02d"),qdate.month()).toUtf8());
 
     // %M: Minute as decimal number (00 – 59)
-    strReturnDT.Replace(wxT("%M"),wxString::Format(wxT("%02d"),qtime.minute()).toAscii());
+    strReturnDT.Replace(wxT("%M"),wxString::Format(wxT("%02d"),qtime.minute()).toUtf8());
 
     // %p: Current locale's A.M./P.M. indicator for 12-hour clock
     strReturnDT.Replace(wxT("%p"),qtime.hour() > 11 ? "AM" : "PM");
 
     // %S: Second as decimal number (00 – 59)
-    strReturnDT.Replace(wxT("%S"),wxString::Format(wxT("%02d"),qtime.second()).toAscii());
+    strReturnDT.Replace(wxT("%S"),wxString::Format(wxT("%02d"),qtime.second()).toUtf8());
 
     // %U: Week of year as decimal number, with Sunday as first day of week (00 – 53)
     // Not supported
 
     // %w: Weekday as decimal number (0 – 6; Sunday is 0)
-    strReturnDT.Replace(wxT("%w"),QString("%1").arg(qdate.dayOfWeek() == 7 ? 0 : qdate.dayOfWeek()).toAscii());
+    strReturnDT.Replace(wxT("%w"),QString("%1").arg(qdate.dayOfWeek() == 7 ? 0 : qdate.dayOfWeek()).toUtf8());
 
     // %W: Week of year as decimal number, with Monday as first day of week (00 – 53)
     int iYear = qdate.year();
-    strReturnDT.Replace(wxT("%W"),wxString::Format(wxT("%02d"),qdate.weekNumber(&iYear) - 1).toAscii());
+    strReturnDT.Replace(wxT("%W"),wxString::Format(wxT("%02d"),qdate.weekNumber(&iYear) - 1).toUtf8());
 
     // %x: Date representation for current locale
-    strReturnDT.Replace(wxT("%x"),QString("%1").arg(date().toString(Qt::ISODate)).toAscii());
+    strReturnDT.Replace(wxT("%x"),QString("%1").arg(date().toString(Qt::ISODate)).toUtf8());
 
     // %X: Time representation for current locale
-    strReturnDT.Replace(wxT("%x"),QString("%1").arg(time().toString(Qt::ISODate)).toAscii());
+    strReturnDT.Replace(wxT("%x"),QString("%1").arg(time().toString(Qt::ISODate)).toUtf8());
 
     // %y : Year without century, as decimal number (00 – 99)
-    strReturnDT.Replace(wxT("%y"),wxString::Format(wxT("%02d"),qdate.year() % 100).toAscii());
+    strReturnDT.Replace(wxT("%y"),wxString::Format(wxT("%02d"),qdate.year() % 100).toUtf8());
 
     // %Y: Year with century, as decimal number
-    strReturnDT.Replace(wxT("%Y"),wxString::Format(wxT("%04d"),qdate.year()).toAscii());
+    strReturnDT.Replace(wxT("%Y"),wxString::Format(wxT("%04d"),qdate.year()).toUtf8());
 
     // %z, %Z: Either the time-zone name or time zone abbreviation, depending on registry settings; no characters if time zone is unknown
     // Not supported
@@ -452,23 +464,30 @@ wxQString wxString::Format(const char *_pszFormat,...)
 
 wxString::operator const char *() const
 {
-    m_convertToChar = toAscii();
+    m_convertToChar = toUtf8();
 
     return m_convertToChar;
 }
 
 const wxChar *wxString::wx_str() const
 {
-    m_convertToChar = toAscii();
+    m_convertToChar = toUtf8();
 
     return m_convertToChar;
 }
 
 const wxChar *wxString::c_str() const
 {
-    m_convertToChar = toAscii();
+    m_convertToChar = toUtf8();
 
     return m_convertToChar;
+}
+
+const wxChar *wxString::utf8_str() const
+{
+    m_convertToChar = toUtf8();
+
+    return m_convertToChar.toStdString().c_str();
 }
 
 //----------------------------------------------------------------------------------------------------------------

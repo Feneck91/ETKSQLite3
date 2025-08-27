@@ -27,14 +27,9 @@
 #define wxNOT_FOUND (-1)
 
 #define _T(x)               x
+#define wxS(x)              x
 
-class EXPORT_IMPORT wxQByteArray : public QByteArray
-{
-public:
-    wxQByteArray()                                                                      {}
-    wxQByteArray(const QByteArray &_rRef) :  QByteArray(_rRef)                          {}
-    wxQByteArray(const wxQByteArray &_rRef) : QByteArray(_rRef)                         {}
-};
+using wxQByteArray = QByteArray;
 
 /**
  * wxString wrapper class.
@@ -68,6 +63,7 @@ public:
     wxString Right(size_t count) const                                                  { return QString::right(count); }
     const wxChar *wx_str() const;
     const wxChar *c_str() const;
+    const wxChar *utf8_str() const;
     wxString SubString(size_t nStart = 0,size_t nLen = -1) const                        { return wxString(QString::midRef(nStart,nLen).toString()); }
     void Replace(const wxChar *_pstrBefore,const wxChar *_pstrAfter)                    { replace(QString(_pstrBefore), QString(_pstrAfter)); }
     // Adds count copies of chPad to the beginning, or to the end of the string (the default).

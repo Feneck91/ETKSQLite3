@@ -9,11 +9,11 @@
 ----------------------------------------------------------------------------------------------
 -- Script parameters:
 --
--- Call lua.exe "compile_ws3.lua" <ws3 file path> <qt/wx> <header file path> <source file path>
+-- Call lua.exe "compile_ws3.lua" <ws3 file path> <qt/wx/boost> <header file path> <source file path>
 --
--- arg[0] - "compile_ws3.lua\" is this script to execute
+-- arg[0] - "compile_ws3.lua" is this script to execute
 -- arg[1] - <ws3 file path> is the path of the file used to generate database source code
--- arg[2] - <qt / wx> indicate if the generated file must be generated for QT or for wxWidgets
+-- arg[2] - <qt / wx / boost> indicate if the generated file must be generated for QT, Boost or for wxWidgets
 -- arg[3] - <header file path> is the full path where to generated the header file (.h)
 -- arg[4] - <source file path> is the full path where to generated the source file (.cpp)
 --
@@ -135,11 +135,11 @@ function DisplayCommandLineHelp()
         end
         print(string.format("Bad parameters when calling lua script:\n\"%s\"\n",strCommandLine))
     end
-    print("Call lua \"compile_ws3.lua\" <ws3 file path> <qt/wx> <header file path> <source file path>")
+    print("Call lua \"compile_ws3.lua\" <ws3 file path> <qt/wx/boost> <header file path> <source file path>")
     print("where")
     print("    \"compile_ws3.lua\" is this script to execute")
     print("    <ws3 file path> is the path of the file used to generate database source code")
-    print("    <qt / wx> indicate if the generated file must be generated for QT or for wxWidgets")
+    print("    <qt / wx / boost> indicate if the generated file must be generated for QT, Boost or for wxWidgets")
     print("    <header file path> is the full path where to generated the header file (.h)")
     print("    <source file path> is the full path where to generated the source file (.cpp)")
 end
@@ -678,7 +678,7 @@ else
     local bGenerateH,bGenerateCPP = true,true
     local bFind,strContentType -- General variable, for all needed
     local strExportImport
-    local strwxOrQT = arg[2]
+    local strwxOrQToRBoost = arg[2]
 
     --------------------------------------------
     -- 1> Read the ws3 input file content
@@ -689,16 +689,16 @@ else
     else
         --------------------------------------------
         -- 2> Read the template header file content
-        bOk, strTemplateHeaderFile =  ReadFileContent("wxETKSQLite3TableTemplate.h")
+        bOk, strTemplateHeaderFile =  ReadFileContent("ETKSQLite3TableTemplate.h")
         if (not bOk) then
-            strError = string.format("Error while reading file: %s","wxETKSQLite3TableTemplate.h")
+            strError = string.format("Error while reading file: %s","ETKSQLite3TableTemplate.h")
         else
             strTemplateHeaderFile = Trim(strTemplateHeaderFile)
             --------------------------------------------
             -- 3> Read the template source file content
-            bOk, strTemplateSourceFile =  ReadFileContent("wxETKSQLite3TableTemplate.cpp")
+            bOk, strTemplateSourceFile =  ReadFileContent("ETKSQLite3TableTemplate.cpp")
             if (not bOk) then
-                strError = string.format("Error while reading file: %s","wxETKSQLite3TableTemplate.cpp")
+                strError = string.format("Error while reading file: %s","ETKSQLite3TableTemplate.cpp")
             else
                 strTemplateSourceFile = Trim(strTemplateSourceFile)
             end
@@ -706,10 +706,10 @@ else
     end
 
     --------------------------------------------
-    -- Check qt / wx argument
+    -- Check qt / wx / boost argument
     if (string.len(strError) == 0) then
-        if (string.lower(strwxOrQT) ~= "wx" and string.lower(strwxOrQT) ~= "qt") then
-            strError = string.format("Parameter 3 (%s) is unknown, use wx (wxWidgets generation) or qt (QT generation)!",strwxOrQT)
+        if (string.lower(strwxOrQToRBoost) ~= "wx" and string.lower(strwxOrQToRBoost) ~= "qt" and string.lower(strwxOrQToRBoost) ~= "boost") then
+            strError = string.format("Parameter 3 (%s) is unknown, use wx (wxWidgets generation), qt (QT generation) or boost (Boost generation)!",strwxOrQToRBoost)
         end
     end
 
@@ -867,7 +867,7 @@ else
         --------------------------------------------------
         -- 7> Table that contains all type with parameters
         -- 7.1> Init default types
-        if (strwxOrQT == "wx") then
+        if (strwxOrQToRBoost == "wx") then
             tabTypeMembers.INTEGER              = "wxLongLong"
             tabTypeMembers.BIGINT               = "wxLongLong"
             tabTypeMembers.VARCHAR              = "wxString"
@@ -892,7 +892,7 @@ else
         tabTypeMembers.DOUBLE               = "double"
         tabTypeMembers.NUMERIC              = "double"
         tabTypeMembers.BOOLEAN              = "bool"
-        tabTypeMembers.BLOB                 = "wxETKSQLite3VariantDataBlob"
+        tabTypeMembers.BLOB                 = "ETKSQLite3VariantDataBlob"
 
         -- 7.2> Override default types by user types
         repeat
@@ -953,7 +953,7 @@ else
         -- Init reference / value
         --------------------------------------------------
         -- For parameters, as reference
-        if (strwxOrQT == "wx") then
+        if (strwxOrQToRBoost == "wx") then
             tabTypeMembersRef.DATE      = "wxdt"
             tabTypeMembersRef.TIME      = "wxdt"
             tabTypeMembersRef.DATETIME  = "wxdt"
@@ -1028,13 +1028,13 @@ else
 
         --------------------------------------------------
         -- 11> Table that contains all binding
-        if (strwxOrQT == "qt") then
-            tabTypeBind.INTEGER     = "wxETKSQLite3ValueBindOther<qint64>"
-            tabTypeBind.BIGINT      = "wxETKSQLite3ValueBindOther<qint64>"
-            tabTypeBind.VARCHAR     = "wxETKSQLite3ValueBindOther<QString>"
-            tabTypeBind.DATE        = "wxETKSQLite3ValueBindOther<QDate>"
-            tabTypeBind.TIME        = "wxETKSQLite3ValueBindOther<QTime>"
-            tabTypeBind.DATETIME    = "wxETKSQLite3ValueBindOther<QDateTime>"
+        if (strwxOrQToRBoost == "qt") then
+            tabTypeBind.INTEGER     = "ETKSQLite3ValueBindOther<qint64>"
+            tabTypeBind.BIGINT      = "ETKSQLite3ValueBindOther<qint64>"
+            tabTypeBind.VARCHAR     = "ETKSQLite3ValueBindOther<QString>"
+            tabTypeBind.DATE        = "ETKSQLite3ValueBindOther<QDate>"
+            tabTypeBind.TIME        = "ETKSQLite3ValueBindOther<QTime>"
+            tabTypeBind.DATETIME    = "ETKSQLite3ValueBindOther<QDateTime>"
         end
         if (string.len(strError) == 0) then
             repeat
@@ -1070,7 +1070,7 @@ else
         ----------------------------------------------------------------
         -- 13> Table that contains all type used as function parameters
         -- 13.1> Init default types
-        if (strwxOrQT == "wx") then
+        if (strwxOrQToRBoost == "wx") then
             tabTypeArgs.INTEGER  = "wxLongLong"
             tabTypeArgs.BIGINT   = "wxLongLong"
             tabTypeArgs.INT      = "long"
@@ -1083,7 +1083,7 @@ else
             tabTypeArgs.DATE     = "wxDateTime"
             tabTypeArgs.TIME     = "wxDateTime"
             tabTypeArgs.DATETIME = "wxDateTime"
-            tabTypeArgs.BLOB     = "wxETKSQLite3VariantDataBlob"
+            tabTypeArgs.BLOB     = "ETKSQLite3VariantDataBlob"
         else -- QT
             tabTypeArgs.INTEGER  = "qint64"
             tabTypeArgs.BIGINT   = "qint64"
@@ -1097,7 +1097,7 @@ else
             tabTypeArgs.DATE     = "QDate"
             tabTypeArgs.TIME     = "QTime"
             tabTypeArgs.DATETIME = "QDateTime"
-            tabTypeArgs.BLOB     = "wxETKSQLite3VariantDataBlob"
+            tabTypeArgs.BLOB     = "ETKSQLite3VariantDataBlob"
         end
 
         -- 13.2> Override default types by user types
@@ -1128,7 +1128,7 @@ else
         ----------------------------------------------------------------
         -- 14> Table that contains all prefix to use into stucture
         -- 14.1> Init default types
-        if (strwxOrQT == "qt") then
+        if (strwxOrQToRBoost == "qt") then
             tabPrefixTypeMembers.wxLongLong = "wxll"
             tabPrefixTypeMembers.wxDateTime = "wxdt"
         end
@@ -1315,7 +1315,7 @@ else
                         end
 
                         strCPPColumnImplementation  =   strCPPColumnImplementation ..
-                                                        string.format("const wxETKSQLite3Column %s%s::%s%s%s= wxETKSQLite3Column(TABLE_NAME,_T(\"%s\"));"
+                                                        string.format("const ETKSQLite3Column %s%s::%s%s%s= ETKSQLite3Column(TABLE_NAME,_T(\"%s\"));"
                                                                       ,strPrefixTable
                                                                       ,strTableName
                                                                       ,strPrefixColumn
@@ -1327,7 +1327,7 @@ else
                         if (tabTypeBind[strType] ~= nil) then
                             -- Binding type
                             strCPPColumnAdd = strCPPColumnAdd ..
-                                              string.format("    AddColumn(wxETKSQLite3Column(%s%s,%swxETKSQLite3ColumnAttributes(%s(&%s%s%s)%s)));"
+                                              string.format("    AddColumn(ETKSQLite3Column(%s%s,%sETKSQLite3ColumnAttributes(%s(&%s%s%s)%s)));"
                                                             ,strPrefixColumn
                                                             ,strColumName
                                                             ,string.rep(" ",math.max(1,17 - string.len(strColumName)))
@@ -1340,7 +1340,7 @@ else
                         else
                             -- No binding type
                             strCPPColumnAdd = strCPPColumnAdd ..
-                                              string.format("    AddColumn(wxETKSQLite3Column(%s%s,%swxETKSQLite3ColumnAttributes(&%s%s%s%s)));"
+                                              string.format("    AddColumn(ETKSQLite3Column(%s%s,%sETKSQLite3ColumnAttributes(&%s%s%s%s)));"
                                                             ,strPrefixColumn
                                                             ,strColumName
                                                             ,string.rep(" ",math.max(1,17 - string.len(strColumName)))
@@ -1443,7 +1443,7 @@ else
                             strTemplateSourceFileCopy = ReplaceRepeatSection(setReplace,strTemplateSourceFileCopy);
                         end
 
-                        strCPPColumnDeclaration = strCPPColumnDeclaration .. string.format("    static const wxETKSQLite3Column     %s%s;",strPrefixColumn,strColumName)
+                        strCPPColumnDeclaration = strCPPColumnDeclaration .. string.format("    static const ETKSQLite3Column     %s%s;",strPrefixColumn,strColumName)
                         -- Add Datas used to make the binding
                         strCPPColumnVariablesDeclaration = strCPPColumnVariablesDeclaration ..
                                                            string.format("    %s%s%s%s%s;"

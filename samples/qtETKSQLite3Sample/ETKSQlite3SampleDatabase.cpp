@@ -2,7 +2,7 @@
 #include "Database.h"
 
 CETKSQlite3SampleDatabase::CETKSQlite3SampleDatabase()
-    : wxETKSQLite3Database()
+    : ETKSQLite3Database()
 {
 }
 
@@ -16,10 +16,10 @@ wxString CETKSQlite3SampleDatabase::GetSQLDatabaseSchema() const
            + CRecordTCustomer::GetSQLTableConstruction()
            + CRecordTItem::GetSQLTableConstruction()
            + CRecordTPurchase::GetSQLTableConstruction()
-           + QString("INSERT INTO \"TGeneral\" (\"Version\",\"CreationDate\") VALUES (\"%1\", \"%2\");").arg(1).arg(QDateTime::currentDateTime().toString(Qt::ISODate));
+           + QString("INSERT INTO \"TGeneral\" (\"Version\",\"CreationDate\") VALUES (%1, '%2');").arg(1).arg(QDateTime::currentDateTime().toString(Qt::ISODate));
 }
 
-void CETKSQlite3SampleDatabase::ExecuteConfigAfterOpenOrCreate() throw(wxSQLite3Exception)
+void CETKSQlite3SampleDatabase::ExecuteConfigAfterOpenOrCreate()
 {
     wxASSERT_MSG(IsOpened(),wxT("Database is not opened!"));
     if (IsOpened())
@@ -29,5 +29,5 @@ void CETKSQlite3SampleDatabase::ExecuteConfigAfterOpenOrCreate() throw(wxSQLite3
         //GetDatabase()->ExecuteUpdate("PRAGMA count_changes=OFF");
         //GetDatabase()->ExecuteUpdate("PRAGMA temp_store=MEMORY");
     }
-    wxETKSQLite3Database::ExecuteConfigAfterOpenOrCreate();
+    ETKSQLite3Database::ExecuteConfigAfterOpenOrCreate();
 }

@@ -1,9 +1,9 @@
 #pragma once
 
 // Include the wxETKSQLite3 library header files.
-#include "wxETKSQLite3Include.h"
+#include "ETKSQLite3Include.h"
 
-class CETKSQlite3SampleDatabase : public wxETKSQLite3Database
+class CETKSQlite3SampleDatabase : public ETKSQLite3Database
 {
 public:
     CETKSQlite3SampleDatabase();
@@ -28,5 +28,5 @@ public:
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
-    virtual void                        ExecuteConfigAfterOpenOrCreate() throw(wxSQLite3Exception);
+    virtual void                        ExecuteConfigAfterOpenOrCreate();
 };

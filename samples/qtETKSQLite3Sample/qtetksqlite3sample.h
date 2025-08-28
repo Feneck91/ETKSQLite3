@@ -24,7 +24,7 @@ private:
 public:
     qtETKSQLite3Sample(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     ~qtETKSQLite3Sample();
-    void InsertItem(const wxETKSQLite3ResultSet<CRecordTCustomer> &_rResultSetTCustomer,long _lRowCount,double _dSumPrices);
+    void InsertItem(const ETKSQLite3ResultSet<CRecordTCustomer> &_rResultSetTCustomer,long _lRowCount,double _dSumPrices);
 
     void UpdateGUI();
     void UpdateTCustomers();

@@ -13,7 +13,7 @@ $ONLY_HEADER_FILE$
 #ifndef DATABASE_DATAS_H
 #define DATABASE_DATAS_H
 #include <limits>
-#include "wxETKSQLite3Include.h"
+#include "ETKSQLite3Include.h"
 
 // Define value for NULL column
 #define DBL_NULL_VALUE                  (std::numeric_limits<double>::min())
@@ -28,7 +28,7 @@ $ONLY_SOURCE_FILE$
 {
 #include "$FILENAME_H$"
 
-template<> void wxETKSQLite3ValueBindOther<eSexe>::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bAddForInsertRequest,bool _bForInsertRequest) const
+template<> void ETKSQLite3ValueBindOther<eSexe>::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bAddForInsertRequest,bool _bForInsertRequest) const
 {
     int iValue; // Get value from enum: get independance from this enum into database
                 // to correctly explain, Male will be 59 / Female will be 87 / unknown will be 11 or other
@@ -53,7 +53,7 @@ template<> void wxETKSQLite3ValueBindOther<eSexe>::BindTo(wxSQLite3Statement &_r
 }
 
 
-template<> void wxETKSQLite3ValueBindOther<eSexe>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
+template<> void ETKSQLite3ValueBindOther<eSexe>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
     int iValue; // Get value from enum: get independance from this enum into database
                 // to correctly explain, Male will be 59 / Female will be 87 / unknown will be 11 or other
@@ -82,7 +82,7 @@ $REMOVE_BLOC$
     // Bind of SEXE type
     $TYPE_MEMBERS$      {SEXE,eSexe}
     $TYPE_DATABASE$     {SEXE,ENUM}
-    $TYPE_BIND$         {SEXE,wxETKSQLite3ValueBindOther<eSexe>}
+    $TYPE_BIND$         {SEXE,ETKSQLite3ValueBindOther<eSexe>}
     $PREFIX_COPY$       {SEXE,eSexe}
 }
 

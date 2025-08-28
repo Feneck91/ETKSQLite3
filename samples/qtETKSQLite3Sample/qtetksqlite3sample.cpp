@@ -1,6 +1,7 @@
 #include "qtetksqlite3sample.h"
 #include "ETKSQlite3SampleDatabase.h"
 #include <QFileDialog>
+#include <QElapsedTimer>
 
 qtETKSQLite3Sample::qtETKSQLite3Sample(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
@@ -16,6 +17,28 @@ qtETKSQLite3Sample::qtETKSQLite3Sample(QWidget *parent, Qt::WindowFlags flags)
     {
         if (m_pDatabase->Open())
         {
+QElapsedTimer timer;
+timer.start();  // démarre le chronomètre
+
+            // Prepare request
+            CRecordTGeneral recordGeneral;
+            ETKSQLite3RequestInserter inserterGeneral = m_pDatabase->GetInserter();
+            auto currentDate = QDateTime::currentDateTime();
+            inserterGeneral<<recordGeneral;   // Customer table
+            {
+                wxSQLite3Transaction transaction(m_pDatabase->GetDatabase());
+
+                for (int i=0; i<100000; ++i)
+                {
+                    recordGeneral.SetVersion(1);
+                    recordGeneral.SetCreationDate(currentDate);
+                    inserterGeneral.ExecuteWithoutTransaction();
+                }
+                transaction.Commit();
+qint64 elapsed = timer.elapsed(); // en millisecondes
+//qDebug() << "Temps écoulé:" << elapsed << "ms";
+QMessageBox::warning(this, "temp", QString(_T("temps ecoule pour 100000 : %1 ms")).arg(elapsed));
+            }
             UpdateTCustomers();
         }
     }
@@ -52,11 +75,11 @@ void qtETKSQLite3Sample::UpdateTCustomers()
         CRecordTItem recordItem;
 
         // Selector
-        wxETKSQLite3RequestSelector selector = m_pDatabase->GetSelector();
-        wxETKSQLite3ResultSet<CRecordTCustomer> resultSetTCustomer;
+        ETKSQLite3RequestSelector selector = m_pDatabase->GetSelector();
+        ETKSQLite3ResultSet<CRecordTCustomer> resultSetTCustomer;
 
         // Create the criterion that count the number of purchase for this customer, it is also a SELECT too.
-        wxETKSQLite3Criterion countPurchase(wxETKSQLite3Criterion::eRequestTypeSelect);
+        ETKSQLite3Criterion countPurchase(ETKSQLite3Criterion::eRequestTypeSelect);
         countPurchase<<dbCount();
         countPurchase.SetWhere(CRecordTCustomer::COLUMN_FIELD_id == CRecordTPurchase::COLUMN_FIELD_idCustomer);
         // Set SetFrom is mandatory else in "automatic" mode it takes the 2 tables TCustomer && TPurchase: the computed result is not correct!
@@ -64,13 +87,13 @@ void qtETKSQLite3Sample::UpdateTCustomers()
         // 3 differents way to set the FROM:
         // 1> Directly with string format. Returns by the static member CRecordTPurchase::TABLE_NAME
         // countPurchase.SetFrom(CRecordTPurchase::TABLE_NAME);
-        // 2> Get the tables columns by asking wxETKSQLite3Record::GetAllColumn(x) to create 'TABLE.*' only the table name is used
-        // countPurchase.SetFrom(wxETKSQLite3Record::GetAllColumn(CRecordTPurchase::TABLE_NAME));
+        // 2> Get the tables columns by asking ETKSQLite3Record::GetAllColumn(x) to create 'TABLE.*' only the table name is used
+        // countPurchase.SetFrom(ETKSQLite3Record::GetAllColumn(CRecordTPurchase::TABLE_NAME));
         // 3> Get one table column, don't care about the column name, only the table is important so give one of the table column
         countPurchase.SetFrom(CRecordTPurchase::COLUMN_FIELD_id);
 
         // Create the criterion that count the sum of all items the customer ha bought, it is also a SELECT too.
-        wxETKSQLite3Criterion sumPrice(wxETKSQLite3Criterion::eRequestTypeSelect);
+        ETKSQLite3Criterion sumPrice(ETKSQLite3Criterion::eRequestTypeSelect);
         sumPrice<<dbSum(CRecordTItem::COLUMN_FIELD_Price);
         sumPrice.SetWhere(CRecordTPurchase::COLUMN_FIELD_idItem == CRecordTItem::COLUMN_FIELD_id && CRecordTPurchase::COLUMN_FIELD_idCustomer == CRecordTCustomer::COLUMN_FIELD_id);
         // Set SetFrom is mandatory else in "automatic" mode it takes the 3 tables TCustomer && TPurchase && TItem: the computed result is not correct!
@@ -78,8 +101,8 @@ void qtETKSQLite3Sample::UpdateTCustomers()
         // 3 differents way to set the FROM
         // 1> Directly with string format. But must cast to wxString else the expression cannot be created from a QString
         // sumPrice.SetFrom(wxString(QString("%1,%2").arg(CRecordTItem::TABLE_NAME).arg(CRecordTPurchase::TABLE_NAME)));
-        // 2> Get 2 tables columns, one for each. To get one ask wxETKSQLite3Record::GetAllColumn(x) to create 'TABLE.*' only the table name is used
-        // sumPrice.SetFrom(wxETKSQLite3Record::GetAllColumn(CRecordTItem::TABLE_NAME) + wxETKSQLite3Record::GetAllColumn(CRecordTPurchase::TABLE_NAME));
+        // 2> Get 2 tables columns, one for each. To get one ask ETKSQLite3Record::GetAllColumn(x) to create 'TABLE.*' only the table name is used
+        // sumPrice.SetFrom(ETKSQLite3Record::GetAllColumn(CRecordTItem::TABLE_NAME) + ETKSQLite3Record::GetAllColumn(CRecordTPurchase::TABLE_NAME));
         // 3> Get 2 tables columns, don't care about the column name, only the table is important so give one of the table column
         sumPrice.SetFrom(CRecordTItem::COLUMN_FIELD_id + CRecordTPurchase::COLUMN_FIELD_id);
 
@@ -93,9 +116,9 @@ void qtETKSQLite3Sample::UpdateTCustomers()
 
         resultSetTCustomer = selector.ExecuteQuery();
 
-        // resultSetTCustomer.AddBind(x,wxETKSQLite3ValueBind(&lRowCount)); <-- Works without the dbAs instruction, but should know the x index
-        resultSetTCustomer.AddBind("NbPurchase",wxETKSQLite3ValueBind(&lRowCount)); // <-- Simplest way is to bind
-        resultSetTCustomer.AddBind("SumPrice",wxETKSQLite3ValueBind(&dSumPrices));  //     the result with the columns name
+        // resultSetTCustomer.AddBind(x,ETKSQLite3ValueBind(&lRowCount)); <-- Works without the dbAs instruction, but should know the x index
+        resultSetTCustomer.AddBind("NbPurchase",ETKSQLite3ValueBind(&lRowCount)); // <-- Simplest way is to bind
+        resultSetTCustomer.AddBind("SumPrice",ETKSQLite3ValueBind(&dSumPrices));  //     the result with the columns name
 
         while(resultSetTCustomer.NextRow())
         {
@@ -119,10 +142,10 @@ void qtETKSQLite3Sample::UpdateTCustomers2()
         double dSumPrices;
         CRecordTItem recordItem;
 
-        wxETKSQLite3ResultSet<CRecordTCustomer>   resultSetTCustomer;
-        wxETKSQLite3ResultSet<wxETKSQLite3Record> resultNbItemsAndSum;     // Empty resultset, does contains nothing
-        wxETKSQLite3RequestSelector selector = m_pDatabase->GetSelector();
-        wxETKSQLite3RequestSelector selectorNbItems = m_pDatabase->GetSelector();
+        ETKSQLite3ResultSet<CRecordTCustomer>   resultSetTCustomer;
+        ETKSQLite3ResultSet<ETKSQLite3Record> resultNbItemsAndSum;     // Empty resultset, does contains nothing
+        ETKSQLite3RequestSelector selector = m_pDatabase->GetSelector();
+        ETKSQLite3RequestSelector selectorNbItems = m_pDatabase->GetSelector();
 
         selector << CRecordTCustomer();
         selectorNbItems << dbCount(CRecordTPurchase::COLUMN_FIELD_id) // SELECT COUNT(TPurchase.*)
@@ -132,8 +155,8 @@ void qtETKSQLite3Sample::UpdateTCustomers2()
                              );
 
         resultSetTCustomer = selector.ExecuteQuery();
-        resultNbItemsAndSum.AddBind(0,wxETKSQLite3ValueBind(&lRowCount));
-        resultNbItemsAndSum.AddBind(1,wxETKSQLite3ValueBind(&dSumPrices));
+        resultNbItemsAndSum.AddBind(0,ETKSQLite3ValueBind(&lRowCount));
+        resultNbItemsAndSum.AddBind(1,ETKSQLite3ValueBind(&dSumPrices));
 
         while(resultSetTCustomer.NextRow())
         {
@@ -179,9 +202,9 @@ void qtETKSQLite3Sample::OnCreateDatabase()
         CRecordTItem     recordItem;
         CRecordTPurchase recordPurchase;
 
-        wxETKSQLite3RequestInserter inserterCustomer = m_pDatabase->GetInserter();
-        wxETKSQLite3RequestInserter inserterItems = m_pDatabase->GetInserter();
-        wxETKSQLite3RequestInserter inserterPurchase = m_pDatabase->GetInserter();
+        ETKSQLite3RequestInserter inserterCustomer = m_pDatabase->GetInserter();
+        ETKSQLite3RequestInserter inserterItems = m_pDatabase->GetInserter();
+        ETKSQLite3RequestInserter inserterPurchase = m_pDatabase->GetInserter();
 
         //inserter<<recordCustomer[CRecordTCustomer::COLUMN_FIELD_Name]
         //        <<recordCustomer[CRecordTCustomer::COLUMN_FIELD_FirstName]
@@ -317,10 +340,10 @@ void qtETKSQLite3Sample::OnCreateDatabase()
     }
 }
 
-void qtETKSQLite3Sample::InsertItem(const wxETKSQLite3ResultSet<CRecordTCustomer> &_rResultSetTCustomer,long _lRowCount,double _dSumPrices)
+void qtETKSQLite3Sample::InsertItem(const ETKSQLite3ResultSet<CRecordTCustomer> &_rResultSetTCustomer,long _lRowCount,double _dSumPrices)
 {
     m_bDontUpdate = true;
-    const wxETKSQLite3Column *pColSumPrice = _rResultSetTCustomer.FindColumnByName("SumPrice");
+    const ETKSQLite3Column *pColSumPrice = _rResultSetTCustomer.FindColumnByName("SumPrice");
 
     int iRow = ui.m_pTableCustomer->rowCount();
     ui.m_pTableCustomer->insertRow(iRow);
@@ -348,8 +371,8 @@ void qtETKSQLite3Sample::OnItemChanged(QTableWidgetItem *pItem)
     if (!m_bDontUpdate)
     {
         m_bDontUpdate = true;
-        wxETKSQLite3RequestSelector selector = m_pDatabase->GetSelector();
-        wxETKSQLite3RequestUpdater updater = m_pDatabase->GetUpdater();
+        ETKSQLite3RequestSelector selector = m_pDatabase->GetSelector();
+        ETKSQLite3RequestUpdater updater = m_pDatabase->GetUpdater();
 
         // ID is mandatory : update only this item
         bool bOk,bUpdate(false);
@@ -357,7 +380,7 @@ void qtETKSQLite3Sample::OnItemChanged(QTableWidgetItem *pItem)
         int iRow = pItem->row(); // Get the row of the modified item
         wxLongLong llID = ui.m_pTableCustomer->item(iRow,0)->text().toLongLong(&bOk);
 
-        wxETKSQLite3ResultSet<CRecordTCustomer> resultSetTCustomer;
+        ETKSQLite3ResultSet<CRecordTCustomer> resultSetTCustomer;
         selector<<resultSetTCustomer;
         selector.Where(CRecordTCustomer::COLUMN_FIELD_id == llID);
         resultSetTCustomer = selector.ExecuteQuery();

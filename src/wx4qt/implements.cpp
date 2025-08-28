@@ -474,19 +474,17 @@ size_t wxString::find_first_of(const wxChar* sz, size_t nStart) const
 QString wxString::Printf(const char *_pszFormat,...)
 {
     va_list valistArguments;
-    va_start(valistArguments, _pszFormat);
-    QString strReturn;
-    strReturn.vasprintf(_pszFormat, valistArguments);
+    va_start(valistArguments,_pszFormat);
+    operator=(QString::vasprintf(_pszFormat,valistArguments));
     va_end(valistArguments);
-    return strReturn;
+    return *this;
 }
 
 wxQString wxString::Format(const char *_pszFormat,...)
 {
     va_list valistArguments;
     va_start(valistArguments, _pszFormat);
-    QString strReturn;
-    strReturn.vasprintf(_pszFormat, valistArguments);
+    QString strReturn = QString::vasprintf(_pszFormat, valistArguments);
     va_end(valistArguments);
     return strReturn;
 }

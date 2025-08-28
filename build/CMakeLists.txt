@@ -11,14 +11,19 @@
 cmake_minimum_required(VERSION 3.29...3.31)
 project(ETKSQLite3)
 
-# Options to choose the library type to generate
+# =============================================================================
 # Ask to user the path where wxsqlite3 is installed
-set(WXSQLITE3_DIR       "Path where wxsqlite3 is installed (mandatory)" CACHE PATH      "Installation path of wxsqlite3")
+# =============================================================================
+set(WXSQLITE3_DIR           "Path where wxsqlite3 is installed (mandatory)" CACHE PATH      "Installation path of wxsqlite3")
 
 # =============================================================================
-# Target project to generate
+# Dynamic or static library
 # =============================================================================
 option(BUILD_SHARED_LIBS                "Compile to dynamic library"                    ON)
+
+# =============================================================================
+# Options to choose the library type to generate
+# =============================================================================
 option(wxETKSQLite3                     "Compile the wxWidgets version (wxETKSQLite3)"  OFF)
 option(qtETKSQLite3                     "Compile the Qt version (qtETKSQLite3)"         OFF)
 option(boostETKSQLite3                  "Compile the Boost version (boostETKSQLite3)"   OFF)
@@ -115,7 +120,9 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic -finput-charset=Latin1 -fexec-charset=UTF-8 -Werror -fpic)
 endif()
 
+# =============================================================================
 # Define common headers files
+# =============================================================================
 set(COMMON_HEADER_FILES
     ../include/ETKSQLite3/ETKSQLite3Column.h
     ../include/ETKSQLite3/ETKSQLite3Criterion.h
@@ -137,7 +144,9 @@ set(COMMON_HEADER_FILES
     ../include/ETKSQLite3/ETKSQLite3_pch.h
 )
 
+# =============================================================================
 # Define common source files
+# =============================================================================
 set(COMMON_SOURCE_FILES
     ../src/ETKSQLite3/ETKSQLite3Column.cpp
     ../src/ETKSQLite3/ETKSQLite3Criterion.cpp
@@ -155,7 +164,9 @@ set(COMMON_SOURCE_FILES
     ../src/ETKSQLite3/ETKSQLite3WxSQLite3.c
 )
 
+# =============================================================================
 # Define Qt specific header files (wrappers)
+# =============================================================================
 set(QT_HEADER_FILES
     ../include/wx4qt/wx/arrstr.h
     ../include/wx4qt/wx/buffer.h
@@ -177,14 +188,20 @@ set(QT_HEADER_FILES
     ../include/wx4qt/wx/wxtype.h
 )
 
-# Define Qt specific source files
+# =============================================================================
+# Define Qt specific source files (wrappers implementation)
+# =============================================================================
 set(QT_SOURCE_FILES
     ../src/wx4qt/implements.cpp
 )
 
+# =============================================================================
+# Define resource file
+# =============================================================================
 set(MODULE_RC_FILE
     ../src/ETKSQLite3/resource.rc
 )
+
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     add_definitions(-D_WIN32_WINNT=0x0601)
@@ -195,7 +212,7 @@ if(MSVC)
         set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo,MinSizeRel>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo,MinSizeRel>:ProgramDatabase>>")
     endif()
 
-    # Ajoutez des options de compilation spécifiques à chaque configuration
+    # Add specific options to each configuration
     foreach(config ${CMAKE_CONFIGURATION_TYPES})
         string(TOUPPER ${config} CONFIG)
         if (${CONFIG} STREQUAL "DEBUG")
@@ -266,7 +283,7 @@ function(create_framework_library framework)
             FILES ${MODULE_RC_FILE}
         )
 
-        # Créer la librairie
+        # Create library
         if(BUILD_SHARED_LIBS)
             set(BUILD_SHARED_LIBS_TYPE SHARED)
             message("Create shared library ${framework}")
@@ -295,12 +312,45 @@ function(create_framework_library framework)
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif()
 
-        ## Installer la librairie (optionnel)
-        #install(TARGETS ${LIB_NAME}
-        #    ARCHIVE DESTINATION lib
-        #    LIBRARY DESTINATION lib
-        #    PUBLIC_HEADER DESTINATION include/${framework}
-        #)
+        # =============================================================================
+        # Copy result to bin / lib
+        # =============================================================================
+        if(BUILD_SHARED_LIBS)
+            # Copy dll / so files into bin/ directory
+            if (WIN32)
+                # Define ouput folder for windows
+                set(DESTINATION_DIR_BIN "${CMAKE_CURRENT_SOURCE_DIR}/bin/win32")
+            else()
+                # Define ouput folder for linux
+                set(DESTINATION_DIR_BIN "${CMAKE_CURRENT_SOURCE_DIR}/bin/linux")
+            endif()
+            # Create destination folder if it doesn't exits
+            file(MAKE_DIRECTORY "${DESTINATION_DIR_BIN}")
+            add_custom_command(TARGET ${LIB_NAME} POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E make_directory
+                               "${DESTINATION_DIR_BIN}/$<CONFIG>/")
+            add_custom_command(TARGET ${LIB_NAME} POST_BUILD
+                               COMMAND ${CMAKE_COMMAND} -E copy
+                               "$<TARGET_FILE:${LIB_NAME}>"
+                               "${DESTINATION_DIR_BIN}/$<CONFIG>/")
+        endif()
+        # Copy lib
+        if (WIN32)
+            # Define ouput folder for windows
+            set(DESTINATION_DIR_LIB "${CMAKE_CURRENT_SOURCE_DIR}/lib/win32")
+        else()
+            # Define ouput folder for linux
+            set(DESTINATION_DIR_LIB "${CMAKE_CURRENT_SOURCE_DIR}/lib/linux")
+        endif()
+        # Create destination folder if it doesn't exits
+        add_custom_command(TARGET ${LIB_NAME} POST_BUILD
+                           COMMAND ${CMAKE_COMMAND} -E make_directory
+                           "${DESTINATION_DIR_LIB}/$<CONFIG>/")
+        # Copy .lib or .a files for dynamic / statics libs
+        add_custom_command(TARGET ${LIB_NAME} POST_BUILD
+                           COMMAND ${CMAKE_COMMAND} -E copy
+                           "$<TARGET_FILE:${LIB_NAME}>"
+                           "${DESTINATION_DIR_LIB}/$<CONFIG>/")
     endif()
 endfunction()
 
@@ -309,7 +359,16 @@ create_framework_library(wxETKSQLite3 "wx")
 create_framework_library(qtETKSQLite3 "qt")
 create_framework_library(boostETKSQLite3 "boost")
 
-# At least one option is selected
+# =============================================================================
+# Check options of ETKSQLite3 generation type
+# =============================================================================
 if(NOT wxETKSQLite3 AND NOT qtETKSQLite3 AND NOT boostETKSQLite3)
     message(FATAL_ERROR "No target type for ETKSQLite3 is selected. You must activate at least wxETKSQLite3, qtETKSQLite3 or boostETKSQLite3.")
+endif()
+
+# =============================================================================
+# Check if wxSQLite3 directory exists
+# =============================================================================
+if(NOT EXISTS "${WXSQLITE3_DIR}")
+    message(FATAL_ERROR "The specified wxSQLite3 directory does not exist: ${WXSQLITE3_DIR}. Please set WXSQLITE3_DIR to a valid path, this path is mandatory!")
 endif()

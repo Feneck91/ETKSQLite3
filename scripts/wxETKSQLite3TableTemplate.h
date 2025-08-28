@@ -22,7 +22,7 @@ $COLUMNS_VARIABLES_DECLARATIONS$
     //@}
 };}
 
-class $EXPORT_IMPORT$$PREFIX_TABLE$$TABLE_NAME$ : protected $PREFIX_STRUCT$$TABLE_NAME$, public wxETKSQLite3Record
+class $EXPORT_IMPORT$$PREFIX_TABLE$$TABLE_NAME$ : protected $PREFIX_STRUCT$$TABLE_NAME$, public ETKSQLite3Record
 {
 private:
     /// @name SQL string to create the $TABLE_NAME$ table into database.
@@ -80,7 +80,7 @@ public:
      * Copy values into this.
      *
      * Only values are copied. Very important function, else it create new instance of this before assign to
-     * this and lost columns binding (Null columns are lost) because new instance of internal wxETKSQLite3ValueBindBase
+     * this and lost columns binding (Null columns are lost) because new instance of internal ETKSQLite3ValueBindBase
      * are created.
      *
      * @param $PREFIX_ARGUMENTS_REFERENCE$Value Structure to copy into this (only values).

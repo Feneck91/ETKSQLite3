@@ -39,6 +39,7 @@ option(BUILD_SHARED_LIBS                "Compile to dynamic library"            
 option(wxETKSQLite3                     "Compile the wxWidgets version (wxETKSQLite3)"  OFF)
 option(qtETKSQLite3                     "Compile the Qt version (qtETKSQLite3)"         OFF)
 option(boostETKSQLite3                  "Compile the Boost version (boostETKSQLite3)"   OFF)
+option(stlETKSQLite3                    "Compile the STL version (stlETKSQLite3)"       OFF)
 
 # =============================================================================
 # SQLite Configuration Options
@@ -208,6 +209,20 @@ set(QT_SOURCE_FILES
 )
 
 # =============================================================================
+# Define STL specific header files (wrappers)
+# =============================================================================
+set(STL_HEADER_FILES
+    ../include/wx4stl/wx/wx.h
+)
+
+# =============================================================================
+# Define STL specific source files (wrappers implementation)
+# =============================================================================
+set(STL_SOURCE_FILES
+    ../src/wx4stl/implements.cpp
+)
+
+# =============================================================================
 # Define resource file
 # =============================================================================
 set(MODULE_RC_FILE
@@ -250,7 +265,9 @@ function(create_framework_library framework)
         # Define library name
         set(LIB_NAME "${framework}")
 
-        # Définir les sources et en-têtes spécifiques
+        # =============================================================================
+        # Define specific sources and headers files
+        # =============================================================================
         if(framework STREQUAL "wxETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES})
@@ -273,6 +290,10 @@ function(create_framework_library framework)
             find_package(Boost REQUIRED)
             set(FRAMEWORK_LIBS Boost::boost)
             set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_BOOST)
+        elseif(framework STREQUAL "stlETKSQLite3")
+            set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${STL_SOURCE_FILES})
+            set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES} ${STL_HEADER_FILES})
+            set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_STL)
         else()
             message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${framework} is selected but not supported. Error into CMake file!")
         endif()
@@ -313,7 +334,21 @@ function(create_framework_library framework)
         add_library(${LIB_NAME} ${BUILD_SHARED_LIBS_TYPE} ${ETKSQLITE3_SOURCES} ${ETKSQLITE3_HEADERS} ${MODULE_RC_FILE})
 
         # Configure library properties
-        target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+        # =============================================================================
+        # Define specific sources and headers files
+        # =============================================================================
+        if(framework STREQUAL "wxETKSQLite3")
+            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+        elseif(framework STREQUAL "qtETKSQLite3")
+            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+        elseif(framework STREQUAL "boostETKSQLite3")
+            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+        elseif(framework STREQUAL "stlETKSQLite3")
+            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4stl ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+        else()
+            message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${framework} is selected but not supported. Error into CMake file!")
+        endif()
+
         target_link_libraries(${LIB_NAME}      PRIVATE ${FRAMEWORK_LIBS})
         target_compile_definitions(${LIB_NAME} PRIVATE ${FRAMEWORK_DEFINITIONS})
 
@@ -393,12 +428,13 @@ add_custom_target(Installation ALL
 create_framework_library(wxETKSQLite3 "wx")
 create_framework_library(qtETKSQLite3 "qt")
 create_framework_library(boostETKSQLite3 "boost")
+create_framework_library(stlETKSQLite3 "stl")
 
 # =============================================================================
 # Check options of ETKSQLite3 generation type
 # =============================================================================
-if(NOT wxETKSQLite3 AND NOT qtETKSQLite3 AND NOT boostETKSQLite3)
-    message(FATAL_ERROR "No target type for ETKSQLite3 is selected. You must activate at least wxETKSQLite3, qtETKSQLite3 or boostETKSQLite3.")
+if(NOT wxETKSQLite3 AND NOT qtETKSQLite3 AND NOT boostETKSQLite3 AND NOT stlETKSQLite3)
+    message(FATAL_ERROR "No target type for ETKSQLite3 is selected. You must activate at least wxETKSQLite3, qtETKSQLite3 or boostETKSQLite3 or stlETKSQLite3.")
 endif()
 
 # =============================================================================

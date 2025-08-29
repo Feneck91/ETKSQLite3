@@ -28,6 +28,12 @@
     #else
         #define ETKSQLITE3_DLLNAME      "boostETKSQLite3.dll"
     #endif
+#elif ETK_SQLITE3_USE_STL
+    #ifdef __ETKSQLITE3_DEBUG__
+        #define ETKSQLITE3_DLLNAME      "stlETKSQLite3d.dll"
+    #else
+        #define ETKSQLITE3_DLLNAME      "stlETKSQLite3.dll"
+    #endif
 #endif
 
 #endif // ETK_SQLITE3_VERSION_HEADER

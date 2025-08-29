@@ -1,14 +1,19 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Criterion.h
-// Library:     ETKSQLite3
-// Purpose:     Use to make criterion to use into request and for format SQL.
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Criterion.h
+ * @brief Header file for SQL request creation.
+ *
+ * This file contains the headers for the ETKSQLite3Value,
+ * ETKSQLite3Expression, and ETKSQLite3Criterion classes, which are used to
+ * define the criteria to be used in queries to be formatted in SQL.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/08/29
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
-
 #ifndef INCLUDE_ETK_SQLITE3_CRITERION_H
 #define INCLUDE_ETK_SQLITE3_CRITERION_H
 
@@ -27,7 +32,7 @@ class ETKSQLite3Criterion;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                       //
-//                                         ETKSQLite3Value                                             //
+//                                          ETKSQLite3Value                                              //
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +157,7 @@ private:
      *
      * This value could be ignored, depending of kind operator.
      */
-    wxVariant                           m_Value;
+    etkVariant                          m_Value;
 
     /**
      *  Expression type, explain how to use (or not) the value and the child expressions.
@@ -213,7 +218,7 @@ public:
      *
      * @param _rValue Variant value to record.
      */
-    ETKSQLite3Value(const wxVariant &_rValue);
+    ETKSQLite3Value(const etkVariant &_rValue);
 
     /**
      * Create value only.
@@ -231,7 +236,7 @@ public:
      *
      * @param _rdtValue Date/Time wxWidgets date/time class. Internal converted in UTC date/time.
      */
-    ETKSQLite3Value(const wxDateTime &_rdtValue);
+    ETKSQLite3Value(const etkDateTime &_rdtValue);
 
     /**
      * Create value only.
@@ -265,9 +270,9 @@ public:
      *
      * Value is always recorded into variant.
      *
-     * @param _rllValue long long value (64 bits).
+     * @param _ri64Value long long value (64 bits).
      */
-    ETKSQLite3Value(const wxLongLong &_rllValue);
+    ETKSQLite3Value(const etkInt64 &_ri64Value);
 
     /**
      * Create value only.
@@ -278,7 +283,7 @@ public:
      * @param _expressionType Expression type, by default use quote string but it can be other type. No check is done
      *                        to check validity expression type.
      */
-    ETKSQLite3Value(const wxChar *_pszValue,eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);  // Or eExpressionTypeValue for column name (for example)
+    ETKSQLite3Value(const wxChar *_pszValue, eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);  // Or eExpressionTypeValue for column name (for example)
 
     /**
      * Create value only.
@@ -289,7 +294,7 @@ public:
      * @param _expressionType Expression type, by default use quote string but it can be other type. No check is done
      *                        to check validity expression type.
      */
-    ETKSQLite3Value(wxString _strValue,eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);  // Or eExpressionTypeValue for column name (for example)
+    ETKSQLite3Value(etkString _strValue, eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);  // Or eExpressionTypeValue for column name (for example)
 
     /**
      * Destructor.
@@ -305,7 +310,7 @@ public:
      * @param _rExpression {const ETKSQLite3Value &} - Value to copy into this.
      * @return Reference to this.
      */
-    const ETKSQLite3Value &           operator=(const ETKSQLite3Value &_rExpression);
+    const ETKSQLite3Value &             operator=(const ETKSQLite3Value &_rExpression);
     //@}
 
     /**
@@ -313,7 +318,7 @@ public:
      *
      * @return The expression as string.
      */
-    virtual wxString                    GetAsString() const;
+    virtual etkString                   GetAsString() const;
 
     /**
      * Get the column name without the table name.
@@ -322,7 +327,7 @@ public:
      *
      * @return The column name as string, without table name.
      */
-    wxString                            GetColumnName() const;
+    etkString                           GetColumnName() const;
 
     /**
      * Get the table name without the column name.
@@ -331,7 +336,7 @@ public:
      *
      * @return The table name as string, without column name.
      */
-    wxString                            GetTableName() const;
+    etkString                           GetTableName() const;
 
     /**
      * Get the variant.
@@ -340,7 +345,7 @@ public:
      *
      * @return Get the value variant.
      */
-    const wxVariant &                   GetVariant() const;
+    const etkVariant &                  GetVariant() const;
 
 #ifdef __WXDEBUG__
     /**
@@ -353,7 +358,7 @@ public:
      * @return Get the value variant.
      * @see GetOperatorString
      */
-    const wxVariant &                   GetVariantDebug() const;
+    const etkVariant &                  GetVariantDebug() const;
 #endif
 
     /**
@@ -385,7 +390,7 @@ protected:
      * @param _riIndex Index of item to bind. If a bind is done, increment index.
      * @param _bForInsertRequest If true if it's bind for an insert request (for INSERT request, the primary key is computed and should be null).
      */
-    virtual void                        BindTo(wxSQLite3Statement &_rstmt,int &_riIndex,bool _bForInsertRequest) const;
+    virtual void                        BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const;
 
     /**
      * Clear this content.
@@ -412,13 +417,13 @@ protected:
      * @param _strValue String to quote.
      * @return Quoted string, can be same as entry one is no <b>'</b> is present.
      */
-    wxString                            QuoteString(wxString _strValue) const;
+    etkString                           QuoteString(etkString _strValue) const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                       //
-//                                      ETKSQLite3Expression                                           //
+//                                       ETKSQLite3Expression                                            //
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -441,7 +446,7 @@ public:
     /**
      * Type of list used to record table list.
      */
-    typedef std::map<wxString,bool>     tdStringList;
+    typedef std::map<etkString, bool>   tdStringList;
 
 protected:
     /**
@@ -450,14 +455,14 @@ protected:
      * Left expression when it is an expression of OR / AND / etc type that contains two expressions.
      * Unique expression when the operator contains only one element (like count, max, min, etc).
      */
-    ETKSQLite3Expression *            m_pExpression1;
+    ETKSQLite3Expression *              m_pExpression1;
 
     /**
      * Expression 2.
      *
      * Right expression only used when it is an expression of OR / AND / etc type that contains two expressions.
      */
-    ETKSQLite3Expression *            m_pExpression2;
+    ETKSQLite3Expression *              m_pExpression2;
 
 #ifdef __WXDEBUG__
     /**
@@ -505,7 +510,7 @@ public:
      * @param _rExpression1 Expression 1 (left expression).
      * @param _rExpression2 Expression 2 (right expression).
      */
-    ETKSQLite3Expression(eExpressionOrOperationType _expressionType,const ETKSQLite3Expression &_rExpression1,const ETKSQLite3Expression &_rExpression2);
+    ETKSQLite3Expression(eExpressionOrOperationType _expressionType, const ETKSQLite3Expression &_rExpression1, const ETKSQLite3Expression &_rExpression2);
 
     /**
      * Construct an operation type.
@@ -517,7 +522,7 @@ public:
      * @param _rExpression1 Expression 1 (left expression).
      * @param _rExpression2 Expression 2 (right expression).
      */
-    ETKSQLite3Expression(const ETKSQLite3Value &_rValueAndExpressionType,const ETKSQLite3Expression &_rExpression1,const ETKSQLite3Expression &_rExpression2);
+    ETKSQLite3Expression(const ETKSQLite3Value &_rValueAndExpressionType, const ETKSQLite3Expression &_rExpression1, const ETKSQLite3Expression &_rExpression2);
 
     /**
      * Create an expression with a column (name).
@@ -528,7 +533,7 @@ public:
      * @param _rColumn Contains columns name and table name.
      * @param _expressionType Operation type, could be only eExpressionColumnNameFull or eExpressionColumnNameOnly.
      */
-    ETKSQLite3Expression(const ETKSQLite3Column &_rColumn,eExpressionOrOperationType _expressionType=eExpressionColumnNameFull);
+    ETKSQLite3Expression(const ETKSQLite3Column &_rColumn, eExpressionOrOperationType _expressionType=eExpressionColumnNameFull);
 
     /**
      * Create an expression with colum attribute.
@@ -561,7 +566,7 @@ public:
      *
      * @param _rValue Contains value, type is eExpressionTypeValue.
      */
-    ETKSQLite3Expression(const wxVariant &_rValue);
+    ETKSQLite3Expression(const etkVariant &_rValue);
 
     /**
      * Create an expression with a value.
@@ -575,7 +580,7 @@ public:
      *
      * @param _rdtValue Date/Time wxWidgets date/time class. Internal converted in UTC date/time. Type is eExpressionTypeValue.
      */
-    ETKSQLite3Expression(const wxDateTime &_rdtValue);
+    ETKSQLite3Expression(const etkDateTime &_rdtValue);
 
     /**
      * Create an expression with a value.
@@ -601,9 +606,9 @@ public:
     /**
      * Create an expression with a value.
      *
-     * @param _rllValue long long value (64 bits).
+     * @param _ri64Value long long value (64 bits).
      */
-    ETKSQLite3Expression(const wxLongLong &_rllValue);
+    ETKSQLite3Expression(const etkInt64 &_ri64Value);
 
     /**
      * Create an expression with a value.
@@ -612,7 +617,7 @@ public:
      * @param _expressionType Expression type, by default use quote string but it can be other type. No check is done
      *                        to check expression type validity.
      */
-    ETKSQLite3Expression(const wxChar *_pszValue,eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);
+    ETKSQLite3Expression(const wxChar *_pszValue, eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);
 
     /**
      * Create an expression with a value.
@@ -621,7 +626,7 @@ public:
      * @param _expressionType Expression type, by default use quote string but it can be other type. No check is done
      *                        to check expression type validity.
      */
-    ETKSQLite3Expression(wxString _strValue,eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);
+    ETKSQLite3Expression(etkString _strValue, eExpressionOrOperationType _expressionType = eExpressionTypeValueQuoteString);
 
     /**
      * Constructor created from selection request.
@@ -654,7 +659,7 @@ public:
      * @param _rExpression Expression to copy into this.
      * @return contant reference to this.
      */
-    const ETKSQLite3Expression &      operator=(const ETKSQLite3Expression &_rExpression);
+    const ETKSQLite3Expression &        operator=(const ETKSQLite3Expression &_rExpression);
 
     /**
      * Assignment operator from a selector.
@@ -664,7 +669,7 @@ public:
      * @param _rSelector Selector to copy into this.
      * @return Reference to this that contains assigned expression.
      */
-    const ETKSQLite3Expression &      operator=(const ETKSQLite3RequestSelector& _rSelector);
+    const ETKSQLite3Expression &        operator=(const ETKSQLite3RequestSelector& _rSelector);
 
     /**
      * Logical <b>OR</b> operator.
@@ -674,7 +679,7 @@ public:
      * @param _rExpression Expression used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator||(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                operator||(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * Logical <b>AND</b> operator.
@@ -684,7 +689,7 @@ public:
      * @param _rExpression Expression used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator&&(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                operator&&(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * Logical <b>==</b> operator.
@@ -694,7 +699,7 @@ public:
      * @param _rExpression Expression used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator==(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                operator==(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * Logical <b>==</b> operator with column.
@@ -705,7 +710,7 @@ public:
      * @param _rColumn Column class that contains column and table name. Names are used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator==(const ETKSQLite3Column &_rColumn) const;
+    ETKSQLite3Expression                operator==(const ETKSQLite3Column &_rColumn) const;
 
     /**
      * Logical <b>\></b> operator.
@@ -715,7 +720,7 @@ public:
      * @param _rExpression Expression used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator>(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                operator>(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * Logical <b>\></b> operator with column.
@@ -726,7 +731,7 @@ public:
      * @param _rColumn Column class that contains column and table name. Names are used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator>(const ETKSQLite3Column &_rColumn) const;
+    ETKSQLite3Expression                operator>(const ETKSQLite3Column &_rColumn) const;
 
     /**
      * Logical <b>\>=</b> operator.
@@ -736,7 +741,7 @@ public:
      * @param _rExpression Expression used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator>=(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                operator>=(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * Logical <b>\>=</b> operator with column.
@@ -747,7 +752,7 @@ public:
      * @param _rColumn Column class that contains column and table name. Names are used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator>=(const ETKSQLite3Column &_rColumn) const;
+    ETKSQLite3Expression                operator>=(const ETKSQLite3Column &_rColumn) const;
 
     /**
      * Logical <b>\<</b> operator.
@@ -757,7 +762,7 @@ public:
      * @param _rExpression Expression used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator<(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                operator<(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * Logical <b>\<</b> operator with column.
@@ -768,7 +773,7 @@ public:
      * @param _rColumn Column class that contains column and table name. Names are used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator<(const ETKSQLite3Column &_rColumn) const;
+    ETKSQLite3Expression                operator<(const ETKSQLite3Column &_rColumn) const;
 
     /**
      * Logical <b>\<</b> operator.
@@ -778,7 +783,7 @@ public:
      * @param _rExpression Expression used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator<=(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                operator<=(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * Logical <b>\<=</b> operator with column.
@@ -789,18 +794,18 @@ public:
      * @param _rColumn Column class that contains column and table name. Names are used to make logical operation with this.
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              operator<=(const ETKSQLite3Column &_rColumn) const;
+    ETKSQLite3Expression                operator<=(const ETKSQLite3Column &_rColumn) const;
 
     /**
      * Add expression to other.
      *
-     * Used to concatenate expressions with '<b>,</b>'. Used for operations Order By that are separate with comma,
+     * Used to concatenate expressions with '<b>, </b>'. Used for operations Order By that are separate with comma,
      * or assignment for inserters and updaters.
      *
      * @param _rExpression Expression to add to this.
      * @return A new constructed expression with this new expression.
      */
-    const ETKSQLite3Expression &      Add(const ETKSQLite3Expression &_rExpression);
+    const ETKSQLite3Expression &        Add(const ETKSQLite3Expression &_rExpression);
 
     /**
      * Add criterion.
@@ -810,18 +815,18 @@ public:
      * @param _rCriterion Criterion to add to this.
      * @return A new constructed expression with this new criterion.
      */
-    const ETKSQLite3Expression &      Add(const ETKSQLite3Criterion &_rCriterion);
+    const ETKSQLite3Expression &        Add(const ETKSQLite3Criterion &_rCriterion);
 
     /**
      * Add expression to other.
      *
-     * Used to concatenate expressions with '<b>,</b>'. Used for operations Order By that are separate with comma,
+     * Used to concatenate expressions with '<b>, </b>'. Used for operations Order By that are separate with comma,
      * join (separate with nothing) or assignment for inserters and updaters.
      *
      * @param _rExpression Expression to add to this.
      * @return A new constructed expression with this new expression.
      */
-    ETKSQLite3Expression &            operator<<(const ETKSQLite3Expression &_rExpression);
+    ETKSQLite3Expression &              operator<<(const ETKSQLite3Expression &_rExpression);
 
     /**
      * Logical <b>\!</b> operator.
@@ -830,7 +835,7 @@ public:
      *
      * @return A new constructed expression with this operator.
      */
-    ETKSQLite3Expression              operator!() const;
+    ETKSQLite3Expression                operator!() const;
 
     /**
      * SQL Like operator.
@@ -839,7 +844,7 @@ public:
      *
      * @return A new constructed expression with this + operator + expression.
      */
-    ETKSQLite3Expression              Like(const ETKSQLite3Expression &_rExpression) const;
+    ETKSQLite3Expression                Like(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * SQL In operator.
@@ -848,7 +853,7 @@ public:
      *
      * @return A new constructed expression with this + operator + expression.
      */
-     ETKSQLite3Expression             In(const ETKSQLite3Expression &_rExpression) const;
+     ETKSQLite3Expression               In(const ETKSQLite3Expression &_rExpression) const;
 
     /**
      * SQL JOIN operator.
@@ -858,7 +863,7 @@ public:
      * @param _rExpressionIn Join expression to set into IN expression.
      * @return A new constructed expression with this + operator + expression.
      */
-     ETKSQLite3Expression             Join(const ETKSQLite3Expression &_rExpressionIn) const;
+     ETKSQLite3Expression               Join(const ETKSQLite3Expression &_rExpressionIn) const;
 
     /**
      * SQL INNER JOIN operator.
@@ -868,7 +873,7 @@ public:
      * @param _rExpressionIn Inner join expression to set into IN expression.
      * @return A new constructed expression with this + operator + expression.
      */
-     ETKSQLite3Expression             InnerJoin(const ETKSQLite3Expression &_rExpressionIn) const;
+     ETKSQLite3Expression               InnerJoin(const ETKSQLite3Expression &_rExpressionIn) const;
 
     /**
      * SQL LEFT JOIN operator.
@@ -878,7 +883,7 @@ public:
      * @param _rExpressionIn Left join expression to set into IN expression.
      * @return A new constructed expression with this + operator + expression.
      */
-     ETKSQLite3Expression             LeftJoin(const ETKSQLite3Expression &_rExpressionIn) const;
+     ETKSQLite3Expression               LeftJoin(const ETKSQLite3Expression &_rExpressionIn) const;
     //@}
 
     /**
@@ -886,7 +891,7 @@ public:
      *
      * @return The request as string format.
      */
-    wxString                            FormatRequest() const;
+    etkString                           FormatRequest() const;
 
     /**
      * Used to know if expression is empty or not.
@@ -926,7 +931,7 @@ public:
      *
      * @return The left expression 1.
      */
-    const ETKSQLite3Expression *      GetExpression1() const;
+    const ETKSQLite3Expression *        GetExpression1() const;
 
     /**
      * Get expression 2.
@@ -935,7 +940,7 @@ public:
      *
      * @return The left expression 2.
      */
-    const ETKSQLite3Expression *      GetExpression2() const;
+    const ETKSQLite3Expression *        GetExpression2() const;
 
 protected:
     /**
@@ -945,24 +950,24 @@ protected:
      * @param _riIndex Index of item to bind. If a bind is done, increment index.
      * @param _bForInsertRequest If true if it's bind for an insert request (for INSERT request, the primary key is computed and should be NULL).
      */
-    virtual void                        BindTo(wxSQLite3Statement &_rstmt,int &_riIndex,bool _bForInsertRequest) const;
+    virtual void                        BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const;
 
     /**
      * Get the expression as string.
      *
      * @return Espression computed as string.
      */
-    virtual wxString                    GetAsString() const;
+    virtual etkString                    GetAsString() const;
 
     /**
      * Format AND or OR expression.
      *
      * Is used to omit operator if one the both expression is empty.
      *
-     * @param strOperator {wxString} - Operator (AND or OR).
+     * @param strOperator {etkString} - Operator (AND or OR).
      * @return Formatted string.
      */
-    wxString                            GetAsStringForOperator(wxString strOperator) const;
+    etkString                           GetAsStringForOperator(etkString strOperator) const;
 
     /**
      * Clear all expression and delete them to prevent memory leaks.
@@ -988,7 +993,7 @@ private:
      * @param _rExpression1 Expression 1 (left expression).
      * @param _rExpression2 Expression 2 (right expression).
      */
-    void                                Assign2Expressions(const ETKSQLite3Expression &_rExpression1,const ETKSQLite3Expression &_rExpression2);
+    void                                Assign2Expressions(const ETKSQLite3Expression &_rExpression1, const ETKSQLite3Expression &_rExpression2);
 
     friend class ETKSQLite3Criterion;
 
@@ -1003,7 +1008,7 @@ public:
      *
      * @return All content of tree expression as string text.
      */
-    wxString                            GetStringContentDescription() const;
+    etkString                            GetStringContentDescription() const;
 private:
 
     /**
@@ -1016,7 +1021,7 @@ private:
      * @return _strDescription Receive all Tree node description, all line have same length.
      * @return The length of one line.
      */
-    int                                 ConstructContentDescription(wxString &_strDescription) const;
+    int                                 ConstructContentDescription(etkString &_strDescription) const;
 
     /**
      * Construct the description of one node without child and lines.
@@ -1037,7 +1042,7 @@ private:
      * @return _strDescription Receive one tree node description, all line have same length.
      * @return The length of one line.
      */
-    int                                 ConstructContentThisDescription(wxString &_strDescription) const;
+    int                                 ConstructContentThisDescription(etkString &_strDescription) const;
 
     /**
      * Get the current operator type as string.
@@ -1048,7 +1053,7 @@ private:
      *
      * @return The operator as string.
      */
-    wxString                            GetOperatorString() const;
+    etkString                            GetOperatorString() const;
 
     /**
      * Pad all string to specific size.
@@ -1060,7 +1065,7 @@ private:
      * @param iLenString length to pad.
      * @return The padded string.
      */
-    static wxString                     Pad(const wxString _strString,int iLenString);
+    static etkString                     Pad(const etkString _strString, int iLenString);
 #endif // __WXDEBUG__
 };
 
@@ -1075,7 +1080,7 @@ private:
 /**
  * SQL criterion class.
  *
- * It is the class that contains all kind of expressions (where, column selection,order by, join, etc) and make
+ * It is the class that contains all kind of expressions (where, column selection, order by, join, etc) and make
  * the SQL format request that is used directly with database request.
  *
  * @see ETKSQLite3Expression
@@ -1319,12 +1324,12 @@ public:
     /**
      * Convert a string list into a string separate by comma.
      *
-     * Insert '<b>,</b>' between all field of this list.
+     * Insert '<b>, </b>' between all field of this list.
      *
      * @param _rlstDatas Liste of strings.
-     * @return A formatted string with '<b>,</b>' between all field.
+     * @return A formatted string with '<b>, </b>' between all field.
      */
-    static wxString                     FormatSetAsString(const tdStringList &_rlstDatas);
+    static etkString                    FormatSetAsString(const tdStringList &_rlstDatas);
 
     /**
      * Apply (oo not) the distinc mode on a request.
@@ -1355,7 +1360,7 @@ public:
      *
      * @return The Where expression.
      */
-    const ETKSQLite3Expression &      GetWhere() const;
+    const ETKSQLite3Expression &        GetWhere() const;
 
     /**
      * Set the From expression.
@@ -1366,17 +1371,17 @@ public:
      *  TABLE Purchase { ID_Customer , ID_Item }<br><br>
      *
      * To know how many purchase a customer has done, you can make this request:<br>
-     *  <i>SELECT TCustomer.*,(SELECT count(*) from TPurchase WHERE (TCustomer.id = TPurchase.idCustomer)) FROM TCustomer</i>.<br><br>
+     *  <i>SELECT TCustomer.*, (SELECT count(*) from TPurchase WHERE (TCustomer.id = TPurchase.idCustomer)) FROM TCustomer</i>.<br><br>
      *
      * If you let the automatic mode do its works, it will generated a SQL request as:<br>
-     *  <i>SELECT TCustomer.*,(SELECT count(*) from <b>TCustomer</b>,TPurchase WHERE (TCustomer.id = TPurchase.idCustomer)) FROM TCustomer</i>.<br><br>
+     *  <i>SELECT TCustomer.*, (SELECT count(*) from <b>TCustomer</b>, TPurchase WHERE (TCustomer.id = TPurchase.idCustomer)) FROM TCustomer</i>.<br><br>
      *
      * This automatic generation will set one more table name into the from (TCustomer) that not give the correct SQL request: the result will not give the attemp result.<br>
      * In normal mode, don't set this expression, use it only for specific cases that need it.
      *
      * @see GetFrom
      * @param _rExprWhere The From expression. It can be a list of columns (only tables name will be taken into account) or directly a
-     *        string of table seperate with comma, like "Table1,Table2,Table3".
+     *        string of table seperate with comma, like "Table1, Table2, Table3".
      */
     void                                SetFrom(const ETKSQLite3Expression &_rExprFrom);
 
@@ -1386,7 +1391,7 @@ public:
      * @see SetFrom
      * @return The From expression.
      */
-    const ETKSQLite3Expression &      GetFrom() const;
+    const ETKSQLite3Expression &        GetFrom() const;
 
     /**
      * Set the Join expression.
@@ -1403,12 +1408,12 @@ public:
      *
      * @return The Join expression.
      */
-    const ETKSQLite3Expression &      GetJoin() const;
+    const ETKSQLite3Expression &        GetJoin() const;
 
     /**
      * Construct SQL request with internal informations.
      */
-    wxString                            GetSQL() const;
+    etkString                            GetSQL() const;
 
     /**
      * Bind a column data of a statement.
@@ -1416,7 +1421,7 @@ public:
      * @param _rstmt Statement to bind to.
      * @param _riIndex Index of item to bind. If a bind is done, increment index.
      */
-    void                                BindTo(wxSQLite3Statement &_rstmt,int &_riIndex) const;
+    void                                BindTo(wxSQLite3Statement &_rstmt, int &_riIndex) const;
 
 protected:
     /**
@@ -1434,53 +1439,17 @@ protected:
     virtual tdStringList &              UpdateTablesList(tdStringList &_rlstTablesList) const;
 
     void                                SetOrderBy(const ETKSQLite3Expression &_rExprOrderBy = ETKSQLite3Expression());
-    const ETKSQLite3Expression &      GetOrderBy() const;
+    const ETKSQLite3Expression &        GetOrderBy() const;
 
 
-    wxString                            GetOrderByAsString() const;
-
-
-    /**
-     * Format an insert request with internal criterions.
-     *
-     * This function format insert request as: <b>INSERT INTO</b> <i>table</i> (<i>fields</i>) <b>VALUES</b> (<i>values</i>)
-     *
-     * @return The SQL formatted request.
-     */
-    wxString                            FormatInsert() const;
-
-    /**
-     * Format an update request with internal criterions and where.
-     *
-     * This function format update request as: <b>UPDATE</b> <i>table</i> <b>SET</b> <i>column_name1=column_value1,column_name2=column_value2,...</i> <b>WHERE</b> <i>where_request</i>
-     *
-     * @param _rCriterionWhere Where criterions.
-     * @return The SQL formatted request.
-     */
-    wxString                            FormatUpdate(const ETKSQLite3Criterion &_rCriterionWhere) const;
-
-    /**
-     * Format a select request from internal criterions.
-     *
-     * @param _rCriterionWhere Where criterions.
-     * @return The SQL formatted request.
-     */
-    wxString                            FormatSelect(const ETKSQLite3Criterion &_rCriterionWhere) const;
-
-    /**
-     * Format a delete request from criterions passed into arguments.
-     *
-     * @param _rCriterionWhere Where criterions.
-     * @return The SQL formatted request.
-     */
-    wxString                            FormatDelete(const ETKSQLite3Criterion &_rCriterionWhere) const;
+    etkString                           GetOrderByAsString() const;
 };
 
-EXPORT_IMPORT ETKSQLite3Expression    operator==(const ETKSQLite3Value &_rValue,const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator>(const ETKSQLite3Value &_rValue,const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator>=(const ETKSQLite3Value &_rValue,const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator<(const ETKSQLite3Value &_rValue,const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator<=(const ETKSQLite3Value &_rValue,const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression    operator==(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression    operator>(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression    operator>=(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression    operator<(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression    operator<=(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
 
 EXPORT_IMPORT ETKSQLite3Expression    dbCount();
 EXPORT_IMPORT ETKSQLite3Expression    dbCount(const ETKSQLite3Column& _rColumn);
@@ -1489,11 +1458,11 @@ EXPORT_IMPORT ETKSQLite3Expression    dbCount(const ETKSQLite3Expression& _rExpr
 EXPORT_IMPORT ETKSQLite3Expression    dbMax(const ETKSQLite3Column& _rColumn);
 EXPORT_IMPORT ETKSQLite3Expression    dbMin(const ETKSQLite3Column& _rColumn);
 EXPORT_IMPORT ETKSQLite3Expression    dbSum(const ETKSQLite3Column& _rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    dbCast(const ETKSQLite3Column& _rColumn,wxString _strCast);
-EXPORT_IMPORT ETKSQLite3Expression    dbSubString(const ETKSQLite3Expression &_rExpression,const ETKSQLite3Expression &_rExpressionStart,const ETKSQLite3Expression &_rExpressionLength);
-EXPORT_IMPORT ETKSQLite3Expression    dbAs(const ETKSQLite3Expression& _rExpression,wxString _strAsName);
-EXPORT_IMPORT ETKSQLite3Expression    dbAs(const ETKSQLite3Criterion& _rCriterion,wxString _strAsName);
+EXPORT_IMPORT ETKSQLite3Expression    dbCast(const ETKSQLite3Column& _rColumn, etkString _strCast);
+EXPORT_IMPORT ETKSQLite3Expression    dbSubString(const ETKSQLite3Expression &_rExpression, const ETKSQLite3Expression &_rExpressionStart, const ETKSQLite3Expression &_rExpressionLength);
+EXPORT_IMPORT ETKSQLite3Expression    dbAs(const ETKSQLite3Expression& _rExpression, etkString _strAsName);
+EXPORT_IMPORT ETKSQLite3Expression    dbAs(const ETKSQLite3Criterion& _rCriterion, etkString _strAsName);
 // Directly format a sql request
-EXPORT_IMPORT ETKSQLite3Expression    dbSQL(wxString _strSQLRequest);
+EXPORT_IMPORT ETKSQLite3Expression    dbSQL(etkString _strSQLRequest);
 
 #endif // INCLUDE_ETK_SQLITE3_CRITERION_H

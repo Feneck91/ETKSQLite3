@@ -1,12 +1,17 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Database.h
-// Library:     ETKSQLite3
-// Purpose:     Code for database managment
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/07/31
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Database.h
+ * @brief Header file for SQL request creation.
+ *
+ * This file contains the headers for the ETKSQLite3Database class
+ * which is used to manage SQLite3 database into ETKSQLite3 library.
+ *
+ * @author Stéphane Château du header
+ * @date Created: 2011/07/31
+ * @date Modified: 2025/08/29
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_DATABASE_H
 #define INCLUDE_ETK_SQLITE3_DATABASE_H
@@ -22,12 +27,12 @@
 \section intro What is ETKSQLite3?
 
     \b ETKSQLite3 is a C++ wrapper around the public domain
-    written in C++ that allow to access <a href="http://www.sqlite.org/">SQLite3</a> database.<br>
+    written in C++ that allow to access <a href="http://www.sqlite.org/">SQLite3</a> database using the <a href="https://github.com/utelle/wxsqlite3">wxSQLite3</a> wrapper library.<br>
     This library is used to allow user to quickly make database binding and make easy request with C++ operators
     and is specifically designed for use in programs based on the \b <a href="http://www.wxwidgets.org/">wxWidgets</a> library.
     A workaround has been made to make it works with \b <a href="http://qt.nokia.com/products/">QT</a> Library.<br>
 
-    Since \b SQLite3 stores strings in UTF-8 encoding, the  \b wxSQLite3 methods provide automatic conversion between wxStrings and UTF-8 strings.
+    Since \b SQLite3 stores strings in UTF-8 encoding, the  \b wxSQLite3 methods provide automatic conversion between wxString and UTF-8 strings.
     The methods ToUTF8 and FromUTF8 of the wxString class (available since  \b wxWidgets 2.8.4) are used for the conversion. Special care has to be taken if external administration
     tools are used to modify the database contents, since not all of these tools operate in Unicode or UTF-8 mode.
 
@@ -39,11 +44,15 @@
 \section version Version history
 
     <dl>
-    <dt><b>1.1</b> - <i>02 July 2012</i></dt>
+    <dt><b>1.2</b> - <i>September 2025</i></dt>
+    <dd>
+    Boost Integration...
+    </dd>
+    <dt><b>1.1</b> - <i>July 2012</i></dt>
     <dd>
     QT Integration...
     </dd>
-    <dt><b>1.0</b> - <i>12 December 2011</i></dt>
+    <dt><b>1.0</b> - <i>December 2011</i></dt>
     <dd>
     First release - Not published...
     </dd>
@@ -53,7 +62,7 @@
 
 \section ackn Acknowledgements
 
-    Kudos to <b>Ulrich Telle</b> (and all the peaple have contributed to \b wxSQLite3) for developing \b wxSQLite3 based library used by \b ETKSQLite3.
+    Kudos to Ulrich Telle (and all wxSQLite3 contributors) for developing the wxSQLite3 library used by ETKSQLite3.
 
 \subpage Installation
 */
@@ -196,7 +205,7 @@
 
 \section Creating ETKSQLite3's project based.
     <ul>
-      <li> Create an empty project file based on \b wxWdigets template.</li>
+      <li> Create an empty project file based on \b wxWidgets template.</li>
       <li> Into <b>Build Option</b> properties of the project:
         <ul>
           <li><b>Linker settings</b> tab:
@@ -254,7 +263,6 @@
  * This class contains the pointer on wxSQLite3Database class. It allow to use crypt or uncrypted
  * database.
  *
- *
  * @author Stéphane Château
  * @version Name : ETKSQLite3<br>
  *          Revision : <b>1.1</b>
@@ -265,12 +273,12 @@ public:
     /**
      * Section name into the ini file of all informations about database.
      */
-    static const wxString               STR_DATABASE_SECTION_NAME;
+    static const etkString              STR_DATABASE_SECTION_NAME;
 
     /**
      * Key name for the path where the database must be opened.
      */
-    static const wxString               STR_DATABASE_KEY_NAME_PATH;
+    static const etkString              STR_DATABASE_KEY_NAME_PATH;
 
     /**
      * Structure that contains informations about database events.
@@ -292,12 +300,12 @@ public:
         /**
          * Name of the database.
          */
-        wxString                            m_strDatabaseName;
+        etkString                           m_strDatabaseName;
 
         /**
          * Table name.
          */
-        wxString                            m_strTableName;
+        etkString                           m_strTableName;
 
         /**
          * Row identifier.
@@ -309,7 +317,7 @@ public:
          *
          * @return "DELETE", "INSERT" or "UPDATE" string depending of update type.
          */
-        wxString                            GetUpdateTypeString() const;
+        etkString                           GetUpdateTypeString() const;
     };
 
     /**
@@ -338,14 +346,14 @@ private:
     /**
      * Database SQL creation command.
      */
-    wxString                            m_strSQLSchema;
+    etkString                           m_strSQLSchema;
 
     /**
      * Last error description.
      *
      * Is mutable because is set on const function call (LogDatabaseException).
      */
-    mutable wxString                    m_strLastErrorMsg;
+    mutable etkString                   m_strLastErrorMsg;
 
 public:
     /// @name Constructor / Destructor.
@@ -375,7 +383,7 @@ public:
      *
      *  @return The error message description of last exception log by LogDatabaseException function call.
      */
-    wxString                            GetLastErrorMessage() const;
+    etkString                           GetLastErrorMessage() const;
 
     /**
      * Get the database file path
@@ -405,7 +413,7 @@ public:
      * @param _strDatabaseFilePath Database file path to create.
      * @return true is the database is correctly created, false else.
      */
-    bool                                Create(wxString _strDatabaseFilePath);
+    bool                                Create(etkString _strDatabaseFilePath);
 
     /**
      * Open an existing database file.
@@ -414,7 +422,7 @@ public:
      *                             current ini file.
      * @return true is the database is correctly opened, false else.
      */
-    bool                                Open(wxString _strDatabaseFilePath = wxEmptyString);
+    bool                                Open(etkString _strDatabaseFilePath = wxEmptyString);
 
     /**
      * Ask if the database is correctly opened or not.
@@ -471,7 +479,7 @@ public:
      *
      * @return The SQL needed to construct the database.
      */
-    void                                SetSQLDatabaseSchema(wxString _strSQLSchema);
+    void                                SetSQLDatabaseSchema(etkString _strSQLSchema);
 
     /**
      * Log Exception into log or/and a message box to the user.
@@ -482,7 +490,7 @@ public:
      * @param _bLogError If true, log database error.
      * @param _bDisplayMsgBox If true, display the error to the user.
      */
-    virtual void                        LogDatabaseException(const wxSQLite3Exception &_rException,bool _bLogError,bool _bDisplayMsgBox) const;
+    virtual void                        LogDatabaseException(const wxSQLite3Exception &_rException, bool _bLogError, bool _bDisplayMsgBox) const;
 
 protected:
     /**
@@ -491,14 +499,14 @@ protected:
      * It is called only on database creation if no SQL schema is set.
      * @return The SQL needed to construct the database.
      */
-    virtual wxString                    GetSQLDatabaseSchema() const;
+    virtual etkString                   GetSQLDatabaseSchema() const;
 
     /**
      * Create the encrypt key used to crypt database file.
      *
      * @return The encrypt key used to crypt the database, by default returns empty string.
      */
-    virtual wxString                    GetEncryptKey() const;
+    virtual etkString                   GetEncryptKey() const;
 
     /**
      * Execute SQL request select with transaction using SQL.
@@ -520,7 +528,7 @@ protected:
      * @param _bDisplayMsgBox If true, display the error to the user.
      * @return The number of database rows that were changed (or inserted or deleted), 0 if error.
      */
-    int                                 ExecuteStatementWithTransaction(wxSQLite3Statement &_rstmRequest,bool _bLogError,bool _bDisplayMsgBox);
+    int                                 ExecuteStatementWithTransaction(wxSQLite3Statement &_rstmRequest, bool _bLogError, bool _bDisplayMsgBox);
 
     /**
      * Execute SQL request without transaction using wxSQLite3Statement class.
@@ -543,7 +551,7 @@ protected:
      *     catch(wxSQLite3Exception &_ex)
      *     {   // Error while executing request to the database
      *         // log and display error to the user, choose parameters you want
-     *         GetDatabase().LogDatabaseException(_ex,true (log error),true (display Message box));
+     *         GetDatabase().LogDatabaseException(_ex, true (log error), true (display Message box));
      *     }
      * </pre>
      *
@@ -568,7 +576,7 @@ protected:
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
-    int                                 ExecuteSQLWithTransaction(wxString _strSQL,bool _bLogError,bool _bDisplayMsgBox);
+    int                                 ExecuteSQLWithTransaction(etkString _strSQL, bool _bLogError, bool _bDisplayMsgBox);
 
     /**
      * Execute SQL request with transaction using SQL.
@@ -582,7 +590,7 @@ protected:
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
-    int                                 ExecuteSQLWithoutTransaction(wxString _strSQL,bool _bLogError,bool _bDisplayMsgBox);
+    int                                 ExecuteSQLWithoutTransaction(etkString _strSQL, bool _bLogError, bool _bDisplayMsgBox);
 
 private:
     /**
@@ -595,7 +603,7 @@ private:
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      * must be protected by try / catch statement.
      */
-    wxSQLite3Statement                  PrepareEmptyStatement(wxString _strStatementSQL);
+    wxSQLite3Statement                  PrepareEmptyStatement(etkString _strStatementSQL);
 
     /**
      * Execute SQL request with transaction or not, using wxSQLite3Statement class.
@@ -611,7 +619,7 @@ private:
      * @throw wxSQLite3Exception If the function failed and don't use transaction, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
-    int                                 ExecuteStatement(wxSQLite3Statement &_rstmRequest,bool _bLogError,bool _bDisplayMsgBox,bool _bUseTransaction);
+    int                                 ExecuteStatement(wxSQLite3Statement &_rstmRequest, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction);
 
     /**
      * Execute SQL request with transaction or not.
@@ -627,7 +635,7 @@ private:
      * @throw wxSQLite3Exception If the function failed and don't use transaction, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
-    int                                 ExecuteSQL(wxString _strSQL,bool _bLogError,bool _bDisplayMsgBox,bool _bUseTransaction);
+    int                                 ExecuteSQL(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction);
 
 protected:
     /**
@@ -676,7 +684,7 @@ protected:
      * @param _strTableName Name of the table.
      * @param _llRowID The rowid of the affected row.
      */
-    void                                UpdateCallback(wxUpdateType _UpdateType,const wxString &_strDatabaseName,const wxString &_strTableName,wxLongLong _llRowID);
+    void                                UpdateCallback(wxUpdateType _UpdateType, const wxString &_strDatabaseName, const wxString &_strTableName, wxLongLong _llRowID);
 
     /// Execute the commit hook callback function
     /**

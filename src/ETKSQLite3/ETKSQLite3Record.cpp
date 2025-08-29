@@ -15,7 +15,7 @@ ETKSQLite3Record::ETKSQLite3Record()
 {
 }
 
-ETKSQLite3Record::ETKSQLite3Record(wxString _strTableName)
+ETKSQLite3Record::ETKSQLite3Record(etkString _strTableName)
     : m_strTableName(_strTableName)
 {
 }
@@ -24,12 +24,12 @@ ETKSQLite3Record::~ETKSQLite3Record()
 {
 }
 
-ETKSQLite3Column ETKSQLite3Record::GetAllColumn(wxString _strTableName)
+ETKSQLite3Column ETKSQLite3Record::GetAllColumn(etkString _strTableName)
 {
     return ETKSQLite3Column(_strTableName,_T("*"));
 }
 
-wxString ETKSQLite3Record::GetTableName() const
+etkString ETKSQLite3Record::GetTableName() const
 {
     return m_strTableName;
 }
@@ -39,7 +39,7 @@ void ETKSQLite3Record::AddColumn(const ETKSQLite3Column &_rColumn)
     m_lstColumns.push_back(_rColumn);
 }
 
-const ETKSQLite3Record & ETKSQLite3Record::ChangeTableName(wxString _strTableName)
+const ETKSQLite3Record & ETKSQLite3Record::ChangeTableName(etkString _strTableName)
 {
     m_strTableName = _strTableName;
     for (tdListColumns::iterator it=m_lstColumns.begin();it!=m_lstColumns.end();++it)
@@ -50,7 +50,7 @@ const ETKSQLite3Record & ETKSQLite3Record::ChangeTableName(wxString _strTableNam
     return *this;
 }
 
-ETKSQLite3Expression ETKSQLite3Record::As(wxString _strTableName) const
+ETKSQLite3Expression ETKSQLite3Record::As(etkString _strTableName) const
 {
     ETKSQLite3Expression exprRet;
     for (tdListColumns::const_iterator it=m_lstColumns.begin();it!=m_lstColumns.end();++it)
@@ -61,7 +61,7 @@ ETKSQLite3Expression ETKSQLite3Record::As(wxString _strTableName) const
     return exprRet;
 }
 
-void ETKSQLite3Record::ChangeAs(wxString _strTableName)
+void ETKSQLite3Record::ChangeAs(etkString _strTableName)
 {
     m_strTableName = _strTableName;
     for (tdListColumns::iterator it=m_lstColumns.begin();it!=m_lstColumns.end();++it)
@@ -91,7 +91,7 @@ const ETKSQLite3Column & ETKSQLite3Record::GetColumn(size_t _nIndex) const
     return *(m_lstColumns.begin() + _nIndex);
 }
 
-const ETKSQLite3Column * ETKSQLite3Record::FindColumnByName(wxString _strColumnName) const
+const ETKSQLite3Column * ETKSQLite3Record::FindColumnByName(etkString _strColumnName) const
 {
     for (tdListColumns::const_iterator it=m_lstColumns.begin();it!=m_lstColumns.end();++it)
     {
@@ -104,7 +104,7 @@ const ETKSQLite3Column * ETKSQLite3Record::FindColumnByName(wxString _strColumnN
     return NULL;
 }
 
-const ETKSQLite3Column * ETKSQLite3Record::FindColumnByFullName(wxString _strColumnFullName) const
+const ETKSQLite3Column * ETKSQLite3Record::FindColumnByFullName(etkString _strColumnFullName) const
 {
     for (tdListColumns::const_iterator it=m_lstColumns.begin();it!=m_lstColumns.end();++it)
     {
@@ -119,7 +119,7 @@ const ETKSQLite3Column * ETKSQLite3Record::FindColumnByFullName(wxString _strCol
 
 const ETKSQLite3Column & ETKSQLite3Record::operator[](const ETKSQLite3Column &_rColumn) const
 {
-    wxString strColumnName(_rColumn.GetFullName());
+    etkString strColumnName(_rColumn.GetFullName());
     for (tdListColumns::const_iterator it=m_lstColumns.begin();it!=m_lstColumns.end();++it)
     {
         if ((*it).GetFullName() == strColumnName)
@@ -128,10 +128,10 @@ const ETKSQLite3Column & ETKSQLite3Record::operator[](const ETKSQLite3Column &_r
         }
     }
 
-    wxString strError = wxT("ETKSQLite3Record::operator[] is called on bad static column instance, the column cannot be found!");
+    etkString strError = wxT("ETKSQLite3Record::operator[] is called on bad static column instance, the column cannot be found!");
     wxLogFatalError(strError);
     wxFAIL_MSG(strError);
-    throw wxSQLite3Exception(-1,wxString(_T("Error while operator[] is called! Check your source code!"))); // throw exception !
+    throw wxSQLite3Exception(-1,etkString(_T("Error while operator[] is called! Check your source code!"))); // throw exception !
 }
 
 const ETKSQLite3ColumnAttributes & ETKSQLite3Record::GetColumnAttributes(int _Index) const

@@ -8,8 +8,8 @@
 // Copyright:   © Stéphane Château
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
-#ifndef INCLUDE_WX_ETK_SQLITE3_TYPES_H
-#define INCLUDE_WX_ETK_SQLITE3_TYPES_H
+#ifndef INCLUDE_ETK_SQLITE3_TYPES_H
+#define INCLUDE_ETK_SQLITE3_TYPES_H
 
 //################################################################
 //##                                                            ##
@@ -75,4 +75,10 @@
     #define     WXEXPORT        EXPORT_IMPORT
 #endif
 
-#endif // INCLUDE_WX_ETK_SQLITE3_TYPES_H
+// Define all wx classes alias to etk classes.
+using etkString             = wxString;
+using etkVariant            = wxVariant;
+using etkInt64              = wxLongLong;
+using etkDateTime           = wxDateTime;
+
+#endif // INCLUDE_ETK_SQLITE3_TYPES_H

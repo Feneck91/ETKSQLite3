@@ -1,12 +1,17 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Column.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for column managment
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Column.h
+ * @brief Implementation file for column management.
+ *
+ * This file contains the implementation of the ETKSQLite3ColumnAttributes
+ * class, which is used for managing columns in the ETKSQLite3 library.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/08/29
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_COLUMN_H
 #define INCLUDE_ETK_SQLITE3_COLUMN_H
@@ -44,7 +49,7 @@ private:
      * Indicate if this column should be added on insert request.
      *
      * If not it is certainly because it is a primary key with autoincrement, when adding this element for insert
-     * request, this field is set to NULL to be automatically computed by database.
+     * request, this field is set to null to be automatically computed by database.
      */
     bool                                m_bAddForInsertRequest;
 
@@ -71,10 +76,10 @@ public:
      * @param _rBindValue Column's value to bind.
      * @param _bAddForInsertRequest Indicate if this column should be added on insert request. If not it is
      *                              certainly because it is a primary key with autoincrement, when adding
-     *                              this element for insert request, this field is set to NULL to be
+     *                              this element for insert request, this field is set to null to be
      *                              automatically computed by database.
      */
-    ETKSQLite3ColumnAttributes(const ETKSQLite3ValueBind & _rBindValue,bool _bAddForInsertRequest = true);
+    ETKSQLite3ColumnAttributes(const ETKSQLite3ValueBind & _rBindValue, bool _bAddForInsertRequest = true);
 
     /**
      * Copy constructor.
@@ -94,9 +99,10 @@ public:
      *
      * @param _rstmt Statement to bind to.
      * @param _iIndex Index of item to bind.
-     * @param _bForInsertRequest If is bind for an INSERT request. In this case, some field must be set to NULL value (for INSERT request, the primary key is computed).
+     * @param _bForInsertRequest If is bind for an INSERT request. In this case, some field must be set to null
+     *                           value (for INSERT request, the primary key is computed).
      */
-    void                                BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bForInsertRequest) const;
+    void                                BindTo(wxSQLite3Statement &_rstmt, int _iIndex, bool _bForInsertRequest) const;
 
     /**
      * Bind datas from the structure.
@@ -104,7 +110,7 @@ public:
      * @param _rResultSet Reocrd set where binf data from.
      * @param _iIndex Index of column into _rResultSet recordset.
      */
-    void                                BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const;
+    void                                BindFrom(wxSQLite3ResultSet &_rResultSet, int _iIndex) const;
 
     /**
      * Indicate if the column's field is null or not.
@@ -140,7 +146,7 @@ public:
      *
      * It is used to verify that the internal binded is correctly initialized. Used into assert function
      * to verify that some functions are called only on binded data, not on static colum that doesn't contains
-     * a value to bind,
+     * a value to bind.
      *
      * @return true if the internal value is binded, false else.
      */
@@ -153,7 +159,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                       //
-//                                            ETKSQLite3Column                                         //
+//                                             ETKSQLite3Column                                          //
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,12 +179,12 @@ private:
     /**
      * Table name.
      */
-    wxString                            m_strTableName;
+    etkString                           m_strTableName;
 
     /**
      * Column name.
      */
-    wxString                            m_strColumnName;
+    etkString                           m_strColumnName;
 
     /**
      * Contains all needed columns attributes.
@@ -214,7 +220,7 @@ public:
      * @param _strTableName Table's name.
      * @param _strColumnName Column's name.
      */
-    ETKSQLite3Column(wxString _strTableName,wxString _strColumnName);
+    ETKSQLite3Column(etkString _strTableName, etkString _strColumnName);
 
     /**
      * Constructor.
@@ -222,7 +228,7 @@ public:
      * @param _rColumn Column that record table and column names.
      * @param _rColumnAttributes Contains all colums needed attributes to make bindings.
      */
-    ETKSQLite3Column(const ETKSQLite3Column &_rColumn,const ETKSQLite3ColumnAttributes &_rColumnAttributes);
+    ETKSQLite3Column(const ETKSQLite3Column &_rColumn, const ETKSQLite3ColumnAttributes &_rColumnAttributes);
 
     /**
      * Copy constructor.
@@ -258,9 +264,9 @@ public:
     /**
      * Get the table's name.
      *
-     * @see GetColumnName,GetFullName
+     * @see GetColumnName, GetFullName
      */
-    wxString                            GetTableName() const;
+    etkString                           GetTableName() const;
 
     /**
      * Set the table name.
@@ -269,31 +275,32 @@ public:
      *
      * @param _strTableName New table name.
      */
-    void                                SetTableName(wxString _strTableName);
+    void                                SetTableName(etkString _strTableName);
 
     /**
      * Get the column's name without table name.
      *
-     * @see GetTableName,GetFullName
+     * @see GetTableName, GetFullName
      */
-    wxString                            GetColumnName() const;
+    etkString                           GetColumnName() const;
 
     /**
      * Get the column name with the table name.
      *
      * @return A string formatted as \"<b>TABLE_NAME.COLUMN_NAME</b>\".
-     * @see GetTableName,GetColumnName
+     * @see GetTableName, GetColumnName
      */
-    wxString                            GetFullName() const;
+    etkString                           GetFullName() const;
 
     /**
      * Bind a data to the statement.
      *
      * @param _rstmt Statement to bind to.
      * @param _iIndex Index of item to bind.
-     * @param _bForInsertRequest If is bind for an INSERT request. In this case, some field must be set to NULL value (for INSERT request, the primary key is computed).
+     * @param _bForInsertRequest If is bind for an INSERT request. In this case, some field must be
+     *                           set to null value (for INSERT request, the primary key is computed).
      */
-    void                                BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bForInsertRequest) const;
+    void                                BindTo(wxSQLite3Statement &_rstmt, int _iIndex, bool _bForInsertRequest) const;
 
     /**
      * Bind datas from the structure.
@@ -301,7 +308,7 @@ public:
      * @param _rResultSet Reocrd set where binf data from.
      * @param _iIndex Index of column into _rResultSet recordset.
      */
-    void                                BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const;
+    void                                BindFrom(wxSQLite3ResultSet &_rResultSet, int _iIndex) const;
 
     /**
      * Get column attributes.
@@ -328,7 +335,7 @@ public:
      *
      * @see GetColumnAttributes.
      *
-     * @return The column attribute. The returns value is never NULL.
+     * @return The column attribute. The returns value is never nullptr.
      */
     const ETKSQLite3ColumnAttributes *operator->() const;
 
@@ -502,27 +509,27 @@ public:
      * <i>_strTableName</i>.<i>column name</i> AS <i>_strAsName</i>.<br>
      * If <i>_strAsName</i> is empty, the value is remplaced by the <i>_strTableName</i> + <i>column name</i>.<br>
      *
-     * @see ChangeAs,ETKSQLite3Record::As
+     * @see ChangeAs, ETKSQLite3Record::As
      * @param _strTableName Table name of the AS value.
      * @param _strAsName Name of the AS value variable, if empty, this value is computed as <i>_strTableName</i> + <i>column name</i>.
      * @return A new formatted expression.
      */
-    ETKSQLite3Expression              As(wxString _strTableName,wxString _strAsName = wxEmptyString) const;
+    ETKSQLite3Expression              As(etkString _strTableName, etkString _strAsName = wxEmptyString) const;
 
     /**
      * Modify the column name to be used as ResultSet record <b>ONLY</b>!
      *
      * Used to bind data into record when the result set is generate with an SQL expression
      * that use the <b>AS</b> expression from the record.<br>
-     * Unlike the \ref ETKSQLite3Column::As "As" function, this function doesn't change the table name,
-     * only change the columns names.<br>
+     * Unlike the \ref ETKSQLite3Column::As "As" function, this function doesn't change the table name, only
+     * change the columns names.<br>
      * <b>DO NOT CALL THIS FUNCTION ON STATIC COLUMN WITHOUT ATTRIBUTES</b>.
      *
-     * @see As,ETKSQLite3Record::ChangeAs
+     * @see As, ETKSQLite3Record::ChangeAs
      * @param _strAsName Name of the AS value variable, if empty, this value is computed as <i>_strTableName</i> + <i>column name</i>.
      * @param _strTableName The AS table name.
      */
-    void                                ChangeAs(wxString _strTableName,wxString _strAsName = wxEmptyString);
+    void                                ChangeAs(etkString _strTableName, etkString _strAsName = wxEmptyString);
 
     /**
      * Compute the column / table name for the \ref ETKSQLite3Column::ChangeAs "ChangeAs" function.
@@ -531,7 +538,7 @@ public:
      *
      * @return A copy of a column that have correct table name / column name.
      */
-    ETKSQLite3Column                  ComputeColumnChangeAs(wxString _strTableName,wxString _strAsName = wxEmptyString) const;
+    ETKSQLite3Column                  ComputeColumnChangeAs(etkString _strTableName, etkString _strAsName = wxEmptyString) const;
 
     /**
      * <b>IS NULL</b> operator.

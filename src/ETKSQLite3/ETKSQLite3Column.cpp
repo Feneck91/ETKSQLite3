@@ -1,12 +1,17 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Column.h
-// Library:     ETKSQLite3
-// Purpose:     Code for column managment
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Column.cpp
+ * @brief Header file for column management.
+ *
+ * This file contains the implementation of the ETKSQLite3ColumnAttributes
+ * class, which is used for managing columns in the ETKSQLite3 library.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/08/29
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3Column.h"
 #include "ETKSQLite3ValueBind.h"
@@ -23,7 +28,7 @@ ETKSQLite3ColumnAttributes::ETKSQLite3ColumnAttributes()
 {
 }
 
-ETKSQLite3ColumnAttributes::ETKSQLite3ColumnAttributes(const ETKSQLite3ValueBind & _rBindValue,bool _bAddForInsertRequest)
+ETKSQLite3ColumnAttributes::ETKSQLite3ColumnAttributes(const ETKSQLite3ValueBind & _rBindValue, bool _bAddForInsertRequest)
     : m_bAddForInsertRequest(_bAddForInsertRequest)
     , m_pBindValue(_rBindValue.Clone())
 {
@@ -39,27 +44,27 @@ ETKSQLite3ColumnAttributes::~ETKSQLite3ColumnAttributes()
     // Nothing to do to delete m_pBindValue
 }
 
-void ETKSQLite3ColumnAttributes::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bForInsertRequest) const
+void ETKSQLite3ColumnAttributes::BindTo(wxSQLite3Statement &_rstmt, int _iIndex, bool _bForInsertRequest) const
 {
-    wxASSERT_MSG(m_pBindValue.IsNotNull(),wxT("BindTo on null bind value (attempt to bind on a static column member ?)"));
+    wxASSERT_MSG(m_pBindValue.IsNotNull(), wxT("BindTo on null bind value (attempt to bind on a static column member ?)"));
     if (m_pBindValue.IsNotNull())
     {
         if ((!m_bAddForInsertRequest && _bForInsertRequest) || IsNull())
         {   // Bind null if this field should not be add for insert request else it doesn't work
             // It is probably a primary key with integer autoincrement field
-            // Bind null if this field is mark as NULL field, ignore binded data and set it to null
+            // Bind null if this field is mark as null field, ignore binded data and set it to null
             _rstmt.BindNull(_iIndex);
         }
         else
         {
-            m_pBindValue->BindTo(_rstmt,_iIndex,m_bAddForInsertRequest,_bForInsertRequest);
+            m_pBindValue->BindTo(_rstmt, _iIndex, m_bAddForInsertRequest, _bForInsertRequest);
         }
     }
 }
 
-void ETKSQLite3ColumnAttributes::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
+void ETKSQLite3ColumnAttributes::BindFrom(wxSQLite3ResultSet &_rResultSet, int _iIndex) const
 {
-    wxASSERT_MSG(m_pBindValue.IsNotNull(),wxT("BindFrom on null bind value (attempt to bind on a static column member ?)"));
+    wxASSERT_MSG(m_pBindValue.IsNotNull(), wxT("BindFrom on null bind value (attempt to bind on a static column member ?)"));
     if (m_pBindValue.IsNotNull())
     {
         if (_rResultSet.IsNull(_iIndex))
@@ -69,14 +74,14 @@ void ETKSQLite3ColumnAttributes::BindFrom(wxSQLite3ResultSet &_rResultSet,int _i
         else
         {
             SetNull(false); // This field is not null
-            m_pBindValue->BindFrom(_rResultSet,_iIndex);
+            m_pBindValue->BindFrom(_rResultSet, _iIndex);
         }
     }
 }
 
 bool ETKSQLite3ColumnAttributes::IsNull() const
 {
-    wxASSERT_MSG(m_pBindValue.IsNotNull(),wxT("IsNull on null bind value (attempt to call on a static column member ?)"));
+    wxASSERT_MSG(m_pBindValue.IsNotNull(), wxT("IsNull on null bind value (attempt to call on a static column member ?)"));
     if (m_pBindValue.IsNotNull())
     {
         return m_pBindValue->IsNull();
@@ -86,7 +91,7 @@ bool ETKSQLite3ColumnAttributes::IsNull() const
 
 void ETKSQLite3ColumnAttributes::SetNull(bool _bIsNull) const
 {
-    wxASSERT_MSG(m_pBindValue.IsNotNull(),wxT("SetNull on null bind value (attempt to call on a static column member ?)"));
+    wxASSERT_MSG(m_pBindValue.IsNotNull(), wxT("SetNull on null bind value (attempt to call on a static column member ?)"));
     if (m_pBindValue.IsNotNull())
     {
         return m_pBindValue->SetNull(_bIsNull);
@@ -118,7 +123,7 @@ ETKSQLite3Column::ETKSQLite3Column(int _iColumnIndex)
 {
 }
 
-ETKSQLite3Column::ETKSQLite3Column(wxString _strTableName,wxString _strColumnName)
+ETKSQLite3Column::ETKSQLite3Column(etkString _strTableName, etkString _strColumnName)
     : m_strTableName(_strTableName)
     , m_strColumnName(_strColumnName)
     , m_ColumnAttributes()
@@ -126,7 +131,7 @@ ETKSQLite3Column::ETKSQLite3Column(wxString _strTableName,wxString _strColumnNam
 {
 }
 
-ETKSQLite3Column::ETKSQLite3Column(const ETKSQLite3Column &_rColumn,const ETKSQLite3ColumnAttributes &_rColumnAttributes)
+ETKSQLite3Column::ETKSQLite3Column(const ETKSQLite3Column &_rColumn, const ETKSQLite3ColumnAttributes &_rColumnAttributes)
     : m_strTableName(_rColumn.GetTableName())
     , m_strColumnName(_rColumn.GetColumnName())
     , m_ColumnAttributes(_rColumnAttributes)
@@ -153,34 +158,34 @@ bool ETKSQLite3Column::HasColumnIndex() const
     return GetColumnIndex() != -1;
 }
 
-wxString ETKSQLite3Column::GetTableName() const
+etkString ETKSQLite3Column::GetTableName() const
 {
     return m_strTableName;
 }
 
-void ETKSQLite3Column::SetTableName(wxString _strTableName)
+void ETKSQLite3Column::SetTableName(etkString _strTableName)
 {
     m_strTableName = _strTableName;
 }
 
-wxString ETKSQLite3Column::GetColumnName() const
+etkString ETKSQLite3Column::GetColumnName() const
 {
     return m_strColumnName;
 }
 
-wxString ETKSQLite3Column::GetFullName() const
+etkString ETKSQLite3Column::GetFullName() const
 {
-    return wxString::Format(_T("%s.%s"),GetTableName().wx_str(),GetColumnName().wx_str());
+    return etkString::Format(_T("%s.%s"), GetTableName().wx_str(), GetColumnName().wx_str());
 }
 
-void ETKSQLite3Column::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bForInsertRequest) const
+void ETKSQLite3Column::BindTo(wxSQLite3Statement &_rstmt, int _iIndex, bool _bForInsertRequest) const
 {
-    m_ColumnAttributes.BindTo(_rstmt,_iIndex,_bForInsertRequest);
+    m_ColumnAttributes.BindTo(_rstmt, _iIndex, _bForInsertRequest);
 }
 
-void ETKSQLite3Column::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
+void ETKSQLite3Column::BindFrom(wxSQLite3ResultSet &_rResultSet, int _iIndex) const
 {
-    m_ColumnAttributes.BindFrom(_rResultSet,_iIndex);
+    m_ColumnAttributes.BindFrom(_rResultSet, _iIndex);
 }
 
 const ETKSQLite3ColumnAttributes & ETKSQLite3Column::GetColumnAttributes() const
@@ -220,45 +225,45 @@ const ETKSQLite3Column & ETKSQLite3Column::operator=(const ETKSQLite3Column &_rC
 ETKSQLite3Expression ETKSQLite3Column::operator==(const ETKSQLite3Expression &_rExpression) const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationEqual,
-                                  ETKSQLite3Expression(*this),
-                                  _rExpression
-                                 );
+                                ETKSQLite3Expression(*this),
+                                _rExpression
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::operator==(const ETKSQLite3Column &_rColumn) const
 {
     // Join between columns
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationEqual,
-                                  ETKSQLite3Expression(*this),
-                                  ETKSQLite3Expression(_rColumn)
-                                 );
+                                ETKSQLite3Expression(*this),
+                                ETKSQLite3Expression(_rColumn)
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::Join(const ETKSQLite3Column &_rColumn) const
 {
     // Join between columns
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationJoin,
-                                  ETKSQLite3Expression(*this),
-                                  ETKSQLite3Expression(_rColumn)
-                                 );
+                                ETKSQLite3Expression(*this),
+                                ETKSQLite3Expression(_rColumn)
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::LeftJoin(const ETKSQLite3Column &_rColumn) const
 {
     // Left join between columns
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationLeftJoin,
-                                  ETKSQLite3Expression(*this),
-                                  ETKSQLite3Expression(_rColumn)
-                                 );
+                                ETKSQLite3Expression(*this),
+                                ETKSQLite3Expression(_rColumn)
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::InnerJoin(const ETKSQLite3Column &_rColumn) const
 {
     // Inner join between columns
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationInnerJoin,
-                                  ETKSQLite3Expression(*this),
-                                  ETKSQLite3Expression(_rColumn)
-                                 );
+                                ETKSQLite3Expression(*this),
+                                ETKSQLite3Expression(_rColumn)
+                               );
 }
 
 // NOT SUPPORTED
@@ -299,11 +304,11 @@ ETKSQLite3Expression ETKSQLite3Column::Like(const ETKSQLite3Expression &_rExpres
                                  );
 }
 
-ETKSQLite3Expression ETKSQLite3Column::As(wxString _strTableName,wxString _strAsName) const
+ETKSQLite3Expression ETKSQLite3Column::As(etkString _strTableName, etkString _strAsName) const
 {
     ETKSQLite3Column column(*this);
     column.SetTableName(_strTableName);
-    return ETKSQLite3Expression(ETKSQLite3Value(GetFullName(),ETKSQLite3Expression::eOperationAs), // GetFullName() is not used into select but used into inner join (very important)
+    return ETKSQLite3Expression(ETKSQLite3Value(GetFullName(), ETKSQLite3Expression::eOperationAs), // GetFullName() is not used into select but used into inner join (very important)
                                   ETKSQLite3Expression(column),
                                   // _strTableName+column.GetColumnName() is the automatic alias
                                   ETKSQLite3Expression(_strAsName.IsEmpty()
@@ -313,16 +318,16 @@ ETKSQLite3Expression ETKSQLite3Column::As(wxString _strTableName,wxString _strAs
                                  );
 }
 
-void ETKSQLite3Column::ChangeAs(wxString _strTableName,wxString _strAsName)
+void ETKSQLite3Column::ChangeAs(etkString _strTableName, etkString _strAsName)
 {
-    wxASSERT_MSG(m_ColumnAttributes.IsBindedValueExists(),wxT("Don't call ETKSQLite3Column::ChangeAs function on static column without value to bind!"));
+    wxASSERT_MSG(m_ColumnAttributes.IsBindedValueExists(), wxT("Don't call ETKSQLite3Column::ChangeAs function on static column without value to bind!"));
 
-    m_strColumnName = ComputeColumnChangeAs(_strTableName,_strAsName).GetColumnName();
+    m_strColumnName = ComputeColumnChangeAs(_strTableName, _strAsName).GetColumnName();
 }
 
-ETKSQLite3Column ETKSQLite3Column::ComputeColumnChangeAs(wxString _strTableName,wxString _strAsName) const
+ETKSQLite3Column ETKSQLite3Column::ComputeColumnChangeAs(etkString _strTableName, etkString _strAsName) const
 {
-    return ETKSQLite3Column(GetTableName(),_strAsName.IsEmpty()
+    return ETKSQLite3Column(GetTableName(), _strAsName.IsEmpty()
                               ? _strTableName + GetColumnName()
                               : _strAsName);
 }

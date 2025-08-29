@@ -1,11 +1,17 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Database.h
-// Library:     ETKSQLite3
-// Purpose:     Code for database managment
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/07/31
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Database.h
+ * @brief Header file for SQL request creation.
+ *
+ * This file contains the implementation for the ETKSQLite3Database class
+ * which is used to manage SQLite3 database into ETKSQLite3 library.
+ *
+ * @author Stéphane Château du cpp
+ * @date Created: 2011/07/31
+ * @date Modified: 2025/08/29
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3Database.h"
 #include <wx/confbase.h>
@@ -14,9 +20,13 @@
 const wxString  ETKSQLite3Database::STR_DATABASE_SECTION_NAME       = _T("/DATABASE");
 const wxString  ETKSQLite3Database::STR_DATABASE_KEY_NAME_PATH      = _T("Path");
 
-// ----------------------------------------------------------------------------
-// ETKSQLite3Database::SDatabaseEvent
-// ----------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                       //
+//                                  ETKSQLite3Database::SDatabaseEvent                                   //
+//                                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 wxString ETKSQLite3Database::SDatabaseEvent::GetUpdateTypeString() const
 {
     wxString strUpdateType;
@@ -40,12 +50,16 @@ wxString ETKSQLite3Database::SDatabaseEvent::GetUpdateTypeString() const
     return strUpdateType;
 }
 
-// ----------------------------------------------------------------------------
-// ETKSQLite3Database
-// ----------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                       //
+//                                          ETKSQLite3Database                                           //
+//                                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ETKSQLite3Database::ETKSQLite3Database()
 {
-    m_pDatabase = NULL;
+    m_pDatabase = nullptr;
 }
 
 ETKSQLite3Database::~ETKSQLite3Database()
@@ -66,7 +80,7 @@ wxString ETKSQLite3Database::GetLastErrorMessage() const
 wxFileName ETKSQLite3Database::GetDatabaseFilePath() const
 {
     wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
-    return wxFileName(wxConfigBase::Get()->Read(STR_DATABASE_KEY_NAME_PATH,_T("")));
+    return wxFileName(wxConfigBase::Get()->Read(STR_DATABASE_KEY_NAME_PATH, _T("")));
 }
 
 bool ETKSQLite3Database::Create(wxString _strDatabaseFilePath)
@@ -78,26 +92,26 @@ bool ETKSQLite3Database::Create(wxString _strDatabaseFilePath)
     {   // Database object creation
         m_pDatabase = new wxSQLite3Database();
         // Database file creation
-        m_pDatabase->Open(_strDatabaseFilePath,GetEncryptKey(),WXSQLITE_OPEN_READWRITE | WXSQLITE_OPEN_CREATE);
+        m_pDatabase->Open(_strDatabaseFilePath, GetEncryptKey(), WXSQLITE_OPEN_READWRITE | WXSQLITE_OPEN_CREATE);
         ExecuteConfigAfterOpenOrCreate();
         // Database structure creation
-        ExecuteSQLWithTransaction(m_strSQLSchema.IsEmpty() ? GetSQLDatabaseSchema().wx_str() : m_strSQLSchema.wx_str(),true,true);
+        ExecuteSQLWithTransaction(m_strSQLSchema.IsEmpty() ? GetSQLDatabaseSchema().wx_str() : m_strSQLSchema.wx_str(), true, true);
         // Update ini file to automatically load this database file as startup
         wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
-        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH,_strDatabaseFilePath);
+        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, _strDatabaseFilePath);
         InitCallbacks();
-        wxLogVerbose(wxT("Created SQLite3 database file: %s"),_strDatabaseFilePath.c_str());
+        wxLogVerbose(wxT("Created SQLite3 database file: %s"), _strDatabaseFilePath.c_str());
         bRet = true; // (no exception raised)
     }
     catch(wxSQLite3Exception &_ex)
     {   // Error while creating the database
-        LogDatabaseException(_ex,true,true); // log and display error to the user
+        LogDatabaseException(_ex, true, true); // log and display error to the user
         bRet = false;
     }
 
     if (!bRet)
     {   // Error, the database is not created
-        if (m_pDatabase != NULL)
+        if (m_pDatabase != nullptr)
         {
             if (IsOpened())
             {   // Not only created, must be opened
@@ -107,7 +121,7 @@ bool ETKSQLite3Database::Create(wxString _strDatabaseFilePath)
                 }
                 catch (wxSQLite3Exception &_ex)
                 {
-                    LogDatabaseException(_ex,true,true); // log and display error to the user
+                    LogDatabaseException(_ex, true, true); // log and display error to the user
                 }
             }
 
@@ -141,18 +155,18 @@ bool ETKSQLite3Database::Open(wxString _strDatabaseFilePath)
             try
             {
                 m_pDatabase = new wxSQLite3Database();
-                m_pDatabase->Open(strDatabaseFilePath,GetEncryptKey(),WXSQLITE_OPEN_READWRITE);
+                m_pDatabase->Open(strDatabaseFilePath, GetEncryptKey(), WXSQLITE_OPEN_READWRITE);
                 // Update ini file to automatically load this database file as startup
                 wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
-                wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH,strDatabaseFilePath);
+                wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, strDatabaseFilePath);
                 ExecuteConfigAfterOpenOrCreate();
                 InitCallbacks();
                 bRet = true; // No exception raised
             }
             catch(wxSQLite3Exception &_ex)
             {   // Error while open the database
-                LogDatabaseException(_ex,true,true); // log and display error to the user
-                if (m_pDatabase != NULL)
+                LogDatabaseException(_ex, true, true); // log and display error to the user
+                if (m_pDatabase != nullptr)
                 {
                     try
                     {
@@ -160,7 +174,7 @@ bool ETKSQLite3Database::Open(wxString _strDatabaseFilePath)
                     }
                     catch (wxSQLite3Exception &_ex)
                     {
-                        LogDatabaseException(_ex,true,true); // log and display error to the user
+                        LogDatabaseException(_ex, true, true); // log and display error to the user
                     }
                 }
                 wxDELETE(m_pDatabase); // Not opened !
@@ -170,8 +184,8 @@ bool ETKSQLite3Database::Open(wxString _strDatabaseFilePath)
         {   // Path exist into the ini file but the file doesn't exists.
             wxString strError;
 
-            strError.Printf(_("Error, database \"%s\" doesn't exists!\n\nCannot open database!"),strDatabaseFilePath.wx_str());
-            wxMessageDialog msgDlg(NULL,strError,_("Database file is missing"),wxOK | wxICON_ERROR);
+            strError.Printf(_("Error, database \"%s\" doesn't exists!\n\nCannot open database!"), strDatabaseFilePath.wx_str());
+            wxMessageDialog msgDlg(nullptr, strError, _("Database file is missing"), wxOK | wxICON_ERROR);
             wxLogError(strError);
             msgDlg.ShowModal();
         }
@@ -191,14 +205,14 @@ void ETKSQLite3Database::CloseAndClearIni()
         Close();
         // Update ini file to automatically don't load this any database file as startup
         wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
-        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH,wxEmptyString);
+        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, wxEmptyString);
         wxLogVerbose(wxT("Closed current opened SQLite3 database file and clear ini file from automatically loading as startup."));
     }
 }
 
 void ETKSQLite3Database::Close()
 {
-    if (m_pDatabase != NULL)
+    if (m_pDatabase != nullptr)
     {
         try
         {
@@ -206,7 +220,7 @@ void ETKSQLite3Database::Close()
         }
         catch (wxSQLite3Exception &_ex)
         {
-            LogDatabaseException(_ex,true,true); // log and display error to the user
+            LogDatabaseException(_ex, true, true); // log and display error to the user
         }
         wxDELETE(m_pDatabase);
     }
@@ -214,7 +228,7 @@ void ETKSQLite3Database::Close()
 
 bool ETKSQLite3Database::IsOpened() const
 {   // The database is opened when the pointer to internal wxSQLite3 database is not null.
-    return m_pDatabase != NULL && m_pDatabase->IsOpen();
+    return m_pDatabase != nullptr && m_pDatabase->IsOpen();
 }
 
 ETKSQLite3RequestInserter ETKSQLite3Database::GetInserter()
@@ -248,12 +262,12 @@ void ETKSQLite3Database::SetSQLDatabaseSchema(wxString _strSQLSchema)
     m_strSQLSchema = _strSQLSchema;
 }
 
-void ETKSQLite3Database::LogDatabaseException(const wxSQLite3Exception &_rException,bool _bLogError,bool _bDisplayMsgBox) const
+void ETKSQLite3Database::LogDatabaseException(const wxSQLite3Exception &_rException, bool _bLogError, bool _bDisplayMsgBox) const
 {
     wxString strError;
 
     m_strLastErrorMsg = _rException.GetMessage();
-    strError.Printf(_("Database error: %s"),_rException.GetMessage().c_str());
+    strError.Printf(_("Database error: %s"), _rException.GetMessage().c_str());
 
     if (_bLogError)
     {   // log into logger
@@ -262,7 +276,7 @@ void ETKSQLite3Database::LogDatabaseException(const wxSQLite3Exception &_rExcept
 
     if (_bDisplayMsgBox)
     {   // Display error to the user
-        wxMessageDialog msgDlg(NULL,strError,_("Database error"),wxOK | wxICON_ERROR);
+        wxMessageDialog msgDlg(nullptr, strError, _("Database error"), wxOK | wxICON_ERROR);
         msgDlg.ShowModal();
     }
 }
@@ -303,34 +317,34 @@ wxSQLite3ResultSet ETKSQLite3Database::ExecuteQueryStatement(wxSQLite3Statement 
         }
         catch(wxSQLite3Exception &_ex)
         {   // Error while open the database
-            LogDatabaseException(_ex,true,true); // log and display error to the user
+            LogDatabaseException(_ex, true, true); // log and display error to the user
         }
     }
 
     return resultSet;
 }
 
-int ETKSQLite3Database::ExecuteStatementWithTransaction(wxSQLite3Statement &_rstmRequest,bool _bLogError,bool _bDisplayMsgBox)
+int ETKSQLite3Database::ExecuteStatementWithTransaction(wxSQLite3Statement &_rstmRequest, bool _bLogError, bool _bDisplayMsgBox)
 {
-    return ExecuteStatement(_rstmRequest,_bLogError,_bDisplayMsgBox,true);
+    return ExecuteStatement(_rstmRequest, _bLogError, _bDisplayMsgBox, true);
 }
 
-int ETKSQLite3Database::ExecuteStatementWithoutTransaction(wxSQLite3Statement &_rstmRequest,bool _bLogError,bool _bDisplayMsgBox)
+int ETKSQLite3Database::ExecuteStatementWithoutTransaction(wxSQLite3Statement &_rstmRequest, bool _bLogError, bool _bDisplayMsgBox)
 {
-    return ExecuteStatement(_rstmRequest,_bLogError,_bDisplayMsgBox,false);
+    return ExecuteStatement(_rstmRequest, _bLogError, _bDisplayMsgBox, false);
 }
 
-int ETKSQLite3Database::ExecuteSQLWithTransaction(wxString _strSQL,bool _bLogError,bool _bDisplayMsgBox)
+int ETKSQLite3Database::ExecuteSQLWithTransaction(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox)
 {
-    return ExecuteSQL(_strSQL,_bLogError,_bDisplayMsgBox,true);
+    return ExecuteSQL(_strSQL, _bLogError, _bDisplayMsgBox, true);
 }
 
-int ETKSQLite3Database::ExecuteSQLWithoutTransaction(wxString _strSQL,bool _bLogError,bool _bDisplayMsgBox)
+int ETKSQLite3Database::ExecuteSQLWithoutTransaction(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox)
 {
-    return ExecuteSQL(_strSQL,_bLogError,_bDisplayMsgBox,false);
+    return ExecuteSQL(_strSQL, _bLogError, _bDisplayMsgBox, false);
 }
 
-int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest,bool _bLogError,bool _bDisplayMsgBox,bool _bUseTransaction)
+int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction)
 {
     int iNbRowAffected = 0;
 
@@ -353,7 +367,7 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest,bool _
             }
             else
             {
-                wxString strError(wxString::Format(wxT("Invalid request (%s)!"),_rstmRequest.GetSQL().wx_str()));
+                wxString strError(wxString::Format(wxT("Invalid request (%s)!"), _rstmRequest.GetSQL().wx_str()));
                 wxLogError(strError);
                 wxFAIL_MSG(strError);
             }
@@ -367,7 +381,7 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest,bool _
     }
     catch(wxSQLite3Exception &_ex)
     {   // Error while open the database
-        LogDatabaseException(_ex,_bLogError,_bDisplayMsgBox); // log and display error to the user
+        LogDatabaseException(_ex, _bLogError, _bDisplayMsgBox); // log and display error to the user
         if (!_bUseTransaction)
         {   // Throw exception to calling function
             throw;
@@ -377,7 +391,7 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest,bool _
     return iNbRowAffected;
 }
 
-int ETKSQLite3Database::ExecuteSQL(wxString _strSQL,bool _bLogError,bool _bDisplayMsgBox,bool _bUseTransaction)
+int ETKSQLite3Database::ExecuteSQL(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction)
 {
     int iNbRowAffected = 0;
 
@@ -405,7 +419,7 @@ int ETKSQLite3Database::ExecuteSQL(wxString _strSQL,bool _bLogError,bool _bDispl
     }
     catch(wxSQLite3Exception &_ex)
     {   // Error while open the database
-        LogDatabaseException(_ex,_bLogError,_bDisplayMsgBox); // log and display error to the user
+        LogDatabaseException(_ex, _bLogError, _bDisplayMsgBox); // log and display error to the user
         if (!_bUseTransaction)
         {   // Throw exception to calling function
             throw;
@@ -417,7 +431,7 @@ int ETKSQLite3Database::ExecuteSQL(wxString _strSQL,bool _bLogError,bool _bDispl
 
 void ETKSQLite3Database::ExecuteConfigAfterOpenOrCreate()
 {
-    wxASSERT_MSG(IsOpened(),wxT("Database is not opened!"));
+    wxASSERT_MSG(IsOpened(), wxT("Database is not opened!"));
     if (IsOpened())
     {   // Activate foreign keys update/delete cascade
         if (!m_pDatabase->IsForeignKeySupportEnabled())
@@ -429,7 +443,7 @@ void ETKSQLite3Database::ExecuteConfigAfterOpenOrCreate()
 
 bool ETKSQLite3Database::InitCallbacks()
 {
-    wxASSERT_MSG(IsOpened(),wxT("Database is not opened!"));
+    wxASSERT_MSG(IsOpened(), wxT("Database is not opened!"));
    if (IsOpened())
     {
         // Initialize all callbacks
@@ -446,18 +460,18 @@ bool ETKSQLite3Database::InitCallbacks()
 
 void ETKSQLite3Database::UnInitCallbacks()
 {
-    wxASSERT_MSG(IsOpened(),wxT("Database is not opened!"));
+    wxASSERT_MSG(IsOpened(), wxT("Database is not opened!"));
     if (IsOpened())
     {
         // Initialize all callbacks
-        m_pDatabase->SetUpdateHook(NULL);
-        m_pDatabase->SetRollbackHook(NULL);
-        m_pDatabase->SetCommitHook(NULL);
-        wxSQLite3Hook::SetDatabase(NULL);
+        m_pDatabase->SetUpdateHook(nullptr);
+        m_pDatabase->SetRollbackHook(nullptr);
+        m_pDatabase->SetCommitHook(nullptr);
+        wxSQLite3Hook::SetDatabase(nullptr);
     }
 }
 
-void ETKSQLite3Database::UpdateCallback(wxUpdateType _UpdateType,const wxString &_strDatabaseName,const wxString &_strTableName,wxLongLong _llRowID)
+void ETKSQLite3Database::UpdateCallback(wxUpdateType _UpdateType, const wxString &_strDatabaseName, const wxString &_strTableName, wxLongLong _llRowID)
 {
     tdPtrDatabaseEvent pEvent = AllocNewDatabaseEvent();
 

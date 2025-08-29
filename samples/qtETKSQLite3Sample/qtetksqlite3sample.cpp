@@ -2,6 +2,8 @@
 #include "ETKSQlite3SampleDatabase.h"
 #include <QFileDialog>
 #include <QElapsedTimer>
+#include <fstream>
+#include <iomanip>
 
 qtETKSQLite3Sample::qtETKSQLite3Sample(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
@@ -17,28 +19,6 @@ qtETKSQLite3Sample::qtETKSQLite3Sample(QWidget *parent, Qt::WindowFlags flags)
     {
         if (m_pDatabase->Open())
         {
-QElapsedTimer timer;
-timer.start();  // démarre le chronomètre
-
-            // Prepare request
-            CRecordTGeneral recordGeneral;
-            ETKSQLite3RequestInserter inserterGeneral = m_pDatabase->GetInserter();
-            auto currentDate = QDateTime::currentDateTime();
-            inserterGeneral<<recordGeneral;   // Customer table
-            {
-                wxSQLite3Transaction transaction(m_pDatabase->GetDatabase());
-
-                for (int i=0; i<100000; ++i)
-                {
-                    recordGeneral.SetVersion(1);
-                    recordGeneral.SetCreationDate(currentDate);
-                    inserterGeneral.ExecuteWithoutTransaction();
-                }
-                transaction.Commit();
-qint64 elapsed = timer.elapsed(); // en millisecondes
-//qDebug() << "Temps écoulé:" << elapsed << "ms";
-QMessageBox::warning(this, "temp", QString(_T("temps ecoule pour 100000 : %1 ms")).arg(elapsed));
-            }
             UpdateTCustomers();
         }
     }
@@ -454,6 +434,7 @@ void qtETKSQLite3Sample::OnItemChanged(QTableWidgetItem *pItem)
                 {   // Restaure old value
                     pItem->setText(resultSetTCustomer.GetBirthday().toString(Qt::ISODate));
                 }
+                break;
             }
             case 5: // Birthday Time
             {
@@ -471,6 +452,7 @@ void qtETKSQLite3Sample::OnItemChanged(QTableWidgetItem *pItem)
                 {   // Restaure old value
                     pItem->setText(resultSetTCustomer.GetBirthdayTime().toString(Qt::ISODate));
                 }
+                break;
             }
         }
         if (bUpdate)

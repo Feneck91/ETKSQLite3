@@ -23,144 +23,167 @@
    <string>qtETKSQLite3Sample</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="verticalWidget_2" native="true">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>731</width>
-      <height>561</height>
-     </rect>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="spacing">
+     <number>4</number>
     </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-      <horstretch>1</horstretch>
-      <verstretch>1</verstretch>
-     </sizepolicy>
+    <property name="leftMargin">
+     <number>4</number>
     </property>
-    <layout class="QVBoxLayout" name="MainLayoutV">
-     <property name="spacing">
-      <number>6</number>
-     </property>
-     <property name="sizeConstraint">
-      <enum>QLayout::SetMaximumSize</enum>
-     </property>
-     <item>
-      <layout class="QVBoxLayout" name="DatabaseLayoutV">
+    <property name="topMargin">
+     <number>4</number>
+    </property>
+    <property name="rightMargin">
+     <number>4</number>
+    </property>
+    <property name="bottomMargin">
+     <number>4</number>
+    </property>
+    <item>
+     <widget class="QWidget" name="verticalWidget_2" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QVBoxLayout" name="MainLayoutV">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
-        <layout class="QHBoxLayout" name="DatabaseLayoutHButtons">
+        <layout class="QVBoxLayout" name="DatabaseLayoutV">
          <item>
-          <widget class="QPushButton" name="m_pbtnCreate">
+          <layout class="QHBoxLayout" name="DatabaseLayoutHButtons">
+           <item>
+            <widget class="QPushButton" name="m_pbtnCreate">
+             <property name="text">
+              <string>Create...</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="m_pbtnClose">
+             <property name="text">
+              <string>Close</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="m_pbtnOpen">
+             <property name="text">
+              <string>Open...</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="DatabaseLayoutHStatus">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>Create...</string>
+            <string>Database path</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="m_pbtnClose">
+          <widget class="QLabel" name="m_pLabelDatabaseName">
            <property name="text">
-            <string>Close</string>
+            <string/>
            </property>
           </widget>
          </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QPushButton" name="m_pbtnOpen">
-           <property name="text">
-            <string>Open...</string>
-           </property>
+          <widget class="QTableWidget" name="m_pTableCustomer">
+           <column>
+            <property name="text">
+             <string>ID</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Name</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>First Name</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Sexe</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Birthday</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Birthday Time</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Buy</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Price</string>
+            </property>
+           </column>
           </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </item>
       </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="DatabaseLayoutHStatus">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Database path</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="m_pLabelDatabaseName">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QTableWidget" name="m_pTableCustomer">
-         <column>
-          <property name="text">
-           <string>ID</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Name</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>First Name</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Sexe</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Birthday</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Birthday Time</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Buy</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Price</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -168,7 +191,7 @@
      <x>0</x>
      <y>0</y>
      <width>733</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

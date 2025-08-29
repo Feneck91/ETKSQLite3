@@ -1,6 +1,6 @@
 # *****************************************************************************
 # Name:        CMakeLists.txt
-# Library:     ETKSQLite3 for Qt
+# Library:     ETKSQLite3
 # Purpose:     CMake root file for ETKSqlite3
 # Author:      Stéphane Château (Feneck91@free.fr)
 # Modified by:
@@ -15,6 +15,18 @@ project(ETKSQLite3)
 # Ask to user the path where wxsqlite3 is installed
 # =============================================================================
 set(WXSQLITE3_DIR           "Path where wxsqlite3 is installed (mandatory)" CACHE PATH      "Installation path of wxsqlite3")
+
+# =============================================================================
+# Define installation folder
+# =============================================================================
+if (MSVC)
+    # Windows, install into build folder by default
+    #unset(CMAKE_INSTALL_PREFIX CACHE)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Installation directory for ETKSQLite3 (Windows)")
+else()
+    # Linux/macOS, keep default
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation directory for ETKSQLite3 (Linux/macOS)")
+endif()
 
 # =============================================================================
 # Dynamic or static library
@@ -202,7 +214,7 @@ set(MODULE_RC_FILE
     ../src/ETKSQLite3/resource.rc
 )
 
-if(MSVC)
+if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     add_definitions(-D_WIN32_WINNT=0x0601)
 
@@ -351,10 +363,33 @@ function(create_framework_library framework)
                            COMMAND ${CMAKE_COMMAND} -E copy
                            "$<TARGET_FILE:${LIB_NAME}>"
                            "${DESTINATION_DIR_LIB}/$<CONFIG>/")
+
+        # =============================================================================
+        # Intallation
+        # =============================================================================
+        # Check the target exists
+        if(NOT TARGET ${LIB_NAME})
+            message(FATAL_ERROR "Target ${LIB_NAME} does not exist. Check your CMakeLists.txt.")
+        endif()
+        # And make the install
+        install(TARGETS ${LIB_NAME}
+                ARCHIVE DESTINATION lib
+                LIBRARY DESTINATION lib
+                PUBLIC_HEADER DESTINATION include/${framework}
+        )
     endif()
 endfunction()
 
+# =============================================================================
+# Add Target intall
+# =============================================================================
+add_custom_target(Installation ALL
+    COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --config $<CONFIGURATION>
+    COMMENT "Installing ETKSQLite3...")
+
+# =============================================================================
 # Create library depending of options
+# =============================================================================
 create_framework_library(wxETKSQLite3 "wx")
 create_framework_library(qtETKSQLite3 "qt")
 create_framework_library(boostETKSQLite3 "boost")

@@ -100,7 +100,7 @@
 --                      ON_DELETE_SET_NULL  : only use with foreign key, add on delete set null for this field
 --                      ON_UPDATE_SET_NULL  : only use with foreign key, add on update set null for this field
 --
--- First item of WX_ETK_SQLITE3_DECLARE_TABLE could be :
+-- First item of ETK_SQLITE3_DECLARE_TABLE could be :
 --                      DECLARE_DATA_IMPLEMENTATION(template_header.h,template_header.cpp)
 --                      into the template, can use $REPEAT_VARIABLE$ to make code for each member (example) :
 --                      $REPEAT_VARIABLE${{ "$COLUMN_NAME$", luaU_getset<$PREFIX_STRUCT$$TABLE_NAME$, $VARIABLE_TYPE$,&$PREFIX_STRUCT$$TABLE_NAME$::$VARIABLE_NAME$> },
@@ -1166,7 +1166,7 @@ else
         -- Beginning of table <---------------------    open brace <-------      |      -> close brace           |   |
         --                               __________|______________        |  ____|____  |          |           __|__ |
         --                             /                          \       | /         \ |          |          /     \|(end)
-        local regExpression =         "WX_ETK_SQLITE3_DECLARE_TABLE[ \t]*%(([a-zA-Z_]+)%)[ \t\r\n]*{[ \t\r\n]*([^}]+)}"
+        local regExpression =         "ETK_SQLITE3_DECLARE_TABLE[ \t]*%(([a-zA-Z_]+)%)[ \t\r\n]*{[ \t\r\n]*([^}]+)}"
         local strRegexSearchForeignKey = "DECLARE_FOREIGN_KEY%(([%a_][%a%d_]*)%.([%a_][%a%d]*)%)" -- to find foreign key
         local strRegexSearchDataImplementation = "DECLARE_DATA_IMPLEMENTATION%([ \t]*([%a%d_ %.\\/]*)[\t]*,[ \t]*([%a%d_ %.\\/]*[\t]*)%)" -- to find implentation files for structure
         local iExpressionBegin,iLastExpressionBegin,iExpressionEnd= 1,1

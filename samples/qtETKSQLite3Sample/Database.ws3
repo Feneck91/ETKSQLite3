@@ -105,10 +105,13 @@ $ONLY_HEADER_FILE$
  *          Revision : <b>1.0</b>
  */
 }
-WX_ETK_SQLITE3_DECLARE_TABLE(TGeneral)
+ETK_SQLITE3_DECLARE_TABLE(TGeneral)
 {
     DECLARE_COLUMN      Version         INTEGER     [ = 0]
     DECLARE_COLUMN      CreationDate    DATETIME    [ = wxInvalidDateTime]
+    DECLARE_COLUMN      Name            VARCHAR     NULL
+    DECLARE_COLUMN      Surname         VARCHAR     NULL
+    DECLARE_COLUMN      Ratio           DOUBLE      [ = 0.0]
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +131,7 @@ $ONLY_HEADER_FILE$
  * @author Stéphane Château
  */
 }
-WX_ETK_SQLITE3_DECLARE_TABLE(TCustomer)
+ETK_SQLITE3_DECLARE_TABLE(TCustomer)
 {
     DECLARE_COLUMN      id              INTEGER     PRIMARY_KEY                     [ = 0]
     DECLARE_COLUMN      Name            VARCHAR     NOT_NULL                        [ = ""]
@@ -154,7 +157,7 @@ $ONLY_HEADER_FILE$
  * @author Stéphane Château
  */
 }
-WX_ETK_SQLITE3_DECLARE_TABLE(TItem)
+ETK_SQLITE3_DECLARE_TABLE(TItem)
 {
     DECLARE_COLUMN      id              INTEGER     PRIMARY_KEY                         [ = 0]
     DECLARE_COLUMN      Name            VARCHAR     UNIQUE      NOT_NULL                [ = ""]
@@ -176,7 +179,7 @@ $ONLY_HEADER_FILE$
  * @author Stéphane Château
  */
 }
-WX_ETK_SQLITE3_DECLARE_TABLE(TPurchase)
+ETK_SQLITE3_DECLARE_TABLE(TPurchase)
 {
     DECLARE_COLUMN                      id          INTEGER     PRIMARY_KEY AUTOINCREMENT [ = 0]
     DECLARE_FOREIGN_KEY(TCustomer.id)   idCustomer  INTEGER                               [ = 0] ON_DELETE_CASCADE ON_UPDATE_CASCADE

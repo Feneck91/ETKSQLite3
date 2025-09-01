@@ -67,7 +67,7 @@ option(SQLITE_ENABLE_DESERIALIZE        "Enable database deserialization"       
 # =============================================================================
 if (qtETKSQLite3)
     # Check if Qt6 is available
-    find_package(Qt6 COMPONENTS Widgets)
+    find_package(Qt6 QUIET COMPONENTS Widgets)
 
     # Check if Qt5 is available
     find_package(Qt5 QUIET COMPONENTS Widgets)
@@ -75,16 +75,21 @@ if (qtETKSQLite3)
     # If both versions are available, let the user choose
     if(Qt6_FOUND AND Qt5_FOUND)
         message(STATUS "Qt5 and Qt6 are installed. Using Qt${QT_VERSION} (change with -DUSE_QT6=ON/OFF).")
-        # Option to choose between Qt5 and Qt6
-        option(USE_QT6 "Use Qt6 instead of Qt5" OFF)
-    elseif(Qt6_FOUND)
-        set(USE_QT6 ON CACHE BOOL "Use Qt6 instead of Qt5" FORCE)
-        message(STATUS "Only Qt6 is installed. Using Qt6.")
-    elseif(Qt5_FOUND)
-        set(USE_QT6 OFF CACHE BOOL "Use Qt6 instead of Qt5" FORCE)
-        message(STATUS "Only Qt5 is installed. Using Qt5.")
+        if(NOT DEFINED USE_QT6)
+            # Option to choose between Qt5 and Qt6
+            option(USE_QT6 "Use Qt6 instead of Qt5" OFF)
+        endif()
     else()
-        message(FATAL_ERROR "Neither Qt5 nor Qt6 found.")
+        unset(USE_QT6 CACHE)  # Remove option from CMake cache
+        if(Qt6_FOUND)
+            #set(USE_QT6 ON CACHE BOOL "Use Qt6 instead of Qt5" FORCE)
+            message(STATUS "Only Qt6 is installed. Using Qt6.")
+        elseif(Qt5_FOUND)
+            #set(USE_QT6 OFF CACHE BOOL "Use Qt6 instead of Qt5" FORCE)
+            message(STATUS "Only Qt5 is installed. Using Qt5.")
+        else()
+            message(FATAL_ERROR "Neither Qt5 nor Qt6 found.")
+        endif()
     endif()
 endif()
 

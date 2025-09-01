@@ -63,6 +63,32 @@ option(SQLITE_ENABLE_SERIALIZE          "Enable database serialization"         
 option(SQLITE_ENABLE_DESERIALIZE        "Enable database deserialization"               OFF)
 
 # =============================================================================
+# Check and display options for QT5 / QT6 - Function to detect and configure Qt
+# =============================================================================
+if (qtETKSQLite3)
+    # Check if Qt6 is available
+    find_package(Qt6 COMPONENTS Widgets)
+
+    # Check if Qt5 is available
+    find_package(Qt5 QUIET COMPONENTS Widgets)
+
+    # If both versions are available, let the user choose
+    if(Qt6_FOUND AND Qt5_FOUND)
+        message(STATUS "Qt5 and Qt6 are installed. Using Qt${QT_VERSION} (change with -DUSE_QT6=ON/OFF).")
+        # Option to choose between Qt5 and Qt6
+        option(USE_QT6 "Use Qt6 instead of Qt5" OFF)
+    elseif(Qt6_FOUND)
+        set(USE_QT6 ON CACHE BOOL "Use Qt6 instead of Qt5" FORCE)
+        message(STATUS "Only Qt6 is installed. Using Qt6.")
+    elseif(Qt5_FOUND)
+        set(USE_QT6 OFF CACHE BOOL "Use Qt6 instead of Qt5" FORCE)
+        message(STATUS "Only Qt5 is installed. Using Qt5.")
+    else()
+        message(FATAL_ERROR "Neither Qt5 nor Qt6 found.")
+    endif()
+endif()
+
+# =============================================================================
 # ETKSQLite3 environment variables
 # =============================================================================
 set(CMAKE_CXX_STANDARD 11)
@@ -281,8 +307,25 @@ function(create_framework_library framework)
         elseif(framework STREQUAL "qtETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${QT_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES} ${QT_HEADER_FILES})
-            find_package(Qt5 REQUIRED COMPONENTS Widgets)
-            set(FRAMEWORK_LIBS Qt5::Widgets)
+            # Detect the chosen version
+            if(USE_QT6)
+                find_package(Qt6 REQUIRED COMPONENTS Widgets)
+                set(QT_VERSION 6 CACHE INTERNAL "Qt version in use")
+                message(STATUS "Using Qt6")
+                set(QT_LIBRARIES Qt6::Widgets)
+                set(QT_INCLUDE_DIRS ${Qt6Widgets_INCLUDE_DIRS} PARENT_SCOPE)
+                # Set compile definitions
+                add_compile_definitions(USE_QT6)
+            else()
+                find_package(Qt5 REQUIRED COMPONENTS Widgets)
+                set(QT_VERSION 5 CACHE INTERNAL "Qt version in use")
+                message(STATUS "Using Qt5")
+                set(QT_LIBRARIES Qt5::Widgets)
+                set(QT_INCLUDE_DIRS ${Qt5Widgets_INCLUDE_DIRS} PARENT_SCOPE)
+                # Set compile definitions
+                add_compile_definitions(USE_QT5)
+            endif()
+            set(FRAMEWORK_LIBS ${QT_LIBRARIES})
             set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_QT)
         elseif(framework STREQUAL "boostETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES})
@@ -340,7 +383,9 @@ function(create_framework_library framework)
         if(framework STREQUAL "wxETKSQLite3")
             target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
         elseif(framework STREQUAL "qtETKSQLite3")
+        # Include directories
             target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+            #target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${QT_INCLUDE_DIRS} ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)            
         elseif(framework STREQUAL "boostETKSQLite3")
             target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
         elseif(framework STREQUAL "stlETKSQLite3")

@@ -1,12 +1,17 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Request.h
-// Library:     ETKSQLite3
-// Purpose:     Code for request managment (base class)
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Request.h
+ * @brief Header file for request managment (base class).
+ *
+ * Code for database request base class. It's the base class of
+ * Inserter / Updater / Deleter / Selector classes.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_REQUEST_H
 #define INCLUDE_ETK_SQLITE3_REQUEST_H
@@ -30,19 +35,19 @@ private:
     /**
      * Reference on database.
      */
-    ETKSQLite3Database &              m_rDatabase;
+    ETKSQLite3Database &                m_rDatabase;
 
     /**
      * Record the last row id of the last request.
      */
-    wxLongLong                          m_llLastRowID;
+    etkInt64                            m_llLastRowID;
 
     /**
      * Criterion instance.
      *
      * This criterion is used to construct the request.
      */
-    ETKSQLite3Criterion               m_criterionRequest;
+    ETKSQLite3Criterion                 m_criterionRequest;
 
     /**
      * Statement that will make the request.
@@ -118,14 +123,14 @@ public:
      *
      * @return A const reference to internal criterion request.
      */
-    const ETKSQLite3Criterion &       GetCriterionRequest() const;
+    const ETKSQLite3Criterion &         GetCriterionRequest() const;
 
     /**
      * Get the criterion used to construct the request.
      *
      * @return A reference to internal criterion request.
      */
-    ETKSQLite3Criterion &             GetCriterionRequest();
+    ETKSQLite3Criterion &               GetCriterionRequest();
 
     /**
      * Set the Where expression.
@@ -143,7 +148,7 @@ public:
      *
      * @return The Where expression.
      */
-    const ETKSQLite3Expression &      GetWhere();
+    const ETKSQLite3Expression &        GetWhere();
 
     /**
      * Set the Join expression.
@@ -185,7 +190,7 @@ protected:
      *
      * @return Last row identifier, 0 if error or not already initialized.
      */
-    wxLongLong                          GetLastRowId() const;
+    etkInt64                            GetLastRowId() const;
 
     /**
      * Get the database reference.
@@ -194,7 +199,7 @@ protected:
      *
      * @return The database reference.
      */
-    ETKSQLite3Database &              GetDatabase() const;
+    ETKSQLite3Database &                GetDatabase() const;
 
     /**
      * Initialize the request statement.
@@ -206,7 +211,7 @@ protected:
      * @return true if the statement correctly created, false else.
      * @see PrepareStatement
      */
-    bool                                InitStatement(wxString _strSQLRequest);
+    bool                                InitStatement(etkString _strSQLRequest);
 
     /**
      * Prepare the statement.

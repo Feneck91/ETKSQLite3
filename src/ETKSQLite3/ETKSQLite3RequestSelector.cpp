@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3RequestSelector.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code to make select into database
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/09
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3RequestSelector.cpp
+ * @brief Implentation file for selector request managment.
+ *
+ * Code for database request selector class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/09
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3RequestSelector.h"
 #include "ETKSQLite3Database.h"
@@ -24,7 +28,7 @@ ETKSQLite3RequestSelector::ETKSQLite3RequestSelector(ETKSQLite3Database & _rData
 }
 
 ETKSQLite3RequestSelector::ETKSQLite3RequestSelector(const ETKSQLite3Criterion &_rCriterion)
-    : ETKSQLite3Request(* (ETKSQLite3Database *) NULL) // <-- This member is not used in this case else it crash
+    : ETKSQLite3Request(* (ETKSQLite3Database *) nullptr) // <-- This member is not used in this case else it crash
 {
     GetCriterionRequest() = _rCriterion;
 }

@@ -1,11 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3ResultSetBase.h
-// Library:     ETKSQLite3
-// Purpose:     Code for database resultset with automatic binding (base class)
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/09/30
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3ResultSetBase.h
+ * @brief Header file for updater request managment.
+ *
+ * Code for database resultset with automatic binding (base class).
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/09/30
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_RESULTSET_BASE_H
 #define INCLUDE_ETK_SQLITE3_RESULTSET_BASE_H
@@ -28,7 +33,7 @@ protected:
     /**
      * Used to convert array indexes with Columns names.
      */
-    wxArrayInt                          m_arrayBindIndex;
+    etkArrayInt                         m_arrayBindIndex;
 
     /**
      * Indicate if the bind is already done or not.

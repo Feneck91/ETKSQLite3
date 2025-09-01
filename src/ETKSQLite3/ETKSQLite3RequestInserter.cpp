@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3RequestInserter.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for inserter sql managment
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3RequestInserter.cpp
+ * @brief Implementation file for inserter request managment.
+ *
+ * Code for database request inserter class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3RequestInserter.h"
 #include "ETKSQLite3Database.h"
@@ -14,6 +18,7 @@
 #include "ETKSQLite3Record.h"
 
 #include <algorithm>
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////

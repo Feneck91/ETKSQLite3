@@ -1,11 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Record.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for database table/request managment
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/05
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Record.cpp
+ * @brief Implementation file for record management (table / request).
+ *
+ * Code for database table/request managment.
+ *
+ * @author Stéphane Château du header
+ * @date Created: 2011/08/05
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3Record.h"
 #include "ETKSQLite3Database.h"
@@ -101,7 +106,7 @@ const ETKSQLite3Column * ETKSQLite3Record::FindColumnByName(etkString _strColumn
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 const ETKSQLite3Column * ETKSQLite3Record::FindColumnByFullName(etkString _strColumnFullName) const
@@ -114,7 +119,7 @@ const ETKSQLite3Column * ETKSQLite3Record::FindColumnByFullName(etkString _strCo
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 const ETKSQLite3Column & ETKSQLite3Record::operator[](const ETKSQLite3Column &_rColumn) const

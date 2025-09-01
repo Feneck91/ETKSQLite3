@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3RequestUpdater.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code to make update into database
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3RequestUpdater.cpp
+ * @brief Implementation file for updater request managment.
+ *
+ * Code for database request update class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3RequestUpdater.h"
 #include "ETKSQLite3Database.h"
@@ -32,14 +36,14 @@ ETKSQLite3RequestUpdater::~ETKSQLite3RequestUpdater()
 {
 }
 
-wxLongLong ETKSQLite3RequestUpdater::GetLastRowId() const
+etkInt64 ETKSQLite3RequestUpdater::GetLastRowId() const
 {
     return ETKSQLite3Request::GetLastRowId();
 }
 
 void ETKSQLite3RequestUpdater::operator<<(const ETKSQLite3Record &_rRecord)
 {
-    for (size_t stIndex = 0;stIndex < _rRecord.GetColumnCount();++stIndex)
+    for (size_t stIndex = 0; stIndex < _rRecord.GetColumnCount(); ++stIndex)
     {
         operator<<(_rRecord.GetColumn(stIndex));
     }

@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
 /**
  * @file ETKSQLite3Database.h
- * @brief Header file for SQL request creation.
+ * @brief Header file for database managment.
  *
  * This file contains the headers for the ETKSQLite3Database class
  * which is used to manage SQLite3 database into ETKSQLite3 library.
  *
- * @author Stéphane Château du header
+ * @author Stéphane Château
  * @date Created: 2011/07/31
  * @date Modified: 2025/08/29
  * @copyright Copyright © Stéphane Château
@@ -310,7 +310,7 @@ public:
         /**
          * Row identifier.
          */
-        wxLongLong                          m_llRowID;
+        etkInt64                            m_llRowID;
 
         /**
          * Get the update type as string (used to log for example).
@@ -635,7 +635,7 @@ private:
      * @throw wxSQLite3Exception If the function failed and don't use transaction, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
-    int                                 ExecuteSQL(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction);
+    int                                 ExecuteSQL(etkString _strSQL, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction);
 
 protected:
     /**
@@ -684,7 +684,7 @@ protected:
      * @param _strTableName Name of the table.
      * @param _llRowID The rowid of the affected row.
      */
-    void                                UpdateCallback(wxUpdateType _UpdateType, const wxString &_strDatabaseName, const wxString &_strTableName, wxLongLong _llRowID);
+    void                                UpdateCallback(wxUpdateType _UpdateType, const etkString &_strDatabaseName, const etkString &_strTableName, etkInt64 _llRowID);
 
     /// Execute the commit hook callback function
     /**

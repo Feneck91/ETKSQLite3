@@ -16,7 +16,7 @@
 // WXSQLITE3_HAVE_CODEC is used to be able to crypt generated database.
 // WXMAKINGDLL_WXSQLITE3 to get table name in ResultSet
 
-//#include "ETKSQLite3Types.h"
+#include "ETKSQLite3Types.h" // Mandatory for __WXDEBUG__
 
 #ifndef __WXDEBUG__
     // Database is not crypted in debug mode

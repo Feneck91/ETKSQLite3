@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
 /**
- * @file ETKSQLite3Database.h
- * @brief Header file for SQL request creation.
+ * @file ETKSQLite3Database.cpp
+ * @brief Implementation file for database managment.
  *
  * This file contains the implementation for the ETKSQLite3Database class
  * which is used to manage SQLite3 database into ETKSQLite3 library.
  *
- * @author Stéphane Château du cpp
+ * @author Stéphane Château
  * @date Created: 2011/07/31
  * @date Modified: 2025/08/29
  * @copyright Copyright © Stéphane Château
@@ -17,8 +17,8 @@
 #include <wx/confbase.h>
 #include <wx/file.h>
 
-const wxString  ETKSQLite3Database::STR_DATABASE_SECTION_NAME       = _T("/DATABASE");
-const wxString  ETKSQLite3Database::STR_DATABASE_KEY_NAME_PATH      = _T("Path");
+const etkString  ETKSQLite3Database::STR_DATABASE_SECTION_NAME       = _T("/DATABASE");
+const etkString  ETKSQLite3Database::STR_DATABASE_KEY_NAME_PATH      = _T("Path");
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,9 +27,9 @@ const wxString  ETKSQLite3Database::STR_DATABASE_KEY_NAME_PATH      = _T("Path")
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-wxString ETKSQLite3Database::SDatabaseEvent::GetUpdateTypeString() const
+etkString ETKSQLite3Database::SDatabaseEvent::GetUpdateTypeString() const
 {
-    wxString strUpdateType;
+    etkString strUpdateType;
 
     switch(m_UpdateType)
     {
@@ -72,7 +72,7 @@ wxSQLite3Database * ETKSQLite3Database::GetDatabase() const
     return m_pDatabase;
 }
 
-wxString ETKSQLite3Database::GetLastErrorMessage() const
+etkString ETKSQLite3Database::GetLastErrorMessage() const
 {
     return m_strLastErrorMsg;
 }
@@ -83,7 +83,7 @@ wxFileName ETKSQLite3Database::GetDatabaseFilePath() const
     return wxFileName(wxConfigBase::Get()->Read(STR_DATABASE_KEY_NAME_PATH, _T("")));
 }
 
-bool ETKSQLite3Database::Create(wxString _strDatabaseFilePath)
+bool ETKSQLite3Database::Create(etkString _strDatabaseFilePath)
 {
     bool bRet = false;
     Close();
@@ -135,12 +135,12 @@ bool ETKSQLite3Database::Create(wxString _strDatabaseFilePath)
     return bRet;
 }
 
-bool ETKSQLite3Database::Open(wxString _strDatabaseFilePath)
+bool ETKSQLite3Database::Open(etkString _strDatabaseFilePath)
 {
     bool bRet = false;
     Close();
 
-    wxString strDatabaseFilePath(_strDatabaseFilePath);
+    etkString strDatabaseFilePath(_strDatabaseFilePath);
 
     // Try open the database : look into ini where the database is recorded
     if (strDatabaseFilePath.IsEmpty())
@@ -182,7 +182,7 @@ bool ETKSQLite3Database::Open(wxString _strDatabaseFilePath)
         }
         else
         {   // Path exist into the ini file but the file doesn't exists.
-            wxString strError;
+            etkString strError;
 
             strError.Printf(_("Error, database \"%s\" doesn't exists!\n\nCannot open database!"), strDatabaseFilePath.wx_str());
             wxMessageDialog msgDlg(nullptr, strError, _("Database file is missing"), wxOK | wxICON_ERROR);
@@ -251,20 +251,20 @@ ETKSQLite3RequestSelector ETKSQLite3Database::GetSelector()
     return ETKSQLite3RequestSelector(*this);
 }
 
-wxString ETKSQLite3Database::GetSQLDatabaseSchema() const
+etkString ETKSQLite3Database::GetSQLDatabaseSchema() const
 {
     wxFAIL_MSG(wxT("Empty database SQL creation command"));
     return wxEmptyString;
 }
 
-void ETKSQLite3Database::SetSQLDatabaseSchema(wxString _strSQLSchema)
+void ETKSQLite3Database::SetSQLDatabaseSchema(etkString _strSQLSchema)
 {
     m_strSQLSchema = _strSQLSchema;
 }
 
 void ETKSQLite3Database::LogDatabaseException(const wxSQLite3Exception &_rException, bool _bLogError, bool _bDisplayMsgBox) const
 {
-    wxString strError;
+    etkString strError;
 
     m_strLastErrorMsg = _rException.GetMessage();
     strError.Printf(_("Database error: %s"), _rException.GetMessage().c_str());
@@ -281,12 +281,12 @@ void ETKSQLite3Database::LogDatabaseException(const wxSQLite3Exception &_rExcept
     }
 }
 
-wxString ETKSQLite3Database::GetEncryptKey() const
+etkString ETKSQLite3Database::GetEncryptKey() const
 {
     return wxEmptyString;
 }
 
-wxSQLite3Statement ETKSQLite3Database::PrepareEmptyStatement(wxString _strStatementSQL)
+wxSQLite3Statement ETKSQLite3Database::PrepareEmptyStatement(etkString _strStatementSQL)
 {
     if (IsOpened())
     {
@@ -334,12 +334,12 @@ int ETKSQLite3Database::ExecuteStatementWithoutTransaction(wxSQLite3Statement &_
     return ExecuteStatement(_rstmRequest, _bLogError, _bDisplayMsgBox, false);
 }
 
-int ETKSQLite3Database::ExecuteSQLWithTransaction(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox)
+int ETKSQLite3Database::ExecuteSQLWithTransaction(etkString _strSQL, bool _bLogError, bool _bDisplayMsgBox)
 {
     return ExecuteSQL(_strSQL, _bLogError, _bDisplayMsgBox, true);
 }
 
-int ETKSQLite3Database::ExecuteSQLWithoutTransaction(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox)
+int ETKSQLite3Database::ExecuteSQLWithoutTransaction(etkString _strSQL, bool _bLogError, bool _bDisplayMsgBox)
 {
     return ExecuteSQL(_strSQL, _bLogError, _bDisplayMsgBox, false);
 }
@@ -367,14 +367,14 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest, bool 
             }
             else
             {
-                wxString strError(wxString::Format(wxT("Invalid request (%s)!"), _rstmRequest.GetSQL().wx_str()));
+                etkString strError(etkString::Format(wxT("Invalid request (%s)!"), _rstmRequest.GetSQL().wx_str()));
                 wxLogError(strError);
                 wxFAIL_MSG(strError);
             }
         }
         else
         {
-            wxString strError(wxT("Cannot execute request on closed database!"));
+            etkString strError(wxT("Cannot execute request on closed database!"));
             wxLogError(strError);
             wxFAIL_MSG(strError);
         }
@@ -391,7 +391,7 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest, bool 
     return iNbRowAffected;
 }
 
-int ETKSQLite3Database::ExecuteSQL(wxString _strSQL, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction)
+int ETKSQLite3Database::ExecuteSQL(etkString _strSQL, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction)
 {
     int iNbRowAffected = 0;
 
@@ -412,7 +412,7 @@ int ETKSQLite3Database::ExecuteSQL(wxString _strSQL, bool _bLogError, bool _bDis
         }
         else
         {
-            wxString strError(wxT("Cannot execute request on closed database!"));
+            etkString strError(wxT("Cannot execute request on closed database!"));
             wxLogError(strError);
             wxFAIL_MSG(strError);
         }
@@ -471,7 +471,7 @@ void ETKSQLite3Database::UnInitCallbacks()
     }
 }
 
-void ETKSQLite3Database::UpdateCallback(wxUpdateType _UpdateType, const wxString &_strDatabaseName, const wxString &_strTableName, wxLongLong _llRowID)
+void ETKSQLite3Database::UpdateCallback(wxUpdateType _UpdateType, const etkString &_strDatabaseName, const etkString &_strTableName, etkInt64 _llRowID)
 {
     tdPtrDatabaseEvent pEvent = AllocNewDatabaseEvent();
 

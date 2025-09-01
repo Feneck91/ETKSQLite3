@@ -1,12 +1,17 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Request.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for request managment (base class)
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Request.cpp
+ * @brief Implementation file for request managment (base class).
+ *
+ * Code for database request base class. It's the base class of
+ * Inserter / Updater / Deleter / Selector classes.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3Request.h"
 #include "ETKSQLite3Database.h"
@@ -19,7 +24,7 @@ ETKSQLite3Request::ETKSQLite3Request(ETKSQLite3Database & _rDatabase)
     : m_rDatabase(_rDatabase)
     , m_llLastRowID(0)
     , m_criterionRequest(ETKSQLite3Criterion::eRequestTypeUndefined)
-    , m_pStatement(NULL)
+    , m_pStatement(nullptr)
 {
 }
 
@@ -27,7 +32,7 @@ ETKSQLite3Request::ETKSQLite3Request(const ETKSQLite3Request & _rOther)
     : m_rDatabase(_rOther.m_rDatabase)
     , m_llLastRowID(_rOther.m_llLastRowID)
     , m_criterionRequest(_rOther.m_criterionRequest)
-    , m_pStatement(NULL)
+    , m_pStatement(nullptr)
 {
 }
 
@@ -36,7 +41,7 @@ ETKSQLite3Request::~ETKSQLite3Request()
     DeleteStatement();
 }
 
-wxLongLong ETKSQLite3Request::GetLastRowId() const
+etkInt64 ETKSQLite3Request::GetLastRowId() const
 {
     return m_llLastRowID;
 }
@@ -80,7 +85,7 @@ void ETKSQLite3Request::Clear()
     DeleteStatement();
 }
 
-bool ETKSQLite3Request::InitStatement(wxString _strSQLRequest)
+bool ETKSQLite3Request::InitStatement(etkString _strSQLRequest)
 {
     bool bRet = false;
 
@@ -94,7 +99,7 @@ bool ETKSQLite3Request::InitStatement(wxString _strSQLRequest)
     catch(wxSQLite3Exception &_ex)
     {   // Error while open the database
         GetDatabase().LogDatabaseException(_ex,true,true); // log and display error to the user
-        wxFAIL_MSG(wxString::Format(wxT("ETKSQLite3Request::InitStatement function raise exception (%s)!"),
+        wxFAIL_MSG(etkString::Format(wxT("ETKSQLite3Request::InitStatement function raise exception (%s)!"),
                                     _ex.GetMessage().wx_str()));
         DeleteStatement();
     }
@@ -108,7 +113,7 @@ bool ETKSQLite3Request::PrepareStatement()
     bool bIsStatementInitialized = IsStatementInitialized();
     if (!bIsStatementInitialized)
     {   // Get the SQL request
-        wxString strSQLRequest  = GetCriterionRequest().GetSQL();
+        etkString strSQLRequest  = GetCriterionRequest().GetSQL();
         wxLogDebug(wxT("[SQL] %s"),strSQLRequest.wx_str());
 
         // Init wxSQLite3Statement class
@@ -138,7 +143,7 @@ bool ETKSQLite3Request::PrepareStatement()
 
 bool ETKSQLite3Request::IsStatementInitialized() const
 {
-    return m_pStatement!=NULL && m_pStatement->IsOk();
+    return m_pStatement!=nullptr && m_pStatement->IsOk();
 }
 
 void ETKSQLite3Request::DeleteStatement()

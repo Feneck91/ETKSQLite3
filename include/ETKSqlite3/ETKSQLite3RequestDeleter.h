@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3RequestDeleter.h
-// Library:     ETKSQLite3
-// Purpose:     Code to make delete into database
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/09
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3RequestDeleter.h
+ * @brief Header file for deleter request managment.
+ *
+ * Code for database request deleter class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/09
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_REQUEST_DELETER_H
 #define INCLUDE_ETK_SQLITE3_REQUEST_DELETER_H
@@ -76,7 +80,7 @@ public:
      *
      * @param _strTableName Table name where delete row(s).
      */
-    void                                operator<<(wxString _strTableName);
+    void                                operator<<(etkString _strTableName);
     //@}
 
 protected:

@@ -1,11 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3Record.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for database table/request managment
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/05
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3Record.h
+ * @brief Header file for record management (table / request).
+ *
+ * Code for database table/request managment.
+ *
+ * @author Stéphane Château du header
+ * @date Created: 2011/08/05
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_RECORD_H
 #define INCLUDE_ETK_SQLITE3_RECORD_H
@@ -48,7 +53,7 @@ private:
      *
      * If this record used more than one table, you should not use it.
      */
-    wxString                            m_strTableName;
+    etkString                           m_strTableName;
 public:
     /**
      * Typedef of the data structure that contains no datas fields.
@@ -75,7 +80,7 @@ public:
      *
      * @param _strTableName Table name.
      */
-    ETKSQLite3Record(wxString _strTableName);
+    ETKSQLite3Record(etkString _strTableName);
 
     /**
      * Destructor.
@@ -89,14 +94,14 @@ public:
      * @param _strTableName Table name
      * @return A Column that can use as expression.
      */
-    static ETKSQLite3Column           GetAllColumn(wxString _strTableName);
+    static ETKSQLite3Column             GetAllColumn(etkString _strTableName);
 
     /**
      * Get the record name.
      *
      * @return The table name.
      */
-    wxString                            GetTableName() const;
+    etkString                           GetTableName() const;
 
     /**
      * Add column into the list of columns of this record.
@@ -113,7 +118,7 @@ public:
      * @param _rRecord Record to add to this.
      * @return A reference to this.
      */
-    const ETKSQLite3Record &          MergeRecord(const ETKSQLite3Record &_rRecord);
+    const ETKSQLite3Record &            MergeRecord(const ETKSQLite3Record &_rRecord);
 
     /**
      * Set the table name.
@@ -123,7 +128,7 @@ public:
      * @param _strTableName New table name.
      * @return A reference to this.
      */
-    const ETKSQLite3Record &          ChangeTableName(wxString _strTableName);
+    const ETKSQLite3Record &            ChangeTableName(etkString _strTableName);
 
     /**
      * Generate expression with an 'AS' SQL on each column.
@@ -136,7 +141,7 @@ public:
      * @param _strTableName New table name.
      * @return A generated expression.
      */
-    ETKSQLite3Expression              As(wxString _strTableName) const;
+    ETKSQLite3Expression                As(etkString _strTableName) const;
 
     /**
      * Modify the table to be used as ResultSet record <b>ONLY</b>!
@@ -152,7 +157,7 @@ public:
      * @see As,ETKSQLite3Column::ChangeAs
      * @param _strTableName The AS table name.
      */
-    void                                ChangeAs(wxString _strTableName);
+    void                                ChangeAs(etkString _strTableName);
 
     /**
      * Get the number of column.
@@ -173,17 +178,17 @@ public:
      * Search a column from its name.
      *
      * @param _strColumnName Column name (without table name) to find.
-     * @return A const pointer of column, NULL if nnot found.
+     * @return A const pointer of column, nullptr if nnot found.
      */
-    const ETKSQLite3Column *            FindColumnByName(wxString _strColumnName) const;
+    const ETKSQLite3Column *            FindColumnByName(etkString _strColumnName) const;
 
     /**
      * Search a column from its full name (table name + column name).
      *
      * @param _strColumnFullName Column name (with table name) to find.
-     * @return A const pointer of column, NULL if nnot found.
+     * @return A const pointer of column, nullptr if nnot found.
      */
-    const ETKSQLite3Column *            FindColumnByFullName(wxString _strColumnFullName) const;
+    const ETKSQLite3Column *            FindColumnByFullName(etkString _strColumnFullName) const;
 
     /**
      * Search a dynamic columns (with value binding) of a columns given into parameter.

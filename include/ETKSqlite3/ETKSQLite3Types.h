@@ -78,6 +78,7 @@
 // Define all wx classes alias to etk classes.
 using etkString             = wxString;
 using etkVariant            = wxVariant;
+using etkArrayInt           = wxArrayInt;
 using etkInt64              = wxLongLong;
 using etkDateTime           = wxDateTime;
 

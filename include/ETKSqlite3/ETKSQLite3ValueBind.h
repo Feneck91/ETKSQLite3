@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3ValueBind.h
-// Library:     ETKSQLite3
-// Purpose:     Code for binding datas
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3ValueBind.h
+ * @brief Header file for manage binding datas.
+ *
+ * Code for binding datas.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_VALUE_BIND_H
 #define INCLUDE_ETK_SQLITE3_VALUE_BIND_H
@@ -120,7 +124,7 @@ protected:
      * @param _rValueBind Bind value to copy into this.
      * @return This.
      */
-    virtual const ETKSQLite3ValueBindBase &Copy(const ETKSQLite3ValueBindBase &_rValueBind) = 0;
+    virtual const ETKSQLite3ValueBindBase & Copy(const ETKSQLite3ValueBindBase &_rValueBind) = 0;
 
     /**
      * Create instance of the derived class.
@@ -131,7 +135,6 @@ protected:
      */
     virtual ETKSQLite3ValueBindBase * CreateInstance() const = 0;
 };
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +161,7 @@ private:
     enum eDataType
     {
         eDataTypeNull,      // Not defined
-        eDataTypeLongLong,
+        eDataTypeInt64,
         eDataTypeLong,
         eDataTypeULong,
         eDataTypeShortInt,
@@ -166,8 +169,8 @@ private:
         eDataTypeChar,
         eDataTypeUChar,
         eDataTypeDouble,
-        eDataTypewxString,
-        eDataTypewxDateTime,
+        eDataTypeString,
+        eDataTypeDateTime,
         eDataTypeBool
     }                                   m_eDataType;
 
@@ -176,7 +179,7 @@ private:
      */
     union eDataPtr
     {
-        wxLongLong *            m_pLongLongValue;
+        etkInt64 *              m_petkInt64Value;
         long *                  m_pLongValue;
         unsigned long *         m_pULongValue;
         short int *             m_pShortIntValue;
@@ -184,8 +187,8 @@ private:
         char *                  m_pCharValue;
         unsigned char *         m_pUCharValue;
         double *                m_pDoubleValue;
-        wxString *              m_pwxStringValue;
-        wxDateTime *            m_pwxDateTimeValue;
+        etkString *             m_petkStringValue;
+        etkDateTime *           m_petkDateTimeValue;
         bool *                  m_pBool;
     }                                   m_eDataPtr;
 public:
@@ -201,9 +204,9 @@ public:
     /**
      * Constructor.
      *
-     * @param _pLongLongValue Value's pointer of type long 64 bits to bind.
+     * @param _petkInt64Value Value's pointer of type long 64 bits to bind.
      */
-    ETKSQLite3ValueBind(wxLongLong *_pLongLongValue);
+    ETKSQLite3ValueBind(etkInt64 *_petkInt64Value);
 
     /**
      * Constructor.
@@ -257,16 +260,16 @@ public:
     /**
      * Constructor.
      *
-     * @param _pwxStringValue Value's pointer of type wxString to bind.
+     * @param _petkStringValue Value's pointer of type etkString to bind.
      */
-    ETKSQLite3ValueBind(wxString *_pwxStringValue);
+    ETKSQLite3ValueBind(etkString *_petkStringValue);
 
     /**
      * Constructor.
      *
-     * @param _pwxDateTimeValue Value's pointer of type wxDateTime to bind.
+     * @param _petkDateTimeValue Value's pointer of type etkDateTime to bind.
      */
-    ETKSQLite3ValueBind(wxDateTime *_pwxDateTimeValue);
+    ETKSQLite3ValueBind(etkDateTime *_petkDateTimeValue);
 
     /**
      * Constructor.
@@ -323,7 +326,7 @@ protected:
      * @param _rValueBind Bind value to copy into this.
      * @return This.
      */
-    virtual const ETKSQLite3ValueBindBase &Copy(const ETKSQLite3ValueBindBase &_rValueBind);
+    virtual const ETKSQLite3ValueBindBase & Copy(const ETKSQLite3ValueBindBase &_rValueBind);
 
     /**
      * Create instance of the derived class.
@@ -430,7 +433,7 @@ protected:
 
 template<class TYPE> ETKSQLite3ValueBindOther<TYPE>::ETKSQLite3ValueBindOther()
 {
-    m_pDataPtr = NULL;
+    m_pDataPtr = nullptr;
 }
 
 template<class TYPE> ETKSQLite3ValueBindOther<TYPE>::ETKSQLite3ValueBindOther(TYPE *_pDataPtr)
@@ -451,13 +454,13 @@ template<class TYPE> const ETKSQLite3ValueBindOther<TYPE> &ETKSQLite3ValueBindOt
 template<class TYPE> const ETKSQLite3ValueBindBase &ETKSQLite3ValueBindOther<TYPE>::Copy(const ETKSQLite3ValueBindBase &_rValueBind)
 {
     const ETKSQLite3ValueBindOther<TYPE> *pValueToBind = dynamic_cast<const ETKSQLite3ValueBindOther<TYPE> *>(&_rValueBind);
-    if (pValueToBind  != NULL)
+    if (pValueToBind  != nullptr)
     {   // Correct type, can assign
         m_pDataPtr = pValueToBind->m_pDataPtr;
     }
     else
     {   // Not a class derived from ETKSQLite3ValueBind, reset types
-        m_pDataPtr = NULL;
+        m_pDataPtr = nullptr;
         wxFAIL_MSG(wxT("ETKSQLite3ValueBindOther::Copy: Bad value type to copy"));
     }
 

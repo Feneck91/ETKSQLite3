@@ -1,15 +1,19 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3RequestSelector.h
-// Library:     ETKSQLite3
-// Purpose:     Code to make select into database
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/09
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3RequestSelector.h
+ * @brief Header file for selector request managment.
+ *
+ * Code for database request selector class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/09
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
-#ifndef INCLUDE_WX_ETK_SQLITE3_REQUEST_SELECTOR_H
-#define INCLUDE_WX_ETK_SQLITE3_REQUEST_SELECTOR_H
+#ifndef INCLUDE_ETK_SQLITE3_REQUEST_SELECTOR_H
+#define INCLUDE_ETK_SQLITE3_REQUEST_SELECTOR_H
 
 #include "ETKSQLite3Types.h"
 #include "ETKSQLite3Request.h"
@@ -179,4 +183,4 @@ private:
     friend class ETKSQLite3Expression;
 };
 
-#endif // INCLUDE_WX_ETK_SQLITE3_REQUEST_SELECTOR_H
+#endif // INCLUDE_ETK_SQLITE3_REQUEST_SELECTOR_H

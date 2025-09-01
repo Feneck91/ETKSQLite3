@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3RequestUpdater.h
-// Library:     ETKSQLite3
-// Purpose:     Code to make update into database
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/05
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3RequestUpdater.h
+ * @brief Header file for updater request managment.
+ *
+ * Code for database request update class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/05
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_REQUEST_UPDATER_H
 #define INCLUDE_ETK_SQLITE3_REQUEST_UPDATER_H
@@ -62,7 +66,7 @@ public:
      *
      * @return Last row identifier, 0 if error or not already initialized.
      */
-    wxLongLong                          GetLastRowId() const;
+    etkInt64                            GetLastRowId() const;
 
     /** @name Operators.
      *
@@ -86,7 +90,7 @@ public:
      * @param _rColumn Column to add, contains value and column description.
      * @return A reference to this used to cascade \<\< operators.
      */
-    ETKSQLite3RequestUpdater &        operator<<(const ETKSQLite3Column &_rColumn);
+    ETKSQLite3RequestUpdater &          operator<<(const ETKSQLite3Column &_rColumn);
 
     /**
      * Add an expression into the select.
@@ -97,7 +101,7 @@ public:
      * @param _rExpression Expression to add.
      * @return A reference to this used to cascade \<\< operators.
      */
-    ETKSQLite3RequestUpdater &        operator<<(const ETKSQLite3Expression &_rExpression);
+    ETKSQLite3RequestUpdater &          operator<<(const ETKSQLite3Expression &_rExpression);
     //@}
 
 protected:

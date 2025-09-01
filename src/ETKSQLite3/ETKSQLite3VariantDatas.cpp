@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3VariantDatas.h
-// Library:     ETKSQLite3
-// Purpose:     Code for variants used into ETKSQLite3 library
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/05
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3VariantDatas.cpp
+ * @brief Implementation file for variants datas.
+ *
+ * Code for variants used into ETKSQLite3 library.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/05
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3VariantDatas.h"
 
@@ -18,7 +22,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const wxString ETKSQLite3VariantDataBlob::STR_VARIANT_BLOB_TYPE(_T("blob"));
+const etkString ETKSQLite3VariantDataBlob::STR_VARIANT_BLOB_TYPE(_T("blob"));
 
 ETKSQLite3VariantDataBlob::ETKSQLite3VariantDataBlob()
 {
@@ -139,13 +143,13 @@ bool ETKSQLite3VariantDataBlob::PutBinaryToVariant(wxVariant &_rData) const
     return IsNull();
 }
 
-wxString ETKSQLite3VariantDataBlob::GetAsString() const
+etkString ETKSQLite3VariantDataBlob::GetAsString() const
 {
-    wxString strBlobAsString;
+    etkString strBlobAsString;
 
     for (size_t iBlc = 0;iBlc < Length();++iBlc)
     {
-        strBlobAsString+=wxString::Format(_T("%02X"),(int) operator[](iBlc));
+        strBlobAsString+=etkString::Format(_T("%02X"),(int) operator[](iBlc));
     }
 
     return strBlobAsString;
@@ -183,7 +187,7 @@ size_t ETKSQLite3VariantDataBlob::GetSizeOfVariantBlob(const wxVariant &_rData)
     return std::numeric_limits<size_t>::max(); // Erreur
 }
 
-wxString ETKSQLite3VariantDataBlob::GetType() const
+etkString ETKSQLite3VariantDataBlob::GetType() const
 {
     return STR_VARIANT_BLOB_TYPE;
 }
@@ -200,7 +204,7 @@ bool ETKSQLite3VariantDataBlob::Eq(wxVariantData& _rData) const
     return bRet;
 }
 
-bool ETKSQLite3VariantDataBlob::Write(wxString & _rstrValue) const
+bool ETKSQLite3VariantDataBlob::Write(etkString & _rstrValue) const
 {
     _rstrValue = GetAsString();
     return true;
@@ -213,7 +217,7 @@ bool ETKSQLite3VariantDataBlob::Write(wxString & _rstrValue) const
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-const wxString ETKSQLite3VariantDataColumnAttributes::STR_VARIANT_COLUM_ATTRIBUTE_TYPE(_T("columnattributes"));
+const etkString ETKSQLite3VariantDataColumnAttributes::STR_VARIANT_COLUM_ATTRIBUTE_TYPE(_T("columnattributes"));
 
 ETKSQLite3VariantDataColumnAttributes::ETKSQLite3VariantDataColumnAttributes()
 {
@@ -256,7 +260,7 @@ const ETKSQLite3VariantDataColumnAttributes & ETKSQLite3VariantDataColumnAttribu
     return *this;
 }
 
-wxString ETKSQLite3VariantDataColumnAttributes::GetType() const
+etkString ETKSQLite3VariantDataColumnAttributes::GetType() const
 {
     return STR_VARIANT_COLUM_ATTRIBUTE_TYPE;
 }
@@ -267,7 +271,7 @@ bool ETKSQLite3VariantDataColumnAttributes::Eq(wxVariantData& _rData) const
     return false; // No test is done, not used !
 }
 
-bool ETKSQLite3VariantDataColumnAttributes::Write(wxString & _rstrValue) const
+bool ETKSQLite3VariantDataColumnAttributes::Write(etkString & _rstrValue) const
 {
     _rstrValue = _T("?");
     return true;
@@ -280,7 +284,7 @@ bool ETKSQLite3VariantDataColumnAttributes::Write(wxString & _rstrValue) const
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-const wxString ETKSQLite3VariantDataValueBind::STR_VARIANT_VARIANT_BIND_TYPE(_T("valuebind"));
+const etkString ETKSQLite3VariantDataValueBind::STR_VARIANT_VARIANT_BIND_TYPE(_T("valuebind"));
 
 ETKSQLite3VariantDataValueBind::ETKSQLite3VariantDataValueBind()
 {
@@ -322,7 +326,7 @@ const ETKSQLite3VariantDataValueBind & ETKSQLite3VariantDataValueBind::operator=
     return *this;
 }
 
-wxString ETKSQLite3VariantDataValueBind::GetType() const
+etkString ETKSQLite3VariantDataValueBind::GetType() const
 {
     return STR_VARIANT_VARIANT_BIND_TYPE;
 }
@@ -333,7 +337,7 @@ bool ETKSQLite3VariantDataValueBind::Eq(wxVariantData& _rData) const
     return false; // No test is done, not used !
 }
 
-bool ETKSQLite3VariantDataValueBind::Write(wxString & _rstrValue) const
+bool ETKSQLite3VariantDataValueBind::Write(etkString & _rstrValue) const
 {
     _rstrValue = _T("?");
     return true;
@@ -346,7 +350,7 @@ bool ETKSQLite3VariantDataValueBind::Write(wxString & _rstrValue) const
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-const wxString ETKSQLite3VariantDataRequestSelector::STR_VARIANT_REQUEST_SELECTOR_TYPE(_T("requestselector"));
+const etkString ETKSQLite3VariantDataRequestSelector::STR_VARIANT_REQUEST_SELECTOR_TYPE(_T("requestselector"));
 
 ETKSQLite3VariantDataRequestSelector::ETKSQLite3VariantDataRequestSelector(const ETKSQLite3RequestSelector &_rRequestSelector)
     : wxVariantData()
@@ -363,7 +367,7 @@ ETKSQLite3VariantDataRequestSelector::~ETKSQLite3VariantDataRequestSelector()
 {
 }
 
-wxString ETKSQLite3VariantDataRequestSelector::GetType() const
+etkString ETKSQLite3VariantDataRequestSelector::GetType() const
 {
     return STR_VARIANT_REQUEST_SELECTOR_TYPE;
 }
@@ -374,7 +378,7 @@ bool ETKSQLite3VariantDataRequestSelector::Eq(wxVariantData& _rData) const
     return false; // No test is done, not used !
 }
 
-bool ETKSQLite3VariantDataRequestSelector::Write(wxString & _rstrValue) const
+bool ETKSQLite3VariantDataRequestSelector::Write(etkString & _rstrValue) const
 {
     _rstrValue = GetCriterionRequest().GetSQL();
     return true;
@@ -387,7 +391,7 @@ bool ETKSQLite3VariantDataRequestSelector::Write(wxString & _rstrValue) const
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-const wxString ETKSQLite3VariantDataLongLong::STR_VARIANT_LONG_LONG_TYPE(_T("wxLongLong"));
+const etkString ETKSQLite3VariantDataLongLong::STR_VARIANT_LONG_LONG_TYPE(_T("wxLongLong"));
 
 ETKSQLite3VariantDataLongLong::ETKSQLite3VariantDataLongLong(const wxLongLong &_rllValue)
     : wxVariantData()
@@ -409,7 +413,7 @@ const wxLongLong & ETKSQLite3VariantDataLongLong::GetValue() const
     return m_llValue;
 }
 
-wxString ETKSQLite3VariantDataLongLong::GetType() const
+etkString ETKSQLite3VariantDataLongLong::GetType() const
 {
     return STR_VARIANT_LONG_LONG_TYPE;
 }
@@ -425,7 +429,7 @@ bool ETKSQLite3VariantDataLongLong::Eq(wxVariantData& _rData) const
     return bRet;
 }
 
-bool ETKSQLite3VariantDataLongLong::Write(wxString & _rstrValue) const
+bool ETKSQLite3VariantDataLongLong::Write(etkString & _rstrValue) const
 {
     _rstrValue = m_llValue.ToString();
     return true;

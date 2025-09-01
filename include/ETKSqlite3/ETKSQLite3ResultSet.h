@@ -1,11 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3ResultSet.h
-// Library:     ETKSQLite3
-// Purpose:     Code for database resultset with automatic binding
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/05
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3ResultSet.h
+ * @brief Header file for updater request managment.
+ *
+ * Code for database resultset with automatic binding.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/05
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_RESULTSET_H
 #define INCLUDE_ETK_SQLITE3_RESULTSET_H
@@ -22,7 +27,7 @@
  *          Revision : <b>1.0</b>
  */
 template <class TYPE> class ETKSQLite3ResultSet : public ETKSQLite3ResultSetBase
-                                                  , public TYPE
+                                                , public TYPE
 {
 public:
     /// @name Constructor / Destructor.

@@ -1,11 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3ResultSetBase.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for database resultset with automatic binding (base class)
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/09/30
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3ResultSetBase.cpp
+ * @brief Implementation file for updater request managment.
+ *
+ * Code for database resultset with automatic binding (base class).
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/09/30
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3ResultSetBase.h"
 

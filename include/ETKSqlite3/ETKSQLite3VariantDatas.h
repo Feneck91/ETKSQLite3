@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3VariantDatas.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for variants used into ETKSQLite3 library
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/05
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3VariantDatas.h
+ * @brief Header file for variants datas.
+ *
+ * Code for variants used into ETKSQLite3 library.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/05
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_VARIANTS_H
 #define INCLUDE_ETK_SQLITE3_VARIANTS_H
@@ -37,7 +41,7 @@ public:
     /**
      * Type name for this variant.
      */
-    static const wxString               STR_VARIANT_BLOB_TYPE;
+    static const etkString              STR_VARIANT_BLOB_TYPE;
 
     /**
      * Internal blob buffer.
@@ -174,7 +178,7 @@ public:
      * @return The blob as hexa form, one byte after one other.
      * @see PutBinaryToVariant,GetBinaryFromVariant
      */
-    wxString                            GetAsString() const;
+    etkString                           GetAsString() const;
 
     /**
      * Initialize a blob from a memory buffer.
@@ -182,7 +186,7 @@ public:
      * @param _pBuff Pointer on buffer.
      * @param _stLenBuff Length buffer.
      */
-    void                                PutBytes(const char *_pBuff,size_t _stLenBuff);
+    void                                PutBytes(const char *_pBuff, size_t _stLenBuff);
 
     /**
      * Get the size of blob variant type.
@@ -202,7 +206,7 @@ public:
      *
      * @return A string name.
      */
-    virtual wxString                    GetType() const;
+    virtual etkString                   GetType() const;
 
     /**
      * Override these to provide common functionality.
@@ -213,14 +217,14 @@ public:
     virtual bool                        Eq(wxVariantData& _rData) const;
 
     /**
-     * Used to convert to wxString.
+     * Used to convert to etkString.
      *
      * Use GetAsString() function.
      *
      * @param _rstrValue String value to set with blob content.
      * @return Always true.
      */
-    virtual bool                        Write(wxString & _rstrValue) const;
+    virtual bool                        Write(etkString & _rstrValue) const;
     //@}
 };
 
@@ -245,7 +249,7 @@ public:
     /**
      * Type name for this variant.
      */
-    static const wxString               STR_VARIANT_COLUM_ATTRIBUTE_TYPE;
+    static const etkString              STR_VARIANT_COLUM_ATTRIBUTE_TYPE;
 
 public:
     /// @name Constructor / Destructor.
@@ -308,7 +312,7 @@ public:
      *
      * @return A string name.
      */
-    virtual wxString                    GetType() const;
+    virtual etkString                   GetType() const;
 
     /**
      * Override these to provide common functionality.
@@ -319,14 +323,14 @@ public:
     virtual bool                        Eq(wxVariantData& _rData) const;
 
     /**
-     * Used to convert to wxString.
+     * Used to convert to etkString.
      *
      * Always return "<b>?</b>" because it is used into SQL request creation with columns data (in assignation only).
      *
      * @param _rstrValue String value to set with this content. Always returns "?".
      * @return Always true.
      */
-    virtual bool                        Write(wxString & _rstrValue) const;
+    virtual bool                        Write(etkString & _rstrValue) const;
     //@}
 };
 
@@ -351,7 +355,7 @@ public:
     /**
      * Type name for this variant.
      */
-    static const wxString               STR_VARIANT_VARIANT_BIND_TYPE;
+    static const etkString              STR_VARIANT_VARIANT_BIND_TYPE;
 public:
     /// @name Constructor / Destructor.
     //@{
@@ -413,7 +417,7 @@ public:
      *
      * @return A string name.
      */
-    virtual wxString                    GetType() const;
+    virtual etkString                   GetType() const;
 
     /**
      * Override these to provide common functionality.
@@ -424,14 +428,14 @@ public:
     virtual bool                        Eq(wxVariantData& _rData) const;
 
     /**
-     * Used to convert to wxString.
+     * Used to convert to etkString.
      *
      * Always return "<b>?</b>" because it is used into SQL request creation with columns data (in assignation only).
      *
      * @param _rstrValue String value to set with this content. Always returns "?".
      * @return Always true.
      */
-    virtual bool                        Write(wxString & _rstrValue) const;
+    virtual bool                        Write(etkString & _rstrValue) const;
     //@}
 };
 
@@ -456,7 +460,7 @@ public:
     /**
      * Type name for this variant.
      */
-    static const wxString               STR_VARIANT_REQUEST_SELECTOR_TYPE;
+    static const etkString              STR_VARIANT_REQUEST_SELECTOR_TYPE;
 
 public:
     /// @name Constructor / Destructor.
@@ -491,7 +495,7 @@ public:
      *
      * @return A string name.
      */
-    virtual wxString                    GetType() const;
+    virtual etkString                   GetType() const;
 
     /**
      * Override these to provide common functionality.
@@ -502,14 +506,14 @@ public:
     virtual bool                        Eq(wxVariantData& _rData) const;
 
     /**
-     * Used to convert to wxString.
+     * Used to convert to etkString.
      *
      * Always return "<b>?</b>" because it is used into SQL request creation with columns data (in assignation only).
      *
      * @param _rstrValue String value to set with this content. Always returns "?".
      * @return Always true.
      */
-    virtual bool                        Write(wxString & _rstrValue) const;
+    virtual bool                        Write(etkString & _rstrValue) const;
     //@}
 };
 
@@ -533,7 +537,7 @@ public:
     /**
      * Type name for this variant.
      */
-    static const wxString               STR_VARIANT_LONG_LONG_TYPE;
+    static const etkString              STR_VARIANT_LONG_LONG_TYPE;
 private:
     /**
      * Long long value.
@@ -580,7 +584,7 @@ public:
      *
      * @return A string name.
      */
-    virtual wxString                    GetType() const;
+    virtual etkString                   GetType() const;
 
     /**
      * Override these to provide common functionality.
@@ -591,14 +595,14 @@ public:
     virtual bool                        Eq(wxVariantData& _rData) const;
 
     /**
-     * Used to convert to wxString.
+     * Used to convert to etkString.
      *
      * Return the long long value as string.
      *
      * @param _rstrValue String value to set with this content.
      * @return Always true.
      */
-    virtual bool                        Write(wxString & _rstrValue) const;
+    virtual bool                        Write(etkString & _rstrValue) const;
     //@}
 };
 

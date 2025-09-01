@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3ValueBind.cpp
-// Library:     ETKSQLite3
-// Purpose:     Code for binding datas
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/04
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3ValueBind.cpp
+ * @brief Implementation file for manage binding datas.
+ *
+ * Code for binding datas.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/04
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3ValueBind.h"
 
@@ -62,13 +66,13 @@ void ETKSQLite3ValueBindBase::SetNull(bool _bIsNull) const
 ETKSQLite3ValueBind::ETKSQLite3ValueBind()
     : m_eDataType(eDataTypeNull)
 {
-    m_eDataPtr.m_pLongValue = NULL;
+    m_eDataPtr.m_pLongValue = nullptr;
 }
 
-ETKSQLite3ValueBind::ETKSQLite3ValueBind(wxLongLong *_pLongLongValue)
-    : m_eDataType(eDataTypeLongLong)
+ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkInt64 *_petkInt64Value)
+    : m_eDataType(eDataTypeInt64)
 {
-    m_eDataPtr.m_pLongLongValue = _pLongLongValue;
+    m_eDataPtr.m_petkInt64Value = _petkInt64Value;
 }
 
 ETKSQLite3ValueBind::ETKSQLite3ValueBind(long *_pLongValue)
@@ -113,16 +117,16 @@ ETKSQLite3ValueBind::ETKSQLite3ValueBind(double *_pDoubleValue)
     m_eDataPtr.m_pDoubleValue = _pDoubleValue;
 }
 
-ETKSQLite3ValueBind::ETKSQLite3ValueBind(wxString *_pwxStringValue)
-    : m_eDataType(eDataTypewxString)
+ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkString *_petkStringValue)
+    : m_eDataType(eDataTypeString)
 {
-    m_eDataPtr.m_pwxStringValue = _pwxStringValue;
+    m_eDataPtr.m_petkStringValue = _petkStringValue;
 }
 
-ETKSQLite3ValueBind::ETKSQLite3ValueBind(wxDateTime *_pwxDateTimeValue)
-    : m_eDataType(eDataTypewxDateTime)
+ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkDateTime *_petkDateTimeValue)
+    : m_eDataType(eDataTypeDateTime)
 {
-    m_eDataPtr.m_pwxDateTimeValue = _pwxDateTimeValue;
+    m_eDataPtr.m_petkDateTimeValue = _petkDateTimeValue;
 }
 
 ETKSQLite3ValueBind::ETKSQLite3ValueBind(bool *_pBoolValue)
@@ -157,39 +161,39 @@ void ETKSQLite3ValueBind::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bA
                 _rstmt.BindNull(_iIndex);
                 break;
             }
-            case eDataTypeLongLong :
+            case eDataTypeInt64 :
             {
-                _rstmt.Bind(_iIndex,*m_eDataPtr.m_pLongLongValue);
+                _rstmt.Bind(_iIndex,*m_eDataPtr.m_petkInt64Value);
                 break;
             }
             case eDataTypeLong :
             {
-                _rstmt.Bind(_iIndex,wxLongLong(*m_eDataPtr.m_pLongValue));
+                _rstmt.Bind(_iIndex,etkInt64(*m_eDataPtr.m_pLongValue));
                 break;
             }
             case eDataTypeULong :
             {
-                _rstmt.Bind(_iIndex,wxLongLong(*m_eDataPtr.m_pULongValue));
+                _rstmt.Bind(_iIndex,etkInt64(*m_eDataPtr.m_pULongValue));
                 break;
             }
             case eDataTypeShortInt :
             {
-                _rstmt.Bind(_iIndex,wxLongLong((long) *m_eDataPtr.m_pShortIntValue));
+                _rstmt.Bind(_iIndex,etkInt64((long) *m_eDataPtr.m_pShortIntValue));
                 break;
             }
             case eDataTypeUShortInt :
             {
-                _rstmt.Bind(_iIndex,wxLongLong((long) *m_eDataPtr.m_pUShortIntValue));
+                _rstmt.Bind(_iIndex,etkInt64((long) *m_eDataPtr.m_pUShortIntValue));
                 break;
             }
             case eDataTypeChar :
             {
-                _rstmt.Bind(_iIndex,wxLongLong((long) *m_eDataPtr.m_pCharValue));
+                _rstmt.Bind(_iIndex,etkInt64((long) *m_eDataPtr.m_pCharValue));
                 break;
             }
             case eDataTypeUChar :
             {
-                _rstmt.Bind(_iIndex,wxLongLong((long) *m_eDataPtr.m_pUCharValue));
+                _rstmt.Bind(_iIndex,etkInt64((long) *m_eDataPtr.m_pUCharValue));
                 break;
             }
             case eDataTypeDouble :
@@ -197,14 +201,14 @@ void ETKSQLite3ValueBind::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bA
                 _rstmt.Bind(_iIndex,*m_eDataPtr.m_pDoubleValue);
                 break;
             }
-            case eDataTypewxString :
+            case eDataTypeString :
             {
-                _rstmt.Bind(_iIndex,*m_eDataPtr.m_pwxStringValue);
+                _rstmt.Bind(_iIndex,*m_eDataPtr.m_petkStringValue);
                 break;
             }
-            case eDataTypewxDateTime :
+            case eDataTypeDateTime :
             {
-                _rstmt.BindDateTime(_iIndex,*m_eDataPtr.m_pwxDateTimeValue);
+                _rstmt.BindDateTime(_iIndex,*m_eDataPtr.m_petkDateTimeValue);
                 break;
             }
             case eDataTypeBool :
@@ -232,9 +236,9 @@ void ETKSQLite3ValueBind::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) 
                 wxFAIL_MSG(wxT("Error, binding on null data type!"));
                 break;
             }
-            case eDataTypeLongLong :
+            case eDataTypeInt64 :
             {
-                *m_eDataPtr.m_pLongLongValue = _rResultSet.GetInt64(_iIndex).GetValue();
+                *m_eDataPtr.m_petkInt64Value = _rResultSet.GetInt64(_iIndex).GetValue();
                 break;
             }
             case eDataTypeLong :
@@ -272,14 +276,14 @@ void ETKSQLite3ValueBind::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) 
                 *m_eDataPtr.m_pDoubleValue = _rResultSet.GetDouble(_iIndex);
                 break;
             }
-            case eDataTypewxString :
+            case eDataTypeString :
             {
-                *m_eDataPtr.m_pwxStringValue = _rResultSet.GetAsString(_iIndex);
+                *m_eDataPtr.m_petkStringValue = _rResultSet.GetAsString(_iIndex);
                 break;
             }
-            case eDataTypewxDateTime :
+            case eDataTypeDateTime :
             {
-                *m_eDataPtr.m_pwxDateTimeValue = _rResultSet.GetDateTime(_iIndex);
+                *m_eDataPtr.m_petkDateTimeValue = _rResultSet.GetDateTime(_iIndex);
                 break;
             }
             case eDataTypeBool :
@@ -299,11 +303,11 @@ const ETKSQLite3ValueBind & ETKSQLite3ValueBind::operator=(const ETKSQLite3Value
 
 const ETKSQLite3ValueBindBase &ETKSQLite3ValueBind::Copy(const ETKSQLite3ValueBindBase &_rValueBind)
 {
-    m_eDataPtr.m_pLongValue = NULL;
+    m_eDataPtr.m_pLongValue = nullptr;
     m_eDataType             = eDataTypeNull;
 
     const ETKSQLite3ValueBind *pValueToBind = dynamic_cast<const ETKSQLite3ValueBind *>(&_rValueBind);
-    if (pValueToBind  != NULL)
+    if (pValueToBind  != nullptr)
     {   // Correct type, can assign
         m_eDataType = pValueToBind->m_eDataType;
         m_eDataPtr  = pValueToBind->m_eDataPtr;
@@ -311,7 +315,7 @@ const ETKSQLite3ValueBindBase &ETKSQLite3ValueBind::Copy(const ETKSQLite3ValueBi
     else
     {   // Not a class derived from ETKSQLite3ValueBind, reset types
         m_eDataType             = eDataTypeNull;
-        m_eDataPtr.m_pLongValue = NULL;
+        m_eDataPtr.m_pLongValue = nullptr;
         wxFAIL_MSG(wxT("ETKSQLite3ValueBind::Copy: Bad value type to copy"));
     }
 

@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ETKSQLite3RequestInserter.h
-// Library:     ETKSQLite3
-// Purpose:     Code to make insert into database
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/08/05
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file ETKSQLite3RequestInserter.h
+ * @brief Header file for inserter request managment.
+ *
+ * Code for database request inserter class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/08/05
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INCLUDE_ETK_SQLITE3_REQUEST_INSERTER_H
 #define INCLUDE_ETK_SQLITE3_REQUEST_INSERTER_H

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
 /**
  * @file ETKSQLite3Column.h
- * @brief Implementation file for column management.
+ * @brief Header file for column management.
  *
- * This file contains the implementation of the ETKSQLite3ColumnAttributes
+ * This file contains the header of the ETKSQLite3ColumnAttributes
  * class, which is used for managing columns in the ETKSQLite3 library.
  *
  * @author Stéphane Château

@@ -11,46 +11,14 @@
 #ifndef INCLUDE_ETK_SQLITE3_TYPES_H
 #define INCLUDE_ETK_SQLITE3_TYPES_H
 
-//################################################################
-//##                                                            ##
-//##            Definition of macro to export/imports           ##
-//##                    functions and classes                   ##
-//##                                                            ##
-//################################################################
-#ifdef EXPORT_IMPORT
-    #undef EXPORT_IMPORT
-#endif
-
-#ifdef WIN32
-    #ifdef MAKING_ETK_SQLITE3_LIB
-        #define             WXMAKINGLIB_WXSQLITE3
-        #define             EXPORT_IMPORT
-        #define             SQLITE_API
-    #else
-        #ifdef USING_ETK_SQLITE3_LIB
-            #define         EXPORT_IMPORT
-        #else
-            #ifdef MAKING_ETK_SQLITE3_SHARED
-                #define     WXMAKINGDLL_WXSQLITE3
-                #define     EXPORT_IMPORT      __declspec(dllexport)
-            #else
-                #define     WXUSINGDLL_WXSQLITE3
-                #define     EXPORT_IMPORT      __declspec(dllimport)
-            #endif
-        #endif
-    #endif
-#else
-    #ifdef LINUX
-        #error Not implemented !
-    #else
-        #error Not implemented !
-    #endif
-#endif
+#include "ETKSQLite3ImportExport.h"
 
 // Visual Studio compatibility the precompiler header file don't work like mingw
 // Must add include into all C++ file ! So, the compiler is defined without precompiler
 // header file, but in this case the project MUST ADD the following files.
 #include <wx/wx.h>
+#include <wx/variant.h>
+#include <wx/confbase.h>
 
 // Include wxSQLITE3 : database managment: should add this path to project
 // into : Search Directories / Compiler, add :

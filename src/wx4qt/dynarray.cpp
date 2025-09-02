@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 /**
  * @file wx/dynarray.cpp
- * @brief Header of wxArrayPtrVoid class from std:::vector.
+ * @brief Implementation of wxArrayPtrVoid class from std:::vector.
  *
  * wxArrayPtrVoid, simul wxWidget class to be used with other frameworks.
  *
@@ -12,17 +12,16 @@
  * @license wxWindows License
  */
 /////////////////////////////////////////////////////////////////////////////
-#ifndef WX_DYNARRAY_HEADER
-#define WX_DYNARRAY_HEADER
+#include <wx/dynarray.h>
 
-#include <wx/wx.h>
-#include <vector>
-
-class EXPORT_IMPORT wxArrayPtrVoid : public std::vector<void*>
+size_t wxArrayPtrVoid::GetCount() const
 {
-public:
-    size_t GetCount() const;
-    size_t Add(void *pItem);
-};
+    return size();
+}
 
-#endif // WX_DYNARRAY_HEADER
+size_t wxArrayPtrVoid::Add(void *pItem)
+{
+    this->push_back(pItem);
+    return size() - 1;
+}
+

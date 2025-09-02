@@ -1,18 +1,23 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wx/arrstr.h
-// Purpose:     Array string
-// Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      Stéphane Château
-// Modified by:
-// Created:     14/06/2012
-// Copyright:   (c) Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file wx/arrstr.h
+ * @brief Header file for wxArrayString.
+ *
+ * String array, simul wxWidget class to be used with other frameworks.
+ *
+ * @author Stéphane Château
+ * @date Created: 2012/06/14
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_ARRSTRING_HEADER
 #define WX_ARRSTRING_HEADER
 
 #include "buffer.h"
 
+// String array is just a wxQVector of wxString
 #define wxArrayString                           wxQVector<wxString>
 
 #endif // WX_ARRSTRING_HEADER

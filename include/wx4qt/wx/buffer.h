@@ -1,17 +1,21 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wx/buffer.h
-// Purpose:     Array string
-// Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      Stéphane Château
-// Modified by:
-// Created:     14/06/2012
-// Copyright:   (c) Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file wx/buffer.h
+ * @brief Header file for Vector.
+ *
+ * Vector, simul wxWidget class to be used with other frameworks.
+ *
+ * @author Stéphane Château
+ * @date Created: 2012/06/14
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_BUFFER_HEADER
 #define WX_BUFFER_HEADER
 
-#include "wx.h"
+#include <wx/wx.h>
 #include <QBuffer>
 #include <QVector>
 
@@ -28,27 +32,30 @@ public:
     size_t          Count() const                   { return QVector<TYPE>::size(); }
 };
 
-#define wxMemoryBuffer                          wxQBuffer
 #define wxArrayInt                              wxQVector<int>
 
 /**
-  * This class manages the actual data buffer pointer and is ref-counted.
-  */
+ * This class manages the actual data buffer pointer and is ref-counted.
+ */
 class EXPORT_IMPORT wxMemoryBufferData
 {
 public:
     // the initial size and also the size added by ResizeIfNeeded()
-    enum { DefBufSize = 1024 };
+    enum
+    {
+        DefBufSize = 1024
+    };
 
     friend class wxMemoryBuffer;
 
     // everyting is private as it can only be used by wxMemoryBuffer
 private:
-    wxMemoryBufferData(size_t size = wxMemoryBufferData::DefBufSize) : m_data(size ? malloc(size) : NULL), m_size(size), m_len(0), m_ref(0) {}
-    ~wxMemoryBufferData()                                                               { free(m_data); }
+    wxMemoryBufferData(size_t size = wxMemoryBufferData::DefBufSize);
+    ~wxMemoryBufferData();
     void ResizeIfNeeded(size_t newSize);
-    void IncRef()                                                                       { m_ref += 1; }
-    void DecRef()                                                                       { m_ref -= 1; if (m_ref == 0) delete this; }
+
+    void IncRef();
+    void DecRef();
 
     // the buffer containing the data
     void  *m_data;
@@ -69,39 +76,40 @@ class EXPORT_IMPORT wxMemoryBuffer
 {
 public:
     // ctor and dtor
-    wxMemoryBuffer(size_t size = wxMemoryBufferData::DefBufSize)                        { m_bufdata = new wxMemoryBufferData(size); m_bufdata->IncRef(); }
-    ~wxMemoryBuffer()                                                                   { m_bufdata->DecRef(); }
+    wxMemoryBuffer(size_t size = wxMemoryBufferData::DefBufSize);
+    ~wxMemoryBuffer();
 
     // copy and assignment
-    wxMemoryBuffer(const wxMemoryBuffer& src) : m_bufdata(src.m_bufdata)                { m_bufdata->IncRef(); }
+    wxMemoryBuffer(const wxMemoryBuffer& src);
 
-    wxMemoryBuffer& operator=(const wxMemoryBuffer& src)                                { m_bufdata->DecRef(); m_bufdata = src.m_bufdata; m_bufdata->IncRef(); return *this; }
+    wxMemoryBuffer& operator=(const wxMemoryBuffer& src);
 
     // Accessors
-    void  *GetData() const                                                              { return m_bufdata->m_data; }
-    size_t GetBufSize() const                                                           { return m_bufdata->m_size; }
-    size_t GetDataLen() const                                                           { return m_bufdata->m_len; }
+    void  *GetData() const;
+    size_t GetBufSize() const;
+    size_t GetDataLen() const;
 
-    void SetBufSize(size_t size)                                                        { m_bufdata->ResizeIfNeeded(size); }
-    void SetDataLen(size_t len)                                                         { wxASSERT(len <= m_bufdata->m_size); m_bufdata->m_len = len; }
+    void SetBufSize(size_t size);
+    void SetDataLen(size_t len);
 
     // Ensure the buffer is big enough and return a pointer to it
-    void *GetWriteBuf(size_t sizeNeeded)                                                { m_bufdata->ResizeIfNeeded(sizeNeeded); return m_bufdata->m_data; }
+    void *GetWriteBuf(size_t sizeNeeded);
 
     // Update the length after the write
-    void UngetWriteBuf(size_t sizeUsed)                                                 { SetDataLen(sizeUsed); }
+    void UngetWriteBuf(size_t sizeUsed);
 
     // Like the above, but appends to the buffer
-    void *GetAppendBuf(size_t sizeNeeded)                                               { m_bufdata->ResizeIfNeeded(m_bufdata->m_len + sizeNeeded); return (char*)m_bufdata->m_data + m_bufdata->m_len; }
+    void *GetAppendBuf(size_t sizeNeeded);
 
     // Update the length after the append
-    void UngetAppendBuf(size_t sizeUsed)                                                { SetDataLen(m_bufdata->m_len + sizeUsed); }
+    void UngetAppendBuf(size_t sizeUsed);
 
     // Other ways to append to the buffer
     void AppendByte(char data);
-    void AppendData(const void *data, size_t len)                                       { memcpy(GetAppendBuf(len), data, len); UngetAppendBuf(len); }
 
-    operator const char *() const                                                       { return (const char*)GetData(); }
+    void AppendData(const void *data, size_t len);
+
+    operator const char *() const;
 
 private:
     wxMemoryBufferData* m_bufdata;

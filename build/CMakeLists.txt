@@ -61,6 +61,8 @@ option(SQLITE_ENABLE_STMTVTAB           "Enable stmt virtual tables"            
 option(SQLITE_ENABLE_UNLOCK_NOTIFY      "Enable unlock notify"                          OFF)
 option(SQLITE_ENABLE_SERIALIZE          "Enable database serialization"                 OFF)
 option(SQLITE_ENABLE_DESERIALIZE        "Enable database deserialization"               OFF)
+option(wxUSE_REGEX                      "Use regex in wxSQLite3"                        OFF)
+option(wxUSE_THREADS                    "Use threads in wxSQLite3"                      OFF)
 
 # =============================================================================
 # Check and display options for QT5 / QT6 - Function to detect and configure Qt
@@ -138,6 +140,8 @@ if (MSVC)
     add_definitions(-DSQLITE_TEMP_STORE=2)
     add_definitions(-DSQLITE_USE_URI=1)
     add_definitions(-DSQLITE_USER_AUTHENTICATION=1)
+    add_definitions(-DwxUSE_REGEX=1)
+    add_definitions(-DwxUSE_THREADS=1)
 
     # Active hot reload for MSVC compilers is allowed
     if (POLICY CMP0141)
@@ -171,6 +175,7 @@ set(COMMON_HEADER_FILES
     ../include/ETKSQLite3/ETKSQLite3Column.h
     ../include/ETKSQLite3/ETKSQLite3Criterion.h
     ../include/ETKSQLite3/ETKSQLite3Database.h
+    ../include/ETKSQLite3/ETKSQLite3ImportExport.h
     ../include/ETKSQLite3/ETKSQLite3Include.h
     ../include/ETKSQLite3/ETKSQLite3Record.h
     ../include/ETKSQLite3/ETKSQLite3Request.h
@@ -220,8 +225,10 @@ set(QT_HEADER_FILES
     ../include/wx4qt/wx/dynlib.h
     ../include/wx4qt/wx/file.h
     ../include/wx4qt/wx/filename.h
+    ../include/wx4qt/wx/messagedialog.h
     ../include/wx4qt/wx/hashmap.h
     ../include/wx4qt/wx/longlong.h
+    ../include/wx4qt/wx/logger.h
     ../include/wx4qt/wx/regex.h
     ../include/wx4qt/wx/string.h
     ../include/wx4qt/wx/thread.h
@@ -236,7 +243,24 @@ set(QT_HEADER_FILES
 # Define Qt specific source files (wrappers implementation)
 # =============================================================================
 set(QT_SOURCE_FILES
+    # Internal files for library
     ../src/wx4qt/implements.cpp
+    ../src/wx4qt/dynlib.cpp
+    ../src/wx4qt/file.cpp
+    ../src/wx4qt/filename.cpp
+    ../src/wx4qt/messagedialog.cpp
+    ../src/wx4qt/regex.cpp
+    ../src/wx4qt/thread.cpp
+    ../src/wx4qt/tokenzr.cpp
+    # File that should be exported
+    ../src/wx4qt/buffer.cpp
+    ../src/wx4qt/confbase.cpp
+    ../src/wx4qt/datetime.cpp
+    ../src/wx4qt/dynarray.cpp
+    ../src/wx4qt/logger.cpp
+    ../src/wx4qt/longlong.cpp
+    ../src/wx4qt/string.cpp
+    ../src/wx4qt/variant.cpp
 )
 
 # =============================================================================

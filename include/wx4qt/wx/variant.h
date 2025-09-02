@@ -1,48 +1,55 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wx/tokenzr.h
-// Purpose:     String tokenizer - a C++ replacement for strtok(3)
-// Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      Guilhem Lavaux
-// Modified by:
-// Created:     14/06/2012
-// Copyright:   (c) Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file wx/variant.cpp
+ * @brief Header file for wxVariant class.
+ *
+ * Variant implementation.
+ *
+ * @author Stéphane Château
+ * @date Created: 2014/06/02
+ * @date Modified: 2025/09/02
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_VARIANT_HEADER
 #define WX_VARIANT_HEADER
 
-#include "wxtype.h"
+//
+// Internal include, simul wxWidgets
+//
+#include <wx/wx.h>
+#include <wx/wxtype.h>
+#include <wx/datetime.h>
 
 //
 // wxVariant Class
 //
 #include <QVariant>
 #include <QDateTime>
-#include "datetime.h"
-#include "string.h"
 
 class EXPORT_IMPORT wxVariantData
 {
     friend class wxVariant;
 public:
-    wxVariantData() : m_count(0)                                                        { }
+    wxVariantData();
 
     // Override these to provide common functionality
     virtual bool Eq(wxVariantData& data) const = 0;
-    virtual bool Write(wxString & WXUNUSED(str)) const                                  { return false; }
-    virtual bool Read(wxString & WXUNUSED(str))                                         { return false; }
+    virtual bool Write(wxString & WXUNUSED(str)) const;
+    virtual bool Read(wxString & WXUNUSED(str));
     // What type is it? Return a string name.
     virtual wxString GetType() const = 0;
 
-    void IncRef()                                                                       { m_count++; }
-    void DecRef()                                                                       { if ( --m_count == 0 ) delete this; }
-    int GetRefCount() const                                                             { return m_count; }
+    void IncRef();
+    void DecRef();
+    int GetRefCount() const;
 
 protected:
     // Protected dtor should make some incompatible code
     // break more louder. That is, they should do data->DecRef()
     // instead of delete data.
-    virtual ~wxVariantData()                                                            { }
+    virtual ~wxVariantData();
 
 private:
     int     m_count;

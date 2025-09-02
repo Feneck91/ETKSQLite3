@@ -1,18 +1,23 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wx/confbase.h
-// Purpose:     Config base
-// Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      Stéphane Château
-// Modified by:
-// Created:     14/06/2012
-// Copyright:   (c) Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file wx/buffer.h
+ * @brief Header file for ConfigBase.
+ *
+ * ConfigBase, simul wxWidget class to be used with other frameworks.
+ *
+ * @author Stéphane Château
+ * @date Created: 2012/06/14
+ * @date Modified: 2025/09/01
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_CONFIG_BASE_HEADER
 #define WX_CONFIG_BASE_HEADER
 
-#include "wxtype.h"
-#include "string.h"
+#include <wx/wx.h>
+#include <wx/string.h>
+#include <wx/messagedialog.h>
 #include <QSettings>
 
 /**
@@ -22,17 +27,15 @@ class EXPORT_IMPORT wxConfigBase
 {
 private:
     static wxConfigBase m_sSettings;
-    QString m_strGroupName;
-
-private:
-    QSettings *m_pQSettings;
+    QString             m_strGroupName;
+    QSettings *         m_pQSettings;
 
 public:
-    static wxConfigBase * Get();
-    static void Set(QSettings *_pQSettings); // Replace static pointer to config base
-    void SetPath(const wxChar *_pszPath);
-    wxString Read(const wxChar *_pszKey,const wxChar *_pszDefault);
-    void Write(const wxChar *_pszKey,const wxChar *_pszValue);
+    static wxConfigBase *       Get();
+    static void                 Set(QSettings *_pQSettings); // Replace static pointer to config base
+    void                        SetPath(const wxChar *_pszPath);
+    wxString                    Read(const wxChar *_pszKey,const wxChar *_pszDefault);
+    void                        Write(const wxChar *_pszKey,const wxChar *_pszValue);
 };
 
 #endif // WX_CONFIG_BASE_HEADER

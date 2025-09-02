@@ -1,30 +1,36 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wx/buffer.h
-// Purpose:     wxDynamicLibrary : dynamic library to load
-// Library:     Copied from wxWidgets, modifyed to be used with QT library
-// Author:      Stéphane Château
-// Modified by:
-// Created:     14/06/2012
-// Copyright:   (c) Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file wx/dynarray.cpp
+ * @brief Header of wxDynamicLibrary class.
+ *
+ * wxDynamicLibrary : dynamic library to load.
+ *
+ * @author Stéphane Château
+ * @date Created: 2012/06/14
+ * @date Modified: 2025/09/02
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 #ifndef WX_DYNAMIC_LIBRARY_HEADER
 #define WX_DYNAMIC_LIBRARY_HEADER
 
-#include "wxETKSQLite3Types.h"
-#include "wxtype.h"
+#include <wx/wxtype.h>
 #include <QLibrary>
 
 #define wxDynamicLibrary    wxQDynamicLibrary
 
-class EXPORT_IMPORT wxQDynamicLibrary : public QLibrary
+/**
+ * Not exported, only internal used.
+ */
+class wxQDynamicLibrary : public QLibrary
 {
 public:
-    wxQDynamicLibrary()                                                                 { }
-    bool IsLoaded() const                                                               { return isLoaded (); }
-    bool Load(const char *_pszFileName)                                                 { setFileName(_pszFileName); return load(); }
-    void * GetSymbol(const char *_pszSymbol)                                            { return resolve(_pszSymbol); }
-    bool Unload()                                                                       { return unload(); }
+    wxQDynamicLibrary();
+    bool IsLoaded() const;
+    bool Load(const char *_pszFileName);
+    void * GetSymbol(const char *_pszSymbol);
+    bool Unload();
 };
 
 #endif // WX_DYNAMIC_LIBRARY_HEADER

@@ -11,8 +11,8 @@
 #ifndef WX_LONG_LONG_HEADER
 #define WX_LONG_LONG_HEADER
 
-#include "wxtype.h"
-#include "string.h"
+#include <wx/wxtype.h>
+#include <wx/string.h>
 
 #define wxLongLong                              wxQLongLong
 
@@ -22,36 +22,36 @@ private:
     qint64 m_i64Value;
 
 public:
-    wxQLongLong() : m_i64Value(0)                                                   { }
-    wxQLongLong(qint64 _i64Value) : m_i64Value(_i64Value)                           { }
-    wxQLongLong(int _iValue) : m_i64Value(_iValue)                                  { }
-    wxQLongLong(long _lValue) : m_i64Value(_lValue)                                 { }
-    wxQLongLong(unsigned long _ulValue) : m_i64Value(_ulValue)                      { }
-    wxQLongLong(const wxQLongLong &_rValue)    : m_i64Value(_rValue.GetValue())     { }
-    qint64 GetValue() const                                                         { return m_i64Value; }
-    operator const qint64 &() const                                                 { return m_i64Value; }
+    wxQLongLong();
+    wxQLongLong(qint64 _i64Value);
+    wxQLongLong(int _iValue);
+    wxQLongLong(long _lValue);
+    wxQLongLong(unsigned long _ulValue);
+    wxQLongLong(const wxQLongLong &_rValue);
+    qint64 GetValue() const;
+    operator const qint64 &() const;
 
-    const wxQLongLong    operator+(wxQLongLong &_rValue)                            { return wxQLongLong(GetValue() + _rValue.GetValue()); }
-    const wxQLongLong    operator-(wxQLongLong &_rValue)                            { return wxQLongLong(GetValue() - _rValue.GetValue()); }
-    const wxQLongLong    operator*(wxQLongLong &_rValue)                            { return wxQLongLong(GetValue() * _rValue.GetValue()); }
-    const wxQLongLong    operator/(wxQLongLong &_rValue)                            { return wxQLongLong(GetValue() / _rValue.GetValue()); }
-    const wxQLongLong & operator+=(wxQLongLong &_rValue)                            { m_i64Value+=_rValue.GetValue(); return *this; }
-    const wxQLongLong & operator-=(wxQLongLong &_rValue)                            { m_i64Value-=_rValue.GetValue(); return *this; }
-    const wxQLongLong & operator*=(wxQLongLong &_rValue)                            { m_i64Value*=_rValue.GetValue(); return *this; }
-    const wxQLongLong & operator/=(wxQLongLong &_rValue)                            { m_i64Value/=_rValue.GetValue(); return *this; }
+    const wxQLongLong    operator+(wxQLongLong &_rValue);
+    const wxQLongLong    operator-(wxQLongLong &_rValue);
+    const wxQLongLong    operator*(wxQLongLong &_rValue);
+    const wxQLongLong    operator/(wxQLongLong &_rValue);
+    const wxQLongLong & operator+=(wxQLongLong &_rValue);
+    const wxQLongLong & operator-=(wxQLongLong &_rValue);
+    const wxQLongLong & operator*=(wxQLongLong &_rValue);
+    const wxQLongLong & operator/=(wxQLongLong &_rValue);
 
-    const wxQLongLong    operator+(int _iValue)                                     { return wxQLongLong(GetValue() + ((qint64) _iValue)); }
-    const wxQLongLong    operator-(int _iValue)                                     { return wxQLongLong(GetValue() - ((qint64) _iValue)); }
-    const wxQLongLong    operator*(int _iValue)                                     { return wxQLongLong(GetValue() * ((qint64) _iValue)); }
-    const wxQLongLong    operator/(int _iValue)                                     { return wxQLongLong(GetValue() / ((qint64) _iValue)); }
-    const wxQLongLong & operator+=(int _iValue)                                     { m_i64Value+=((qint64) _iValue); return *this; }
-    const wxQLongLong & operator-=(int _iValue)                                     { m_i64Value-=((qint64) _iValue); return *this; }
-    const wxQLongLong & operator*=(int _iValue)                                     { m_i64Value*=((qint64) _iValue); return *this; }
-    const wxQLongLong & operator/=(int _iValue)                                     { m_i64Value/=((qint64) _iValue); return *this; }
+    const wxQLongLong    operator+(int _iValue);
+    const wxQLongLong    operator-(int _iValue);
+    const wxQLongLong    operator*(int _iValue);
+    const wxQLongLong    operator/(int _iValue);
+    const wxQLongLong & operator+=(int _iValue);
+    const wxQLongLong & operator-=(int _iValue);
+    const wxQLongLong & operator*=(int _iValue);
+    const wxQLongLong & operator/=(int _iValue);
 
-    const wxQLongLong    operator-()                                                { return wxQLongLong(-GetValue()); }
-    bool                operator==(const wxQLongLong &_rValue) const                { return GetValue() == _rValue.GetValue(); }
-    wxString            ToString() const                                            { return wxString(QString::number(GetValue())); }
+    const wxQLongLong    operator-();
+    bool                operator==(const wxQLongLong &_rValue) const;
+    wxString            ToString() const;
 };
 
 #endif // WX_LONG_LONG_HEADER

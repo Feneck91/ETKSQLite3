@@ -104,6 +104,9 @@ void qtETKSQLite3Sample::UpdateTCustomers()
         {
             InsertItem(resultSetTCustomer,lRowCount,dSumPrices);
         }
+
+        etkString strToto("gfdsgdfs");
+
     }
 }
 

@@ -36,27 +36,25 @@
 #   endif
 #endif
 
-/*  NB: the following macros also work in release mode! */
+// NB: the following macros also work in release mode!
 
-/*
-  These macros must be used only in invalid situation: for example, an
-  invalid parameter (e.g. a NULL pointer) is passed to a function. Instead of
-  dereferencing it and causing core dump the function might try using
-  CHECK( p != NULL ) or CHECK( p != NULL, return LogError("p is NULL!!") )
-*/
+// These macros must be used only in invalid situation: for example, an
+// invalid parameter (e.g. a NULL pointer) is passed to a function. Instead of
+// dereferencing it and causing core dump the function might try using
+// CHECK( p != NULL ) or CHECK( p != NULL, return LogError("p is NULL!!") )
 
-/*  check that expression is true, "return" if not (also FAILs in debug mode) */
+// check that expression is true, "return" if not (also FAILs in debug mode)
 #define wxCHECK(cond, rc)            wxCHECK_MSG(cond, rc, NULL)
 
-/*  as wxCHECK but with a message explaining why we fail */
+// as wxCHECK but with a message explaining why we fail
 #define wxCHECK_MSG(cond, rc, msg)   wxCHECK2_MSG(cond, return rc, msg)
 
-/*  check that expression is true, perform op if not */
+// check that expression is true, perform op if not */
 #define wxCHECK2(cond, op)           wxCHECK2_MSG(cond, op, NULL)
 
-/*  as wxCHECK2 but with a message explaining why we fail */
+// as wxCHECK2 but with a message explaining why we fail
 
-/* see comment near the definition of wxASSERT_MSG for the # if/else reason */
+// see comment near the definition of wxASSERT_MSG for the # if/else reason
 #if defined(__MWERKS__)
     #define wxCHECK2_MSG(cond, op, msg)                                       \
         if ( cond )                                                           \
@@ -89,12 +87,12 @@
 #define wxFAIL_COND_MSG(cond, msg)                                          \
     wxOnAssert(__TFILE__, __LINE__,  __WXFUNCTION__, wxT(cond), msg)
 
-/*  special form of wxCHECK2: as wxCHECK, but for use in void functions */
-/*  */
-/*  NB: there is only one form (with msg parameter) and it's intentional: */
-/*      there is no other way to tell the caller what exactly went wrong */
-/*      from the void function (of course, the function shouldn't be void */
-/*      to begin with...) */
+// special form of wxCHECK2: as wxCHECK, but for use in void functions
+//
+// NB: there is only one form (with msg parameter) and it's intentional:
+// there is no other way to tell the caller what exactly went wrong
+// from the void function (of course, the function shouldn't be void
+// to begin with...)
 #define wxCHECK_RET(cond, msg)       wxCHECK2_MSG(cond, return, msg)
 
 #define DECLARE_NO_COPY_CLASS(className) \
@@ -140,100 +138,12 @@
 //
 #define wxDELETE(x)      { if (x) { delete x; x=NULL; }}
 
-#include "wxtype.h"
-#include "variant.h"
-#include "string.h"
-#include "confbase.h"
-
+#include <wx/wxtype.h>
+#include <wx/string.h>
+#include <wx/logger.h>
 #include <QVector>
 #include <QtGlobal>
 #include <assert.h>
-
-//
-// Logger
-//
-void EXPORT_IMPORT wxLogDebug(const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogDebug(const wxChar *_pszFormat,const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogInfo(const wxChar *_pszFormat, const wxChar *_pszCodeErrorMessage, int _iErrorCode, wxQString _strMessage);
-void EXPORT_IMPORT wxLogVerbose(const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogVerbose(const wxChar *_pszFormat,const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogError(const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogError(const wxChar *_pszFormat,const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogFatalError(const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogFatalError(const wxChar *_pszFormat,const wxChar *_pszMessage);
-
-/**
- * To use it, just derive it and override virtual functions.
- */
-class EXPORT_IMPORT wx4qtLogger
-{
-private:
-    static wx4qtLogger  *m_pInstance;
-
-public:
-    wx4qtLogger();
-    virtual ~wx4qtLogger();
-
-    virtual void LogDebug(QString _strLogString);
-    virtual void wxLogDebug(QString _strLogString);
-    virtual void wxLogInfo(QString _strFormat, QString  _strCodeErrorMessage, int _iErrorCode, QString _strMessage);
-    virtual void wxLogVerbose(QString _strLogString);
-    virtual void wxLogError(QString _strLogString);
-    virtual void wxLogFatalError(QString _strLogString);
-
-    // Get the instance of logger
-    static wx4qtLogger  *Getwx4qtLoggerInstance();
-};
-
-//
-// Message box
-//
-#include <QMessageBox>
-
-#define wxICON_ERROR            (QMessageBox::Critical)
-#define wxICON_QUESTION         (QMessageBox::Question)
-#define wxICON_INFORMATION      (QMessageBox::Information)
-#define wxICON_WARNING          (QMessageBox::Warning)
-#define wxICON_CRITICAL         (QMessageBox::Critical)
-#define wxICON_MASK             (wxICON_ERROR | wxICON_INFORMATION | wxICON_WARNING | wxICON_CRITICAL)
-
-#define wxOK                    (QMessageBox::Ok)
-#define wxCANCEL                (QMessageBox::Cancel)
-
-class EXPORT_IMPORT wxMessageDialog
-{
-private:
-    QWidget *   m_pParent;
-    QString     m_strTitle;
-    QString     m_strMessage;
-    long        m_lStyle;
-
-public:
-    wxMessageDialog(QWidget *_pParent,QString _strTitle,QString _strMessage,long _lStyle)
-    : m_pParent(_pParent)
-    , m_strTitle(_strTitle)
-    , m_strMessage(_strMessage)
-    , m_lStyle(_lStyle)
-    {
-    }
-
-    long ShowModal()
-    {
-        QMessageBox msgBox;
-        //set inforative text
-        msgBox.setInformativeText(m_strTitle);
-        // Set Message
-        msgBox.setText(m_strMessage);
-        // Add ok and cancel button.
-        msgBox.setStandardButtons((QMessageBox::StandardButton) (m_lStyle & ~wxICON_MASK));
-        //Set predefined icon, icon is show on left side of text.
-        msgBox.setIcon((QMessageBox::Icon) (m_lStyle & wxICON_MASK));
-        // Set modal
-        msgBox.setWindowModality(Qt::WindowModal);
-        // Execute message box. method exec() return the button value of cliecke button
-        return msgBox.exec();
-    }
-};
 
 /*
 #ifndef INCLUDE_WX_ETK_SQLITE3_VALUE_BIND_H

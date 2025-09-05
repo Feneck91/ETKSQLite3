@@ -18,7 +18,7 @@ wxQLongLong::wxQLongLong()
 {
 }
 
-wxQLongLong::wxQLongLong(qint64 _i64Value)
+wxQLongLong::wxQLongLong(int64_t _i64Value)
     : m_i64Value(_i64Value)
 {
 }
@@ -43,12 +43,12 @@ wxQLongLong::wxQLongLong(const wxQLongLong &_rValue)
 {
 }
 
-qint64 wxQLongLong::GetValue() const
+int64_t wxQLongLong::GetValue() const
 {
     return m_i64Value;
 }
 
-wxQLongLong::operator const qint64 &() const
+wxQLongLong::operator const int64_t &() const
 {
     return m_i64Value;
 }
@@ -90,41 +90,41 @@ const wxQLongLong & wxQLongLong::operator/=(wxQLongLong &_rValue)
 
 const wxQLongLong wxQLongLong::operator+(int _iValue)
 {
-    return wxQLongLong(GetValue() + ((qint64) _iValue));
+    return wxQLongLong(GetValue() + ((int64_t) _iValue));
 }
 
 const wxQLongLong wxQLongLong::operator-(int _iValue)
 {
-    return wxQLongLong(GetValue() - ((qint64) _iValue));
+    return wxQLongLong(GetValue() - ((int64_t) _iValue));
 }
 
 const wxQLongLong wxQLongLong::operator*(int _iValue)
 {
-    return wxQLongLong(GetValue() * ((qint64) _iValue));
+    return wxQLongLong(GetValue() * ((int64_t) _iValue));
 }
 
 const wxQLongLong wxQLongLong::operator/(int _iValue)
-{ return wxQLongLong(GetValue() / ((qint64) _iValue));
+{ return wxQLongLong(GetValue() / ((int64_t) _iValue));
 }
 
 const wxQLongLong & wxQLongLong::operator+=(int _iValue)
 {
-    m_i64Value+=((qint64) _iValue); return *this;
+    m_i64Value+=((int64_t) _iValue); return *this;
 }
 
 const wxQLongLong & wxQLongLong::operator-=(int _iValue)
 {
-    m_i64Value-=((qint64) _iValue); return *this;
+    m_i64Value-=((int64_t) _iValue); return *this;
 }
 
 const wxQLongLong & wxQLongLong::operator*=(int _iValue)
 {
-    m_i64Value*=((qint64) _iValue); return *this;
+    m_i64Value*=((int64_t) _iValue); return *this;
 }
 
 const wxQLongLong & wxQLongLong::operator/=(int _iValue)
 {
-    m_i64Value/=((qint64) _iValue); return *this;
+    m_i64Value/=((int64_t) _iValue); return *this;
 }
 
 const wxQLongLong    wxQLongLong::operator-()

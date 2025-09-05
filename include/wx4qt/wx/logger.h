@@ -1,12 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wx/logger.h
-// Purpose:     Contains logger to use with Qt.
-// Library:     Class added to be used with QT library
-// Author:      Stéphane Château
-// Modified by:
-// Created:     2025/09/02
-// Copyright:   (c) Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file wx/logger.h
+ * @brief Implementation of logger to use with Qt.
+ *
+ * Allow to use internal log by derived loggers class.
+ *
+ * @author Stéphane Château
+ * @date Created: 2025/09/02
+ * @date Modified:
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 
 #ifndef WX_LOGGER_HEADER
@@ -20,7 +24,7 @@
 //
 void EXPORT_IMPORT wxLogDebug(const wxChar *_pszMessage);
 void EXPORT_IMPORT wxLogDebug(const wxChar *_pszFormat,const wxChar *_pszMessage);
-void EXPORT_IMPORT wxLogInfo(const wxChar *_pszFormat, const wxChar *_pszCodeErrorMessage, int _iErrorCode, wxQString _strMessage);
+void EXPORT_IMPORT wxLogInfo(const wxChar *_pszFormat, const wxChar *_pszCodeErrorMessage, int _iErrorCode, wxString _strMessage);
 void EXPORT_IMPORT wxLogVerbose(const wxChar *_pszMessage);
 void EXPORT_IMPORT wxLogVerbose(const wxChar *_pszFormat,const wxChar *_pszMessage);
 void EXPORT_IMPORT wxLogError(const wxChar *_pszMessage);
@@ -42,12 +46,12 @@ public:
     wx4qtLogger();
     virtual ~wx4qtLogger();
 
-    virtual void LogDebug(QString _strLogString);
-    virtual void wxLogDebug(QString _strLogString);
-    virtual void wxLogInfo(QString _strFormat, QString  _strCodeErrorMessage, int _iErrorCode, QString _strMessage);
-    virtual void wxLogVerbose(QString _strLogString);
-    virtual void wxLogError(QString _strLogString);
-    virtual void wxLogFatalError(QString _strLogString);
+    virtual void LogDebug(wxString _strLogString);
+    virtual void wxLogDebug(wxString _strLogString);
+    virtual void wxLogInfo(wxString _strFormat, wxString  _strCodeErrorMessage, int _iErrorCode, wxString _strMessage);
+    virtual void wxLogVerbose(wxString _strLogString);
+    virtual void wxLogError(wxString _strLogString);
+    virtual void wxLogFatalError(wxString _strLogString);
 
     // Get the instance of logger
     static wx4qtLogger  *Getwx4qtLoggerInstance();

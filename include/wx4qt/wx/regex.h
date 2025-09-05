@@ -52,16 +52,16 @@ public:
     wxRegEx() = default;
 
     // Constructeur avec une expression régulière et des options
-    wxRegEx(const wxQString & pattern, int flags = wxRE_ADVANCED);
+    wxRegEx(const wxString & pattern, int flags = wxRE_ADVANCED);
 
     // Compile l'expression régulière
-    bool Compile(const wxQString & pattern, int flags = wxRE_ADVANCED);
+    bool Compile(const wxString & pattern, int flags = wxRE_ADVANCED);
 
     // Vérifie si l'expression régulière est valide
     bool IsValid() const;
 
     // Vérifie si la chaîne correspond entièrement à l'expression régulière
-    bool Matches(const wxQString & text) const;
+    bool Matches(const wxString & text) const;
 
 private:
     std::regex m_regex;

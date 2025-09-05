@@ -32,17 +32,17 @@ wx4qtLogger::~wx4qtLogger()
     m_pInstance = nullptr;
 }
 
-void wx4qtLogger::LogDebug(QString _strLogString)
+void wx4qtLogger::LogDebug(wxString _strLogString)
 {
     wxUnusedVar(_strLogString);
 }
 
-void wx4qtLogger::wxLogDebug(QString _strLogString)
+void wx4qtLogger::wxLogDebug(wxString _strLogString)
 {
     wxUnusedVar(_strLogString);
 }
 
-void wx4qtLogger::wxLogInfo(QString _strFormat, QString  _strCodeErrorMessage, int _iErrorCode, QString _strMessage)
+void wx4qtLogger::wxLogInfo(wxString _strFormat, wxString  _strCodeErrorMessage, int _iErrorCode, wxString _strMessage)
 {
     wxUnusedVar(_strFormat);
     wxUnusedVar(_strCodeErrorMessage);
@@ -50,17 +50,17 @@ void wx4qtLogger::wxLogInfo(QString _strFormat, QString  _strCodeErrorMessage, i
     wxUnusedVar(_strMessage);
 }
 
-void wx4qtLogger::wxLogVerbose(QString _strLogString)
+void wx4qtLogger::wxLogVerbose(wxString _strLogString)
 {
     wxUnusedVar(_strLogString);
 }
 
-void wx4qtLogger::wxLogError(QString _strLogString)
+void wx4qtLogger::wxLogError(wxString _strLogString)
 {
     wxUnusedVar(_strLogString);
 }
 
-void wx4qtLogger::wxLogFatalError(QString _strLogString)
+void wx4qtLogger::wxLogFatalError(wxString _strLogString)
 {
     wxUnusedVar(_strLogString);
 }
@@ -69,7 +69,7 @@ void wxLogDebug(const wxChar *_pszMessage)
 {
     if (wx4qtLogger::Getwx4qtLoggerInstance() != nullptr)
     {
-        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogDebug(QString(_pszMessage));
+        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogDebug(wxString(_pszMessage));
     }
 }
 
@@ -78,11 +78,11 @@ void wxLogDebug(const wxChar *_pszFormat,const wxChar *_pszMessage)
     wxLogDebug(wxString::Format(_pszFormat,_pszMessage));
 }
 
-void wxLogInfo(const wxChar *_pszFormat, const wxChar *_pszCodeErrorMessage, int _iErrorCode, wxQString _strMessage)
+void wxLogInfo(const wxChar *_pszFormat, const wxChar *_pszCodeErrorMessage, int _iErrorCode, wxString _strMessage)
 {
     if (wx4qtLogger::Getwx4qtLoggerInstance() != nullptr)
     {
-        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogInfo(QString(_pszFormat), QString(_pszCodeErrorMessage), _iErrorCode, QString(_strMessage));
+        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogInfo(wxString(_pszFormat), wxString(_pszCodeErrorMessage), _iErrorCode, _strMessage);
     }
 }
 
@@ -90,7 +90,7 @@ void wxLogVerbose(const wxChar *_pszMessage)
 {
     if (wx4qtLogger::Getwx4qtLoggerInstance() != nullptr)
     {
-        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogVerbose(QString(_pszMessage));
+        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogVerbose(wxString(_pszMessage));
     }
 }
 
@@ -103,7 +103,7 @@ void wxLogError(const wxChar *_pszMessage)
 {
     if (wx4qtLogger::Getwx4qtLoggerInstance() != nullptr)
     {
-        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogError(QString(_pszMessage));
+        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogError(wxString(_pszMessage));
     }
 }
 
@@ -116,7 +116,7 @@ void wxLogFatalError(const wxChar *_pszMessage)
 {
     if (wx4qtLogger::Getwx4qtLoggerInstance() != nullptr)
     {
-        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogFatalError(QString(_pszMessage));
+        wx4qtLogger::Getwx4qtLoggerInstance()->wxLogFatalError(wxString(_pszMessage));
     }
 }
 

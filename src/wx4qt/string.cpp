@@ -49,28 +49,28 @@ bool wxIsspace(wxChar _cChar)
     return _cChar == wxT(' ');
 }
 
-wxString::wxQString()
+wxString::wxString()
 {
 }
 
-wxString::wxQString(const wxQString &_strString)
+wxString::wxString(const wxString &_strString)
     : QString(_strString)
 {
 }
 
-wxString::wxQString(const QString &_strString)
+wxString::wxString(const QString &_strString)
     : QString(_strString)
 {
 }
 
-wxString::wxQString(const char *_pszString)
+wxString::wxString(const char *_pszString)
     : QString(_pszString)
 {
 }
 
-wxString::wxQString(size_t count, wxChar chPad)
+wxString::wxString(wxChar chPad, size_t nRepeat)
 {
-    Pad(count,chPad);
+    Pad(nRepeat, chPad);
 }
 
 int wxString::Cmp(const QString &_strString) const
@@ -88,7 +88,7 @@ char wxString::operator[](int _iPosition) const
     return (QString::operator[](_iPosition)).toLatin1();
 }
 
-wxQString & wxString::operator<<(const wxQString &_rstrString)
+wxString & wxString::operator<<(const wxString &_rstrString)
 {
     QString::append(_rstrString);
     return *this;
@@ -116,7 +116,7 @@ bool wxString::IsEmpty() const
     return QString::isEmpty();
 }
 
-bool wxString::IsSameAs(const wxQString &_rstrString, bool bIsCaseSensitive) const
+bool wxString::IsSameAs(const wxString &_rstrString, bool bIsCaseSensitive) const
 {
     return 0 == QString::compare(_rstrString, bIsCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
 }
@@ -131,7 +131,7 @@ wxString wxString::FromUTF8(const char *pszText,size_t _stLength)
     return QString::fromUtf8(pszText, static_cast<int>(_stLength));
 }
 
-wxQString wxString::FromUTF8(const char *_pszString)
+wxString wxString::FromUTF8(const char *_pszString)
 {
     return QString::fromUtf8(_pszString);
 }
@@ -234,7 +234,7 @@ size_t wxString::find_first_of(const wxChar* sz, size_t nStart) const
         return i;
 }
 
-QString wxString::Printf(const char *_pszFormat,...)
+wxString wxString::Printf(const char *_pszFormat,...)
 {
     va_list valistArguments;
     va_start(valistArguments,_pszFormat);
@@ -243,7 +243,7 @@ QString wxString::Printf(const char *_pszFormat,...)
     return *this;
 }
 
-wxQString wxString::Format(const char *_pszFormat,...)
+wxString wxString::Format(const char *_pszFormat,...)
 {
     va_list valistArguments;
     va_start(valistArguments, _pszFormat);

@@ -70,7 +70,7 @@ wxVariantData::~wxVariantData()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 wxVariant::wxVariant()
-    : m_pData(NULL)
+    : m_pData(nullptr)
 {
 }
 
@@ -78,93 +78,93 @@ wxVariant::wxVariant(const wxVariant &other)
     : QVariant(other)
     , m_pData(other.m_pData)
 {
-    if (m_pData != NULL)
-    {   // If not NULL increment reference count
+    if (m_pData != nullptr)
+    {   // If not nullptr increment reference count
         m_pData->IncRef();
     }
 }
 
 wxVariant::wxVariant(int i)
     : QVariant(i)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(long i)
     : QVariant(qlonglong(i))
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(uint ui)
     : QVariant(ui)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 wxVariant::wxVariant(qlonglong ll)
     : QVariant(ll)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(qulonglong ull)
     : QVariant(ull)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(bool b)
     : QVariant(b)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(double d)
     : QVariant(d)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(float f)
     : QVariant(f)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(const QString &string)
     : QVariant(string)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(const QDate &date)
     : QVariant(date)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(const QTime &time)
     : QVariant(time)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(const QDateTime &datetime)
     : QVariant(datetime)
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(const struct tm &date)
     : QVariant(QDateTime(QDate(date.tm_year, date.tm_mon, date.tm_mday), QTime(date.tm_hour, date.tm_min,date.tm_sec, 0),Qt::LocalTime))
-    , m_pData(NULL)
+    , m_pData(nullptr)
 {
 }
 
 wxVariant::wxVariant(wxVariantData *pdata)
     : QVariant(),m_pData(pdata)
 {
-    if (m_pData != NULL)
+    if (m_pData != nullptr)
     {
         m_pData->IncRef();
     }
@@ -172,7 +172,7 @@ wxVariant::wxVariant(wxVariantData *pdata)
 
 wxVariant::~wxVariant()
 {
-    if (m_pData != NULL)
+    if (m_pData != nullptr)
     {
         m_pData->DecRef();
     }
@@ -181,7 +181,7 @@ wxVariant::~wxVariant()
 wxString wxVariant::GetString() const
 {
     wxString strValue;
-    if (m_pData != NULL)
+    if (m_pData != nullptr)
     {
         m_pData->Write(strValue);
     }
@@ -204,8 +204,8 @@ wxDateTime wxVariant::GetDateTime() const
 
 wxVariantData *wxVariant::GetData() const
 {
-    if (m_pData != NULL)
-    {   // If not NULL return the data
+    if (m_pData != nullptr)
+    {   // If not nullptr return the data
         return m_pData;
     }
     return (wxVariantData *) this;
@@ -213,12 +213,12 @@ wxVariantData *wxVariant::GetData() const
 
 void wxVariant::SetData(wxVariantData *_pData)
 {
-    if (m_pData != NULL)
+    if (m_pData != nullptr)
     {
         m_pData->DecRef();
     }
     m_pData=_pData;
-    if (m_pData != NULL)
+    if (m_pData != nullptr)
     {
         m_pData->IncRef();
     }
@@ -231,17 +231,17 @@ bool wxVariant::IsNull() const
 void wxVariant::Clear()
 {
     clear();
-    if (m_pData != NULL)
+    if (m_pData != nullptr)
     {
         m_pData->IncRef();
-        m_pData = NULL;
+        m_pData = nullptr;
     }
 }
 
 wxString wxVariant::GetType() const
 {
     wxString  strType;
-    if (m_pData != NULL)
+    if (m_pData != nullptr)
     {
         strType = m_pData->GetType();
     }
@@ -255,19 +255,19 @@ wxString wxVariant::GetType() const
 bool wxVariant::Eq(wxVariantData& data) const
 {
     wxVariant *pVariant = dynamic_cast<wxVariant *>(&data);
-    if (pVariant == NULL)
+    if (pVariant == nullptr)
     {   // The data is not a QVariant, test only if m_pData is not null
-        return (m_pData != NULL) && m_pData->Eq(data);
+        return (m_pData != nullptr) && m_pData->Eq(data);
     }
     else
     {
         if (GetType() == data.GetType())
         {   // Only if same type
-            if (GetData() != NULL && pVariant->GetData() != NULL)
+            if (GetData() != nullptr && pVariant->GetData() != nullptr)
             {   // If both are wxVariantData type
                 return GetData()->Eq(*pVariant->GetData());
             }
-            else if (GetData()== NULL && pVariant->GetData() == NULL)
+            else if (GetData()== nullptr && pVariant->GetData() == nullptr)
             {   // If both h NOT type
                 return QVariant::operator ==(*pVariant);
             }

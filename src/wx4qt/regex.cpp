@@ -15,13 +15,13 @@
 #include <wx/regex.h>
 
 // Constructeur avec une expression régulière et des options
-wxRegEx::wxRegEx(const wxQString & pattern, int flags)
+wxRegEx::wxRegEx(const wxString & pattern, int flags)
 {
     Compile(pattern, flags);
 }
 
 // Compile l'expression régulière
-bool wxRegEx::Compile(const wxQString & pattern, int flags)
+bool wxRegEx::Compile(const wxString & pattern, int flags)
 {
     std::regex_constants::syntax_option_type stdFlags = std::regex_constants::ECMAScript;
 
@@ -50,7 +50,7 @@ bool wxRegEx::IsValid() const
 }
 
 // Vérifie si la chaîne correspond entièrement à l'expression régulière
-bool wxRegEx::Matches(const wxQString & text) const
+bool wxRegEx::Matches(const wxString & text) const
 {
     if (!m_isValid)
     {

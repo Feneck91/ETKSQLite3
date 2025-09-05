@@ -205,7 +205,7 @@ const wxChar * wxQDateTime::ParseDate(const QString &_rString)
     QDate dtComputed = QDate::fromString(_rString,Qt::ISODate);
     if (!dtComputed.isValid())
     {
-        return NULL;
+        return nullptr;
     }
     else
     {
@@ -221,7 +221,7 @@ const wxChar * wxQDateTime::ParseTime(const QString &_rString)
     QTime dtComputed = QTime::fromString(_rString,Qt::ISODate);
     if (!dtComputed.isValid())
     {
-        return NULL;
+        return nullptr;
     }
     else
     {
@@ -237,7 +237,7 @@ const wxChar * wxQDateTime::ParseDateTime(const QString &_rString)
     QDateTime dtComputed = QDateTime::fromString(_rString,Qt::ISODate);
     if (!dtComputed.isValid())
     {
-        return NULL;
+        return nullptr;
     }
     else
     {

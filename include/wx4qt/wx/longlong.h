@@ -19,17 +19,17 @@
 class EXPORT_IMPORT wxQLongLong
 {
 private:
-    qint64 m_i64Value;
+    int64_t m_i64Value;
 
 public:
     wxQLongLong();
-    wxQLongLong(qint64 _i64Value);
+    wxQLongLong(int64_t _i64Value);
     wxQLongLong(int _iValue);
     wxQLongLong(long _lValue);
     wxQLongLong(unsigned long _ulValue);
     wxQLongLong(const wxQLongLong &_rValue);
-    qint64 GetValue() const;
-    operator const qint64 &() const;
+    int64_t GetValue() const;
+    operator const int64_t &() const;
 
     const wxQLongLong    operator+(wxQLongLong &_rValue);
     const wxQLongLong    operator-(wxQLongLong &_rValue);

@@ -26,12 +26,11 @@
 
 #define wxChar                                  char
 #define wxCharBuffer                            wxQByteArray
-#define wxString                                wxQString
-#define wxEmptyString                           wxQString()
+#define wxEmptyString                           wxString()
 #define wxNOT_FOUND (-1)
 
-#define _T(x)               x
-#define wxS(x)              x
+#define _T(x)                                   x
+#define wxS(x)                                  x
 
 using wxQByteArray = QByteArray;
 
@@ -40,29 +39,29 @@ using wxQByteArray = QByteArray;
  */
 class EXPORT_IMPORT wxString : public QString
 {
+private:
+    mutable QByteArray  m_convertToChar; // Used to convert to const char *
 public:
-    static const size_t  npos;
-    mutable QByteArray m_convertToChar; // Used to convert to const char *
+    static const size_t npos;
 public:
-    wxQString();
-    wxQString(const wxQString &_strString);
-    wxQString(const QString &_strString);
-    wxQString(const char *_pszString);
-    wxQString(size_t count, wxChar chPad);
+    wxString();
+    wxString(const wxString &_strString);
+    wxString(const QString &_strString);
+    wxString(const char *_pszString);
+    wxString(wxChar chPad, size_t nRepeat);
 
     int                 Cmp(const QString &_strString) const;
     int                 Length() const;
     char                operator[](int _iPosition) const;
-    wxQString &         operator<<(const wxQString &_rstrString);
+    wxString &          operator<<(const wxString &_rstrString);
     operator const char *() const;
     int                 Len() const;
     void                ToLong(long *_pLong) const;
     bool                IsEmpty() const;
-    bool                IsSameAs(const wxQString &_rstrString, bool bIsCaseSensitive = true) const;
-;
+    bool                IsSameAs(const wxString &_rstrString, bool bIsCaseSensitive = true) const;
     wxCharBuffer        ToUTF8() const;
     static wxString     FromUTF8(const char *pszText,size_t _stLength);
-    static wxQString    FromUTF8(const char *_pszString);
+    static wxString     FromUTF8(const char *_pszString);
     int                 Find(wxChar ch) const;
     wxString            Left(size_t count) const;
     wxString            Right(size_t count) const;
@@ -77,8 +76,8 @@ public:
     size_t              find_first_not_of(const wxChar* sz, size_t nStart = 0) const;
     // find first/last occurence of any character in the set
     size_t              find_first_of(const wxChar* sz, size_t nStart) const;
-    QString             Printf(const char *_pszFormat,...);
-    static wxQString    Format(const char *_pszFormat,...);
+    wxString            Printf(const char *_pszFormat,...);
+    static wxString     Format(const char *_pszFormat,...);
 };
 
 bool wxIsspace(wxChar _cChar);

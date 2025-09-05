@@ -16,7 +16,8 @@
 #include <wx/string.h>
 
 // Static member
-const size_t wxString::npos = (size_t) -1;
+const size_t wxString::npos     = (size_t) -1;
+const wxChar * wxEmptyString    = wxT("");
 
 #ifdef UNICODE
     #define wxStrlen_   wcslen

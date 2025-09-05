@@ -29,7 +29,7 @@
 #endif // _UNICODE
 
 #define wxChar                                  char
-#define wxEmptyString                           std::string()
+extern EXPORT_IMPORT const wxChar*              wxEmptyString;
 #define wxNOT_FOUND (-1)
 
 #define _T(x)                                   x

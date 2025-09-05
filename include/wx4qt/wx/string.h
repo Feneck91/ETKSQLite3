@@ -26,7 +26,7 @@
 
 #define wxChar                                  char
 #define wxCharBuffer                            wxQByteArray
-#define wxEmptyString                           wxString()
+extern EXPORT_IMPORT const wxChar*              wxEmptyString;
 #define wxNOT_FOUND (-1)
 
 #define _T(x)                                   x

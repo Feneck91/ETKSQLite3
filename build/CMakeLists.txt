@@ -38,7 +38,6 @@ option(BUILD_SHARED_LIBS                "Compile to dynamic library"            
 # =============================================================================
 option(wxETKSQLite3                     "Compile the wxWidgets version (wxETKSQLite3)"  OFF)
 option(qtETKSQLite3                     "Compile the Qt version (qtETKSQLite3)"         OFF)
-option(boostETKSQLite3                  "Compile the Boost version (boostETKSQLite3)"   OFF)
 option(stlETKSQLite3                    "Compile the STL version (stlETKSQLite3)"       OFF)
 
 # =============================================================================
@@ -390,12 +389,18 @@ function(create_framework_library framework)
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES})
             find_package(wxWidgets REQUIRED)
+            #find_package(wxWidgets REQUIRED core base)
+            # Link with wxWidgets libs
+            #set(FRAMEWORK_LIBS wxWidgets::core wxWidgets::base)
             set(FRAMEWORK_LIBS ${wxWidgets_LIBRARIES})
             set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_WXWIDGETS)
-            # Madatory options for wxWidgets
+            set(WX_INCLUDE_DIRS PRIVATE ${wxWidgets_INCLUDE_DIRS} PARENT_SCOPE)
+            # Mandatory options for wxWidgets
             add_definitions(-DwxUSE_UNICODE=1)
             add_definitions(-DwxUSE_DATETIME=1)
             add_definitions(-DwxUSE_STL=1)
+            # Inclure wxWidgets folders
+            include(${wxWidgets_USE_FILE})
         elseif(framework STREQUAL "qtETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${QT_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES} ${QT_HEADER_FILES})
@@ -419,12 +424,6 @@ function(create_framework_library framework)
             endif()
             set(FRAMEWORK_LIBS ${QT_LIBRARIES})
             set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_QT)
-        elseif(framework STREQUAL "boostETKSQLite3")
-            set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES})
-            set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES})
-            find_package(Boost REQUIRED)
-            set(FRAMEWORK_LIBS Boost::boost)
-            set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_BOOST)
         elseif(framework STREQUAL "stlETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${STL_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES} ${STL_HEADER_FILES})
@@ -473,13 +472,11 @@ function(create_framework_library framework)
         # Define specific sources and headers files
         # =============================================================================
         if(framework STREQUAL "wxETKSQLite3")
-            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+            target_include_directories(${LIB_NAME} PUBLIC $(WX_INCLUDE_DIRS) ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
         elseif(framework STREQUAL "qtETKSQLite3")
-        # Include directories
-            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
-            #target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${QT_INCLUDE_DIRS} ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)            
-        elseif(framework STREQUAL "boostETKSQLite3")
-            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+            # Include directories
+            #target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+            target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src ${QT_INCLUDE_DIRS} )
         elseif(framework STREQUAL "stlETKSQLite3")
             target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4stl ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
         else()
@@ -564,13 +561,12 @@ add_custom_target(Installation ALL
 # =============================================================================
 create_framework_library(wxETKSQLite3 "wx")
 create_framework_library(qtETKSQLite3 "qt")
-create_framework_library(boostETKSQLite3 "boost")
 create_framework_library(stlETKSQLite3 "stl")
 
 # =============================================================================
 # Check options of ETKSQLite3 generation type
 # =============================================================================
-if(NOT wxETKSQLite3 AND NOT qtETKSQLite3 AND NOT boostETKSQLite3 AND NOT stlETKSQLite3)
+if(NOT wxETKSQLite3 AND NOT qtETKSQLite3 AND NOT stlETKSQLite3)
     message(FATAL_ERROR "No target type for ETKSQLite3 is selected. You must activate at least wxETKSQLite3, qtETKSQLite3 or boostETKSQLite3 or stlETKSQLite3.")
 endif()
 

@@ -205,7 +205,7 @@ void ETKSQLite3Database::CloseAndClearIni()
         Close();
         // Update ini file to automatically don't load this any database file as startup
         wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
-        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, wxEmptyString.c_str());
+        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, wxEmptyString);
         wxLogVerbose(wxT("Closed current opened SQLite3 database file and clear ini file from automatically loading as startup."));
     }
 }

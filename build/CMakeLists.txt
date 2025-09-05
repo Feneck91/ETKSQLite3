@@ -264,17 +264,80 @@ set(QT_SOURCE_FILES
 )
 
 # =============================================================================
-# Define STL specific header files (wrappers)
+# Define Qt specific header files (wrappers)
 # =============================================================================
-set(STL_HEADER_FILES
-    ../include/wx4stl/wx/wx.h
+set(QT_HEADER_FILES
+    ../include/wx4qt/wx/arrstr.h
+    ../include/wx4qt/wx/buffer.h
+    ../include/wx4qt/wx/confbase.h
+    ../include/wx4qt/wx/datetime.h
+    ../include/wx4qt/wx/dynarray.h
+    ../include/wx4qt/wx/dynlib.h
+    ../include/wx4qt/wx/file.h
+    ../include/wx4qt/wx/filename.h
+    ../include/wx4qt/wx/messagedialog.h
+    ../include/wx4qt/wx/hashmap.h
+    ../include/wx4qt/wx/longlong.h
+    ../include/wx4qt/wx/logger.h
+    ../include/wx4qt/wx/regex.h
+    ../include/wx4qt/wx/string.h
+    ../include/wx4qt/wx/thread.h
+    ../include/wx4qt/wx/tokenzr.h
+    ../include/wx4qt/wx/variant.h
+    ../include/wx4qt/wx/wx.h
+    ../include/wx4qt/wx/wxprec.h
+    ../include/wx4qt/wx/wxtype.h
 )
 
 # =============================================================================
 # Define STL specific source files (wrappers implementation)
 # =============================================================================
 set(STL_SOURCE_FILES
+    # Internal files for library
     ../src/wx4stl/implements.cpp
+    ../src/wx4stl/dynlib.cpp
+    ../src/wx4stl/file.cpp
+    ../src/wx4stl/filename.cpp
+    ../src/wx4stl/messagedialog.cpp
+    ../src/wx4stl/regex.cpp
+    ../src/wx4stl/thread.cpp
+    ../src/wx4stl/tokenzr.cpp
+    # File that should be exported
+    ../src/wx4stl/buffer.cpp
+    ../src/wx4stl/confbase.cpp
+    ../src/wx4stl/datetime.cpp
+    ../src/wx4stl/dynarray.cpp
+    ../src/wx4stl/logger.cpp
+    ../src/wx4stl/longlong.cpp
+    ../src/wx4stl/string.cpp
+    ../src/wx4stl/variant.cpp
+)
+
+# =============================================================================
+# Define STL specific header files (wrappers)
+# =============================================================================
+set(STL_HEADER_FILES
+    ../include/wx4stl/wx/arrstr.h
+    ../include/wx4stl/wx/buffer.h
+    ../include/wx4stl/wx/confbase.h
+    ../include/wx4stl/wx/datetime.h
+    ../include/wx4stl/wx/dynarray.h
+    ../include/wx4stl/wx/dynlib.h
+    ../include/wx4stl/wx/file.h
+    ../include/wx4stl/wx/filename.h
+    ../include/wx4stl/wx/messagedialog.h
+    ../include/wx4stl/wx/hashmap.h
+    ../include/wx4stl/wx/longlong.h
+    ../include/wx4stl/wx/logger.h
+    ../include/wx4stl/wx/regex.h
+    ../include/wx4stl/wx/string.h
+    ../include/wx4stl/wx/thread.h
+    ../include/wx4stl/wx/tokenzr.h
+    ../include/wx4stl/wx/variant.h
+    ../include/wx4stl/wx/wx.h
+    ../include/wx4stl/wx/wxprec.h
+    ../include/wx4stl/wx/wxtype.h
+    
 )
 
 # =============================================================================
@@ -379,7 +442,7 @@ function(create_framework_library framework)
         source_group(
             TREE ${CMAKE_CURRENT_SOURCE_DIR}/..
             PREFIX "Header Files"
-            FILES ${COMMON_HEADER_FILES}
+            FILES ${ETKSQLITE3_HEADERS}
         )
 
         source_group(

@@ -13,6 +13,7 @@
  */
 /////////////////////////////////////////////////////////////////////////////
 #include "ETKSQLite3ValueBind.h"
+#include <ETKSQLite3VariantDatas.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,6 +130,18 @@ ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkDateTime *_petkDateTimeValue)
     m_eDataPtr.m_petkDateTimeValue = _petkDateTimeValue;
 }
 
+ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkDate *_petkDateValue)
+    : m_eDataType(eDataTypeDate)
+{
+    m_eDataPtr.m_petkDateValue = _petkDateValue;
+}
+
+ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkTime *_petkTimeValue)
+    : m_eDataType(eDataTypeTime)
+{
+    m_eDataPtr.m_petkTimeValue = _petkTimeValue;
+}
+
 ETKSQLite3ValueBind::ETKSQLite3ValueBind(bool *_pBoolValue)
     : m_eDataType(eDataTypeBool)
 {
@@ -209,6 +222,16 @@ void ETKSQLite3ValueBind::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bA
             case eDataTypeDateTime :
             {
                 _rstmt.BindDateTime(_iIndex,*m_eDataPtr.m_petkDateTimeValue);
+                break;
+            }
+            case eDataTypeDate:
+            {
+                _rstmt.BindDate(_iIndex,*m_eDataPtr.m_petkDateValue);
+                break;
+            }
+            case eDataTypeTime :
+            {
+                _rstmt.BindTime(_iIndex,*m_eDataPtr.m_petkTimeValue);
                 break;
             }
             case eDataTypeBool :

@@ -16,9 +16,9 @@
 #include <wx/wxtype.h>
 #include <wx/datetime.h>
 
-static const wxChar * ISODate       = "AAAA-MM-JJ";
-static const wxChar * ISOTime       = "HH:MM:SS";
-static const wxChar * ISODateTime   = "AAAA-MM-JJTHH:MM:SS";
+static const wxChar * ISODate       = "%Y-%m-%d";
+static const wxChar * ISOTime       = "%H:%M:%S";
+static const wxChar * ISODateTime   = "%Y-%m-%dT%H:%M:%S";
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,6 @@ int wxTime::GetSecond() const
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // Constructors
 wxDateTime::wxDateTime(const TimePoint& timePoint)
     : m_timePoint(timePoint)
@@ -234,23 +233,29 @@ wxDateTime wxDateTime::Now()
 
 wxDateTime wxDateTime::UTCNow()
 {
-    auto now = std::chrono::system_clock::now();
-    auto in_time_t = std::chrono::system_clock::to_time_t(now);
-    std::tm tm = *std::gmtime(&in_time_t);
-    return wxDateTime(std::chrono::system_clock::from_time_t(std::mktime(&tm)));
+    return wxDateTime(Clock::now());
 }
 
 // Get into UTC format
 wxDateTime wxDateTime::toUTC() const
 {
-    auto in_time_t = Clock::to_time_t(m_timePoint);
-    std::tm tm = *std::gmtime(&in_time_t);
-    return wxDateTime(std::chrono::system_clock::from_time_t(std::mktime(&tm)));
+    return *this;
 }
 
 wxDateTime wxDateTime::MakeUTC() const
 {
     return toUTC();
+}
+
+wxDateTime wxDateTime::ToLocalTime() const
+{
+    auto in_time_t = Clock::to_time_t(m_timePoint);
+
+    // Convert into struct tm local
+    std::tm tmLocal = *std::localtime(&in_time_t);
+
+    // Back to time_point
+    return wxDateTime(Clock::from_time_t(std::mktime(&tmLocal)));
 }
 
 // Format date / time into string
@@ -265,14 +270,23 @@ wxString wxDateTime::Format(const std::string& format) const
 }
 
 // Format date / time into string
-wxString wxDateTime::toString(const std::string& format) const
+wxString wxDateTime::toString(const std::string& format, bool _bUTC) const
 {
-    std::time_t timeT = Clock::to_time_t(m_timePoint);
-    std::tm tm = *std::localtime(&timeT);
+    auto in_time_t = Clock::to_time_t(m_timePoint);
+    std::tm tm{};
+    if (_bUTC)
+    {
+        tm = *std::gmtime(&in_time_t);
+    }
+    else
+    {
+        tm = *std::localtime(&in_time_t);
+    }
 
     char buffer[256];
-    std::strftime(buffer, sizeof(buffer), format.c_str(), &tm);
-    return wxString(buffer);
+    return std::strftime(buffer, sizeof(buffer), format.c_str(), &tm)
+        ? buffer
+        : wxEmptyString;
 }
 
 // Parse string to create wxDateTime (portable version)

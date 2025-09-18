@@ -2,7 +2,7 @@
 // Name:        wxETKSQLite3Types.h
 // Library:     wxETKSQLite3
 // Purpose:     Define types, export/import managment.
-// Author:      Stéphane Château (Feneck91@free.fr)
+// Author:      Stéphane Château
 // Modified by:
 // Created:     2011/07/31
 // Copyright:   © Stéphane Château
@@ -45,9 +45,14 @@
 
 // Define all wx classes alias to etk classes.
 using etkString             = wxString;
+#define etkEmptyString      wxEmptyString
 using etkVariant            = wxVariant;
 using etkArrayInt           = wxArrayInt;
 using etkInt64              = wxLongLong;
 using etkDateTime           = wxDateTime;
+using etkDate               = wxDate;
+using etkTime               = wxTime;
+
+#define etkInvalidDateTime  wxInvalidDateTime;
 
 #endif // INCLUDE_ETK_SQLITE3_TYPES_H

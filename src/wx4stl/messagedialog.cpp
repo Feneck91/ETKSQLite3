@@ -25,7 +25,6 @@ wxMessageDialog::wxMessageDialog(void* _pParent, const std::string& _strTitle, c
 long wxMessageDialog::ShowModal()
 {
     UINT uType = 0;
-    UINT uButtons = 0;
 
     // Icon
     if (m_lStyle & wxICON_ERROR)

@@ -1,12 +1,13 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wxETKSQLite3_pch.h
-// Library:     wxETKSQLite3
-// Purpose:     Header to create Pre-Compiled Header (PCH)
-// Author:      Stéphane Château (Feneck91@free.fr)
-// Modified by:
-// Created:     2011/07/31
-// Copyright:   © Stéphane Château
-// Licence:     wxWindows licence
+/**
+ * @file wxETKSQLite3_pch.h
+ * @briefHeader to create Pre-Compiled Header (PCH).
+ *
+ * @author Stéphane Château
+ * @date Created: 2011/07/31
+ * @copyright Copyright © Stéphane Château
+ * @license wxWindows License
+ */
 /////////////////////////////////////////////////////////////////////////////
 
 #ifndef WX_PCH_H_INCLUDED

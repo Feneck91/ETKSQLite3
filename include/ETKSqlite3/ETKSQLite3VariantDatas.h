@@ -35,7 +35,7 @@
  * @version Name : ETKSQLite3<br>
  *          Revision : <b>1.0</b>
  */
-class EXPORT_IMPORT ETKSQLite3VariantDataBlob  : public wxVariantData
+class EXPORT_IMPORT ETKSQLite3VariantDataBlob : public wxVariantData
 {
 public:
     /**
@@ -312,7 +312,7 @@ public:
      *
      * @return A string name.
      */
-    virtual etkString                   GetType() const;
+    etkString                           GetType() const override;
 
     /**
      * Override these to provide common functionality.
@@ -320,7 +320,7 @@ public:
      * @param _rData Variant to test if is equal to this.
      * @return always return false, never test all columns equality.
      */
-    virtual bool                        Eq(wxVariantData& _rData) const;
+    bool                                Eq(wxVariantData& _rData) const override;
 
     /**
      * Used to convert to etkString.
@@ -417,7 +417,7 @@ public:
      *
      * @return A string name.
      */
-    virtual etkString                   GetType() const;
+    etkString                           GetType() const override;
 
     /**
      * Override these to provide common functionality.
@@ -425,7 +425,7 @@ public:
      * @param _rData Variant to test if is equal to this.
      * @return always return false, never test all columns equality.
      */
-    virtual bool                        Eq(wxVariantData& _rData) const;
+    bool                                Eq(wxVariantData& _rData) const override;
 
     /**
      * Used to convert to etkString.
@@ -435,7 +435,7 @@ public:
      * @param _rstrValue String value to set with this content. Always returns "?".
      * @return Always true.
      */
-    virtual bool                        Write(etkString & _rstrValue) const;
+    bool                                Write(etkString & _rstrValue) const override;
     //@}
 };
 
@@ -495,7 +495,7 @@ public:
      *
      * @return A string name.
      */
-    virtual etkString                   GetType() const;
+    etkString                           GetType() const override;
 
     /**
      * Override these to provide common functionality.
@@ -503,7 +503,7 @@ public:
      * @param _rData Variant to test if is equal to this.
      * @return always return false, never test all columns equality.
      */
-    virtual bool                        Eq(wxVariantData& _rData) const;
+    bool                                Eq(wxVariantData& _rData) const override;
 
     /**
      * Used to convert to etkString.
@@ -513,7 +513,7 @@ public:
      * @param _rstrValue String value to set with this content. Always returns "?".
      * @return Always true.
      */
-    virtual bool                        Write(etkString & _rstrValue) const;
+    bool                                Write(etkString & _rstrValue) const override;
     //@}
 };
 
@@ -584,7 +584,7 @@ public:
      *
      * @return A string name.
      */
-    virtual etkString                   GetType() const;
+    etkString                           GetType() const override;
 
     /**
      * Override these to provide common functionality.
@@ -592,7 +592,7 @@ public:
      * @param _rData Variant to test if is equal to this.
      * @return always return false, never test all columns equality.
      */
-    virtual bool                        Eq(wxVariantData& _rData) const;
+    bool                                Eq(wxVariantData& _rData) const override;
 
     /**
      * Used to convert to etkString.
@@ -602,7 +602,7 @@ public:
      * @param _rstrValue String value to set with this content.
      * @return Always true.
      */
-    virtual bool                        Write(etkString & _rstrValue) const;
+    bool                                Write(etkString & _rstrValue) const override;
     //@}
 };
 

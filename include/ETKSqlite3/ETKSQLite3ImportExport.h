@@ -2,7 +2,7 @@
 // Name:        ETKSQLite3ImportExport.h
 // Library:     wxETKSQLite3
 // Purpose:     Define import / export.
-// Author:      Stéphane Château (Feneck91@free.fr)
+// Author:      Stéphane Château
 // Modified by:
 // Created:     2025/09/01
 // Copyright:   © Stéphane Château
@@ -21,6 +21,9 @@
 #endif
 
 #ifdef WIN32
+    #define     WXEXPORT            __declspec(dllexport)
+    #define     WXIMPORT            __declspec(dllimport)
+
     #ifdef MAKING_ETK_SQLITE3_LIB
         #define             WXMAKINGLIB_WXSQLITE3
         #define             EXPORT_IMPORT
@@ -29,12 +32,18 @@
         #ifdef USING_ETK_SQLITE3_LIB
             #define         EXPORT_IMPORT
         #else
-            #ifdef MAKING_ETK_SQLITE3_SHARED
+            #ifdef USING_ETK_SQLITE3_LIB_SHARED
+                // Same as USING_ETK_SQLITE3_LIB, liked in static lib but all result is exported
                 #define     WXMAKINGDLL_WXSQLITE3
-                #define     EXPORT_IMPORT      __declspec(dllexport)
+                #define     EXPORT_IMPORT           __declspec(dllexport)
             #else
-                #define     WXUSINGDLL_WXSQLITE3
-                #define     EXPORT_IMPORT      __declspec(dllimport)
+                #ifdef MAKING_ETK_SQLITE3_SHARED
+                    #define     WXMAKINGDLL_WXSQLITE3
+                    #define     EXPORT_IMPORT       __declspec(dllexport)
+                #else
+                    #define     WXUSINGDLL_WXSQLITE3
+                    #define     EXPORT_IMPORT       __declspec(dllimport)
+                #endif
             #endif
         #endif
     #endif
@@ -45,8 +54,5 @@
         #error Not implemented !
     #endif
 #endif
-
-// Define WXEXPORT like EXPORT_IMPORT
-#define     WXEXPORT            EXPORT_IMPORT
 
 #endif // INCLUDE_ETK_SQLITE3_IMPORT_EXPORT_H

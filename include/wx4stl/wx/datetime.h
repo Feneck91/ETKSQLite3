@@ -156,12 +156,12 @@ public:
 
     // Get internal date en UTC
     wxDateTime toUTC() const;
-
     wxDateTime MakeUTC() const;
+    wxDateTime ToLocalTime() const; // To local time (not UTC)
 
     // Format date
     wxString Format(const std::string& format = "%Y-%m-%d %H:%M:%S") const;
-    wxString toString(const std::string& format) const;
+    wxString toString(const std::string& format, bool _bUTC = false) const;
 
     // Parse string to create a wxDateTime
     static wxDateTime ParseFormat(const std::string& dateTimeStr, const std::string& format = "%Y-%m-%d %H:%M:%S");
@@ -198,7 +198,7 @@ public:
     wxLongLong GetJulianDayNumber() const;
 
 private:
-    TimePoint m_timePoint; // Point dans le temps
+    TimePoint m_timePoint; // Internal stockage in UTC
 };
 
 // Constantes pour les durées
@@ -211,46 +211,4 @@ namespace wxTimeSpan
     const wxDateTime::Duration Weeks(int weeks);
 }
 
-/*
-class EXPORT_IMPORT wxQDateTime : public QDateTime
-{
-private:
-    mutable wxString m_strParsedDate;
-public :
-    wxQDateTime();
-    wxQDateTime(const wxQDateTime &_rDT);
-    wxQDateTime(const QDateTime &_rDT);
-    wxQDateTime(wxLongLong &_dt);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    wxQDateTime(double _dValue);
-    wxQDateTime(const QDate & _rDate);
-#else
-    wxQDateTime(double _dValue);
-    wxQDateTime(const QDate & _rDate);
-#endif
-    wxQDateTime(const struct tm &date);
-    wxQDateTime(const QTime & _rTime);
-    operator QDate () const;
-    operator QTime () const;
-
-    void SetMillisecond(int _iMillisecond);
-    bool IsValid() const;
-    // This function returns the date representation in the ISO 8601 format (YYYY-MM-DD).
-    wxString FormatISODate() const;
-    // This function returns the time representation in the ISO 8601 format (HH:MM:SS).
-    wxString FormatISOTime() const;
-    wxString Format(const char *_pszFormat) const;
-    wxQDateTime MakeUTC() const;
-
-    const wxChar * ParseDate(const QString &_rString);
-    const wxChar * ParseTime(const QString &_rString);
-    const wxChar * ParseDateTime(const QString &_rString);
-
-    // get the internal representation
-    wxLongLong GetValue() const;
-    wxLongLong GetJulianDayNumber() const;
-
-    time_t GetTicks() const;
-};
-*/
 #endif // WX_DATETIME_HEADER

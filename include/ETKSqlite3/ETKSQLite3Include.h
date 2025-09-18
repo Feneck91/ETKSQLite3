@@ -14,7 +14,10 @@
 /////////////////////////////////////////////////////////////////////////////
 
 // Used to call all includes needed to access to all classes of wxETKSQLite3 library
+#pragma warning(push) // Backup actual warning parameters
+#pragma warning(disable : 4251) // Should have dll interface
 #include "ETKSQLite3Types.h"
 #include "ETKSQLite3Database.h"
 #include "ETKSQLite3Record.h"
 #include "ETKSQLite3VariantDatas.h"
+#pragma warning(pop) // Restaure warning parameters

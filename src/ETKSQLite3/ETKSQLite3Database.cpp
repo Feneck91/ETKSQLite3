@@ -95,13 +95,16 @@ bool ETKSQLite3Database::Create(etkString _strDatabaseFilePath)
         m_pDatabase->Open(_strDatabaseFilePath, GetEncryptKey(), WXSQLITE_OPEN_READWRITE | WXSQLITE_OPEN_CREATE);
         ExecuteConfigAfterOpenOrCreate();
         // Database structure creation
-        ExecuteSQLWithTransaction(m_strSQLSchema.IsEmpty() ? GetSQLDatabaseSchema().wx_str() : m_strSQLSchema.wx_str(), true, true);
-        // Update ini file to automatically load this database file as startup
-        wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
-        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, _strDatabaseFilePath);
-        InitCallbacks();
-        wxLogVerbose(wxT("Created SQLite3 database file: %s"), _strDatabaseFilePath.c_str());
-        bRet = true; // (no exception raised)
+        bRet = (0 != ExecuteSQLWithTransaction(m_strSQLSchema.IsEmpty() ? GetSQLDatabaseSchema().wx_str() : m_strSQLSchema.wx_str(), true, true));
+        if (bRet)
+        {
+            // Update ini file to automatically load this database file as startup
+            wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
+            wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, _strDatabaseFilePath);
+            InitCallbacks();
+            wxLogVerbose(wxT("Created SQLite3 database file: %s"), _strDatabaseFilePath.c_str());
+            bRet = true; // (no exception raised)
+        }
     }
     catch(wxSQLite3Exception &_ex)
     {   // Error while creating the database

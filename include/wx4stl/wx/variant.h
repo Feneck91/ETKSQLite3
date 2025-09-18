@@ -25,8 +25,6 @@
 //
 // wxVariant Class
 //
-//#include <QVariant>
-//#include <QDateTime>
 
 class EXPORT_IMPORT wxVariantData
 {

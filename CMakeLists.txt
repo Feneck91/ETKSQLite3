@@ -22,17 +22,7 @@ option(BUILD_TESTS "Build the test suite" OFF)
 # Add le sub folder build to build the ETKSQLite3 lib
 add_subdirectory(build)
 
-# Add Google Test
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG  v1.12.0 # v1.12.1 > In release note: This will be the last release to support C++11. Future releases will require at least C++14.
-)
-FetchContent_MakeAvailable(googletest)
-
 # Add subfolder tests/ if tests is activated
 if(BUILD_TESTS)
-    enable_testing()
     add_subdirectory(tests)
 endif()

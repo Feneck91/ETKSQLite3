@@ -40,57 +40,56 @@ using wxByteArray = std::vector<char>;
 class wxCharBuffer : public std::vector<char>
 {
 public:
-    wxCharBuffer();
-    wxCharBuffer(const char *pData, size_t size = -1);
-    operator const char *() const;
+    EXPORT_IMPORT wxCharBuffer();
+    EXPORT_IMPORT wxCharBuffer(const char *pData, size_t size = -1);
+    EXPORT_IMPORT operator const char *() const;
 };
-
 
 /**
  * wxString wrapper class.
  */
-class EXPORT_IMPORT wxString : public std::string
+class wxString : public std::string
 {
 private:
     mutable wxByteArray  m_convertToChar; // Used to convert to const char *
 public:
-    static const size_t  npos;
+    EXPORT_IMPORT static const size_t  npos;
 public:
     // Constructors
-    wxString();
-    wxString(const wxString &_strString);
-    wxString(const std::string &_strString);
-    wxString(const char *_pszString);
-    wxString(wxChar chPad, size_t nRepeat);
+    EXPORT_IMPORT wxString();
+    EXPORT_IMPORT wxString(const wxString &_strString);
+    EXPORT_IMPORT wxString(const std::string &_strString);
+    EXPORT_IMPORT wxString(const char *_pszString);
+    EXPORT_IMPORT wxString(wxChar chPad, size_t nRepeat);
 
-    int                 Cmp(const std::string &_strString) const;
-    size_t              Length() const;
-    char                operator[](int _iPosition) const;
-    wxString &          operator<<(const wxString &_rstrString);
-    operator const char *() const;
-    int                 Len() const;
-    void                ToLong(long *_pLong) const;
-    bool                IsEmpty() const;
-    bool                IsSameAs(const wxString &_rstrString, bool _bIsCaseSensitive = true) const;
-    wxCharBuffer        ToUTF8() const;
-    static wxString     FromUTF8(const char *pszText,size_t _stLength = std::string::npos);
-    int                 Find(wxChar ch) const;
-    wxString            Left(size_t count) const;
-    wxString            Right(size_t count) const;
-    const wxChar *      wx_str() const;
-    const wxChar *      c_str() const;
-    const wxChar *      utf8_str() const;
-    wxString            SubString(size_t nStart = 0, size_t nLen = -1) const;
-    void                Replace(const wxChar *_pstrBefore,const wxChar *_pstrAfter);
+    EXPORT_IMPORT int                 Cmp(const std::string &_strString) const;
+    EXPORT_IMPORT size_t              Length() const;
+    EXPORT_IMPORT char                operator[](int _iPosition) const;
+    EXPORT_IMPORT wxString &          operator<<(const wxString &_rstrString);
+    EXPORT_IMPORT operator const char *() const;
+    EXPORT_IMPORT int                 Len() const;
+    EXPORT_IMPORT void                ToLong(long *_pLong) const;
+    EXPORT_IMPORT bool                IsEmpty() const;
+    EXPORT_IMPORT bool                IsSameAs(const wxString &_rstrString, bool _bIsCaseSensitive = true) const;
+    EXPORT_IMPORT wxCharBuffer        ToUTF8() const;
+    EXPORT_IMPORT static wxString     FromUTF8(const char *pszText,size_t _stLength = std::string::npos);
+    EXPORT_IMPORT int                 Find(wxChar ch) const;
+    EXPORT_IMPORT wxString            Left(size_t count) const;
+    EXPORT_IMPORT wxString            Right(size_t count) const;
+    EXPORT_IMPORT const wxChar *      wx_str() const;
+    EXPORT_IMPORT const wxChar *      c_str() const;
+    EXPORT_IMPORT const wxChar *      utf8_str() const;
+    EXPORT_IMPORT wxString            SubString(size_t nStart = 0, size_t nLen = -1) const;
+    EXPORT_IMPORT void                Replace(const wxChar *_pstrBefore,const wxChar *_pstrAfter);
     // Adds count copies of chPad to the beginning, or to the end of the string (the default).
-    wxString &          Pad (size_t count, wxChar chPad= ' ', bool fromRight=true);
+    EXPORT_IMPORT wxString &          Pad (size_t count, wxChar chPad= ' ', bool fromRight=true);
     // find first/last occurence of any character not in the set
-    size_t              find_first_not_of(const wxChar* sz, size_t nStart = 0) const;
+    EXPORT_IMPORT size_t              find_first_not_of(const wxChar* sz, size_t nStart = 0) const;
     // find first/last occurence of any character in the set
-    size_t              find_first_of(const wxChar* sz, size_t nStart) const;
-    wxString            Printf(const char *_pszFormat,...);
-    static wxString     Format(const char *_pszFormat,...);
-    static wxString     number(int64_t value);
+    EXPORT_IMPORT size_t              find_first_of(const wxChar* sz, size_t nStart) const;
+    EXPORT_IMPORT wxString            Printf(const char *_pszFormat,...);
+    EXPORT_IMPORT static wxString     Format(const char *_pszFormat,...);
+    EXPORT_IMPORT static wxString     number(int64_t value);
 };
 
 bool wxIsspace(wxChar _cChar);

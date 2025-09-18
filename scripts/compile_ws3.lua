@@ -9,11 +9,11 @@
 ----------------------------------------------------------------------------------------------
 -- Script parameters:
 --
--- Call lua.exe "compile_ws3.lua" <ws3 file path> <qt/wx/boost> <header file path> <source file path>
+-- Call lua.exe "compile_ws3.lua" <ws3 file path> <qt/wx/stl> <header file path> <source file path>
 --
 -- arg[0] - "compile_ws3.lua" is this script to execute
 -- arg[1] - <ws3 file path> is the path of the file used to generate database source code
--- arg[2] - <qt / wx / boost> indicate if the generated file must be generated for QT, Boost or for wxWidgets
+-- arg[2] - <qt / wx / stl> indicate if the generated file must be generated for Qt, STL or for wxWidgets
 -- arg[3] - <header file path> is the full path where to generated the header file (.h)
 -- arg[4] - <source file path> is the full path where to generated the source file (.cpp)
 --
@@ -88,6 +88,7 @@
 --                      DATETIME
 --                      BLOB
 --                      ENUM
+--                      VARIANT             - No type, use variant binding
 
 -- Options for columns :
 --                      PRIMARY_KEY         : column is a primary key
@@ -100,6 +101,7 @@
 --                      ON_DELETE_SET_NULL  : only use with foreign key, add on delete set null for this field
 --                      ON_UPDATE_SET_NULL  : only use with foreign key, add on update set null for this field
 --
+-- ETK_SQLITE3_COMMENT_TABLE
 -- First item of ETK_SQLITE3_DECLARE_TABLE could be :
 --                      DECLARE_DATA_IMPLEMENTATION(template_header.h,template_header.cpp)
 --                      into the template, can use $REPEAT_VARIABLE$ to make code for each member (example) :
@@ -135,11 +137,11 @@ function DisplayCommandLineHelp()
         end
         print(string.format("Bad parameters when calling lua script:\n\"%s\"\n",strCommandLine))
     end
-    print("Call lua \"compile_ws3.lua\" <ws3 file path> <qt/wx/boost> <header file path> <source file path>")
+    print("Call lua \"compile_ws3.lua\" <ws3 file path> <qt/wx/stl> <header file path> <source file path>")
     print("where")
     print("    \"compile_ws3.lua\" is this script to execute")
     print("    <ws3 file path> is the path of the file used to generate database source code")
-    print("    <qt / wx / boost> indicate if the generated file must be generated for QT, Boost or for wxWidgets")
+    print("    <qt / wx / stl> indicate if the generated file must be generated for Qt, STL or for wxWidgets")
     print("    <header file path> is the full path where to generated the header file (.h)")
     print("    <source file path> is the full path where to generated the source file (.cpp)")
 end
@@ -354,6 +356,44 @@ function string:replaceall(strPattern,strReplacement)
 end
 
 --[[--------------------------------------------------------------------------
+ Recompute indexes to remove cariage return before and after text bloc
+
+ Increment / decrement indexes depending of cariage return presence
+
+ Parameters :
+-------------
+    strContentFile  : Text
+    iIndexBeginBloc : Begin index
+    iIndexEndBloc   : End index
+    bInto           : Check if cariage return are into the bloc of out of the bloc
+    bOnlyBegin      : To don' remove too much cariage return, make the test only on begin of the bloc
+
+ Return :
+---------
+    The new computed indexes
+----------------------------------------------------------------------------]]
+function ComputeIndexes2RemoveBlankLine(strContentFile, iIndexBeginBloc, iIndexEndBloc, bInto, bOnlyBegin)
+    local iIndexMoreLess = (bInto and 1 or -1)
+
+    if (string.sub(strContentFile, iIndexBeginBloc, iIndexBeginBloc) == "\n") then
+        iIndexBeginBloc = iIndexBeginBloc + iIndexMoreLess
+    end
+    if (string.sub(strContentFile, iIndexBeginBloc, iIndexBeginBloc) == "\r") then
+        iIndexBeginBloc = iIndexBeginBloc + iIndexMoreLess
+    end
+    if (not bOnlyBegin) then
+        -- Remove last \n or \r if exist
+        if (string.sub(strContentFile, iIndexEndBloc, iIndexEndBloc) == "\r") then
+            iIndexEndBloc = iIndexEndBloc - iIndexMoreLess
+        end
+        if (string.sub(strContentFile, iIndexEndBloc, iIndexEndBloc) == "\n") then
+            iIndexEndBloc = iIndexEndBloc - iIndexMoreLess
+        end
+    end
+    return iIndexBeginBloc, iIndexEndBloc
+end
+
+--[[--------------------------------------------------------------------------
  Remove the first bloc found delimited by $BLOC_NAME${this is the bloc}.
 
  The bloc $TOTO$ is like :
@@ -384,8 +424,8 @@ end
  -------------------------
 
  #############################################################################
- (bRemoveTagsOnly is true) => if (1) is true returns :
- ----------------------------------------------------
+ (bRemoveTagsOnly is true) => if (1) is true returns : (bloc found)
+ -----------------------------------------------------
  The bloc is not removed, only the tag around it are removed
 
  return (2) is                                      return (3) is
@@ -411,12 +451,12 @@ end
     (1) true / false depending if the function found the entire bloc or not
     (2) Bloc content, if (1) is false return empty string
     (3) Content file without this bloc, if (1) is false it is the same as
-       strBlocName parameter
+        strBlocName parameter
     (4) Begin of bloc index (0 if function returns false as first return parameter)
     (5) End of bloc index (0 if function returns false as first return parameter)
 ----------------------------------------------------------------------------]]
-function RemoveFirstBloc(strBlocName,strContentFile,bRemoveTagsOnly, iStartIndex)
-    local strContentBloc,strRetContentFile
+function RemoveFirstBloc(strBlocName, strContentFile, bRemoveTagsOnly, iStartIndex)
+    local strContentBloc, strRetContentFile
     local bFound = false
 
     if (iStartIndex == nil) then
@@ -427,10 +467,10 @@ function RemoveFirstBloc(strBlocName,strContentFile,bRemoveTagsOnly, iStartIndex
     local strRegexExpression = string.format("$%s$[^{]*{",strBlocName)
     -- iIndexBeginBloc is the first char of the bloc after the tag and opened bracket
     -- iIndexEndBloc is the last char of the bloc after the closed bracket
-    local iIndexBeginBloc,iIndexEndBloc
+    local iIndexBeginBloc, iIndexEndBloc
 
     -- Find it (regex expression)
-    local iFindTagStart,iIndexBeginBloc = string.find(strContentFile,strRegexExpression,iStartIndex,false)
+    local iFindTagStart, iIndexBeginBloc = string.find(strContentFile, strRegexExpression, iStartIndex, false)
     iIndexEndBloc = iIndexBeginBloc
 
     if (iFindTagStart~=nil) then
@@ -441,7 +481,7 @@ function RemoveFirstBloc(strBlocName,strContentFile,bRemoveTagsOnly, iStartIndex
         local iBracket = 0
         -- Find the closed bracket '}' that close the bloc
         repeat
-            local iFindBracketStart,iFindBracketStop = string.find(strContentFile,"[^}{]*[}{]",iIndexEndBloc + 1,false)
+            local iFindBracketStart, iFindBracketStop = string.find(strContentFile,"[^}{]*[}{]",iIndexEndBloc + 1,false)
             if (iFindBracketStart ~= nil) then
                 iIndexEndBloc = iFindBracketStop
                 if (string.sub(strContentFile,iFindBracketStop,iFindBracketStop) == "}") then
@@ -457,34 +497,22 @@ function RemoveFirstBloc(strBlocName,strContentFile,bRemoveTagsOnly, iStartIndex
         until iFindBracketStart == nil
         if (iBracket ~= 0) then
             -- The ended bracket was not found
-            return false,"",strContentFile,0,0
+            return false, "", strContentFile, 0, 0
         end
     else
         --  If not found, return same string
-        return false,"",strContentFile,0,0
+        return false, "", strContentFile, 0, 0
     end
 
     -- Here, iIndexBeginBloc point on the first { of the bloc
     -- Here, iIndexEndBloc point on the last } of the bloc
     local iIndexBeginBlocToExtract = iIndexBeginBloc + 1 -- without the first {
-    local iIndexEndBlocToExtract = iIndexEndBloc - 1 -- without the last }
+    local iIndexEndBlocToExtract = iIndexEndBloc - 1     -- without the last }
 
     -- Get the content bloc
-    -- Remove first \n or \r if exist
-    if (string.sub(strContentFile,iIndexBeginBlocToExtract,iIndexBeginBlocToExtract) == "\n") then
-        iIndexBeginBlocToExtract = iIndexBeginBlocToExtract + 1
-    end
-    if (string.sub(strContentFile,iIndexBeginBlocToExtract,iIndexBeginBlocToExtract) == "\r") then
-        iIndexBeginBlocToExtract = iIndexBeginBlocToExtract + 1
-    end
-    -- Remove last \n or \r if exist
-    if (string.sub(strContentFile,iIndexEndBlocToExtract,iIndexEndBlocToExtract) == "\r") then
-        iIndexEndBlocToExtract = iIndexEndBlocToExtract - 1
-    end
-    if (string.sub(strContentFile,iIndexEndBlocToExtract,iIndexEndBlocToExtract) == "\n") then
-        iIndexEndBlocToExtract = iIndexEndBlocToExtract - 1
-    end
-
+    -- Remove first \n or \r if exist (into the content bloc)
+    -- These lines just remove cariage returns if exists to don't have lot of blank lines
+    iIndexBeginBlocToExtract, iIndexEndBlocToExtract = ComputeIndexes2RemoveBlankLine(strContentFile, iIndexBeginBlocToExtract, iIndexEndBlocToExtract, true, bRemoveTagsOnly)
     strContentBloc = string.sub(strContentFile,iIndexBeginBlocToExtract,iIndexEndBlocToExtract)
 
     if (bRemoveTagsOnly) then
@@ -494,10 +522,12 @@ function RemoveFirstBloc(strBlocName,strContentFile,bRemoveTagsOnly, iStartIndex
                             string.sub(strContentFile,iIndexEndBloc + 1) -- To the end of string
     else
         -- Add text before bloc + after bloc
-        strRetContentFile = string.sub(strContentFile,1,iFindTagStart - 1) .. string.sub(strContentFile,iIndexEndBloc + 1)
+        iFindTagStart, iIndexEndBloc = ComputeIndexes2RemoveBlankLine(strContentFile, iFindTagStart - 1, iIndexEndBloc + 1, false, false)
+        strRetContentFile = string.sub(strContentFile, 1, iFindTagStart) .. string.sub(strContentFile, iIndexEndBloc)
+        --strRetContentFile = string.sub(strContentFile, 1, iFindTagStart - 1) .. string.sub(strContentFile, iIndexEndBloc + 1)
     end
 
-    return bFound,strContentBloc,strRetContentFile,iFindTagStart,iIndexEndBloc
+    return bFound, strContentBloc, strRetContentFile, iFindTagStart, iIndexEndBloc
 end
 
 --[[--------------------------------------------------------------------------
@@ -656,6 +686,29 @@ function switch(iCase)
     }
     return swtbl
 end
+
+--[[--------------------------------------------------------------------------
+ Return the first index with the given value (or nil if not found).
+
+ Parameters :
+-------------
+    array : the array where to find value
+    value : the value to find
+
+ Return :
+---------
+    The index of the first element to find, nil if not found.
+
+----------------------------------------------------------------------------]]
+function indexOf(array, value)
+    for i, v in ipairs(array) do
+        if v == value then
+            return i
+        end
+    end
+    return nil
+end
+
 ----------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------
@@ -678,7 +731,7 @@ else
     local bGenerateH,bGenerateCPP = true,true
     local bFind,strContentType -- General variable, for all needed
     local strExportImport
-    local strwxOrQToRBoost = arg[2]
+    local strwxOrQToRSTL = arg[2]
 
     --------------------------------------------
     -- 1> Read the ws3 input file content
@@ -706,10 +759,10 @@ else
     end
 
     --------------------------------------------
-    -- Check qt / wx / boost argument
+    -- Check qt / wx / STL argument
     if (string.len(strError) == 0) then
-        if (string.lower(strwxOrQToRBoost) ~= "wx" and string.lower(strwxOrQToRBoost) ~= "qt" and string.lower(strwxOrQToRBoost) ~= "boost") then
-            strError = string.format("Parameter 3 (%s) is unknown, use wx (wxWidgets generation), qt (QT generation) or boost (Boost generation)!",strwxOrQToRBoost)
+        if (string.lower(strwxOrQToRSTL) ~= "wx" and string.lower(strwxOrQToRSTL) ~= "qt" and string.lower(strwxOrQToRSTL) ~= "stl") then
+            strError = string.format("Parameter 3 (%s) is unknown, use wx (wxWidgets generation), qt (QT generation) or stl (STL generation)!", strwxOrQToRSTL)
         end
     end
 
@@ -867,20 +920,20 @@ else
         --------------------------------------------------
         -- 7> Table that contains all type with parameters
         -- 7.1> Init default types
-        if (strwxOrQToRBoost == "wx") then
-            tabTypeMembers.INTEGER              = "wxLongLong"
-            tabTypeMembers.BIGINT               = "wxLongLong"
-            tabTypeMembers.VARCHAR              = "wxString"
-            tabTypeMembers.DATE                 = "wxDateTime"
-            tabTypeMembers.TIME                 = "wxDateTime"
-            tabTypeMembers.DATETIME             = "wxDateTime"
+        if (strwxOrQToRSTL == "wx") then
+            tabTypeMembers.INTEGER              = "etkInt64"
+            tabTypeMembers.BIGINT               = "etkInt64"
+            tabTypeMembers.VARCHAR              = "etkString"
+            tabTypeMembers.DATE                 = "etkDate"
+            tabTypeMembers.TIME                 = "etkTime"
+            tabTypeMembers.DATETIME             = "etkDateTime"
         else
-            tabTypeMembers.INTEGER              = "qint64"
-            tabTypeMembers.BIGINT               = "qint64"
-            tabTypeMembers.VARCHAR              = "QString"
-            tabTypeMembers.DATE                 = "QDate"
-            tabTypeMembers.TIME                 = "QTime"
-            tabTypeMembers.DATETIME             = "QDateTime"
+            tabTypeMembers.INTEGER              = "etkInt64"
+            tabTypeMembers.BIGINT               = "etkInt64"
+            tabTypeMembers.VARCHAR              = "etkString"
+            tabTypeMembers.DATE                 = "etkDate"
+            tabTypeMembers.TIME                 = "etkTime"
+            tabTypeMembers.DATETIME             = "etkDateTime"
         end
 
         tabTypeMembers.INT                  = "long"
@@ -893,6 +946,7 @@ else
         tabTypeMembers.NUMERIC              = "double"
         tabTypeMembers.BOOLEAN              = "bool"
         tabTypeMembers.BLOB                 = "ETKSQLite3VariantDataBlob"
+        tabTypeMembers.VARIANT              = "etkVariant"
 
         -- 7.2> Override default types by user types
         repeat
@@ -953,21 +1007,33 @@ else
         -- Init reference / value
         --------------------------------------------------
         -- For parameters, as reference
-        if (strwxOrQToRBoost == "wx") then
+        if (strwxOrQToRSTL == "wx") then
             tabTypeMembersRef.DATE      = "wxdt"
             tabTypeMembersRef.TIME      = "wxdt"
             tabTypeMembersRef.DATETIME  = "wxdt"
             tabTypeMembersRef.BIGINT    = "wxll"
             tabTypeMembersRef.INTEGER   = "wxll"
+            tabTypeMembersRef.VARIANT   = "wxVar"
         else
-            tabTypeMembersRef.DATE      = "qd"
-            tabTypeMembersRef.TIME      = "qt"
-            tabTypeMembersRef.DATETIME  = "qdt"
-            tabTypeMembersRef.BIGINT    = "qi64"
-            tabTypeMembersRef.INTEGER   = "qi64"
+            if (strwxOrQToRSTL == "qt") then
+                tabTypeMembersRef.DATE      = "wxdt"
+                tabTypeMembersRef.TIME      = "wxdt"
+                tabTypeMembersRef.DATETIME  = "wxdt"
+                tabTypeMembersRef.BIGINT    = "wxll"
+                tabTypeMembersRef.INTEGER   = "wxll"
+                tabTypeMembersRef.VARIANT   = "etkVar"
+                tabTypeMembersRef.VARIANT   = "etkVar"
+            else
+                tabTypeMembersRef.DATE      = "d"
+                tabTypeMembersRef.TIME      = "t"
+                tabTypeMembersRef.DATETIME  = "dt"
+                tabTypeMembersRef.BIGINT    = "i64"
+                tabTypeMembersRef.INTEGER   = "i64"
+                tabTypeMembersRef.VARIANT   = "etkVar"
+            end
         end
         -- For parameters, as reference
-        tabTypeMembersRef.BLOB                  = "blb"
+        tabTypeMembersRef.BLOB              = "blb"
 
         -- For parameters, as value
         tabTypeMembersCopy.INT                  = "l"
@@ -980,7 +1046,7 @@ else
         tabTypeMembersCopy.DOUBLE               = "d"
         tabTypeMembersCopy.NUMERIC              = "d"
         tabTypeMembersCopy.BOOLEAN              = "b"
-
+        tabTypeMembersCopy.VARIANT              = "v"
         -------------------------------------------------------
         -- 9> Reference - Override default types by user types
         --                or add new one
@@ -991,8 +1057,12 @@ else
                     local arrResultType = string.split(strContentType,",")
                     if (#arrResultType == 2) then
                         -- Add it: override value or created if not exists
+                        print(string.format("=================================>: %s = %s",Trim(arrResultType[1]),Trim(arrResultType[2])))
+                        iIndex2Remove = indexOf(tabTypeMembersCopy, Trim(arrResultType[1]))
                         tabTypeMembersRef[Trim(arrResultType[1])] = Trim(arrResultType[2])
-                        table.remove(tabTypeMembersCopy,Trim(arrResultType[1])) -- Remove it from value
+                        if (iIndex2Remove ~= nil) then
+                            table.remove(tabTypeMembersCopy, iIndex2Remove) -- Remove it from value
+                        end
                         print(string.format("Prefix refefence: %s = %s",Trim(arrResultType[1]),Trim(arrResultType[2])))
                     else
                         strError = string.format("Prefix reference %s : bad format! Must be $PREFIX_REF${WS3_TYPE,C++ type}",strContentType)
@@ -1028,14 +1098,6 @@ else
 
         --------------------------------------------------
         -- 11> Table that contains all binding
-        if (strwxOrQToRBoost == "qt") then
-            tabTypeBind.INTEGER     = "ETKSQLite3ValueBindOther<qint64>"
-            tabTypeBind.BIGINT      = "ETKSQLite3ValueBindOther<qint64>"
-            tabTypeBind.VARCHAR     = "ETKSQLite3ValueBindOther<QString>"
-            tabTypeBind.DATE        = "ETKSQLite3ValueBindOther<QDate>"
-            tabTypeBind.TIME        = "ETKSQLite3ValueBindOther<QTime>"
-            tabTypeBind.DATETIME    = "ETKSQLite3ValueBindOther<QDateTime>"
-        end
         if (string.len(strError) == 0) then
             repeat
                 bFind,strContentType,strWS3Content = RemoveFirstBloc("TYPE_BIND",strWS3Content,false)
@@ -1070,7 +1132,7 @@ else
         ----------------------------------------------------------------
         -- 13> Table that contains all type used as function parameters
         -- 13.1> Init default types
-        if (strwxOrQToRBoost == "wx") then
+        if (strwxOrQToRSTL == "wx") then
             tabTypeArgs.INTEGER  = "wxLongLong"
             tabTypeArgs.BIGINT   = "wxLongLong"
             tabTypeArgs.INT      = "long"
@@ -1084,20 +1146,39 @@ else
             tabTypeArgs.TIME     = "wxDateTime"
             tabTypeArgs.DATETIME = "wxDateTime"
             tabTypeArgs.BLOB     = "ETKSQLite3VariantDataBlob"
-        else -- QT
-            tabTypeArgs.INTEGER  = "qint64"
-            tabTypeArgs.BIGINT   = "qint64"
-            tabTypeArgs.INT      = "long"
-            tabTypeArgs.SMALLINT = "short int"
-            tabTypeArgs.TINYINT  = "char"
-            tabTypeArgs.VARCHAR  = "QString"
-            tabTypeArgs.DOUBLE   = "double"
-            tabTypeArgs.NUMERIC  = "double"
-            tabTypeArgs.BOOLEAN  = "bool"
-            tabTypeArgs.DATE     = "QDate"
-            tabTypeArgs.TIME     = "QTime"
-            tabTypeArgs.DATETIME = "QDateTime"
-            tabTypeArgs.BLOB     = "ETKSQLite3VariantDataBlob"
+            tabTypeArgs.VARIANT  = "etkVariant"
+        else
+            if (strwxOrQToRSTL == "qt") then -- QT
+                tabTypeArgs.INTEGER  = "qint64"
+                tabTypeArgs.BIGINT   = "qint64"
+                tabTypeArgs.INT      = "long"
+                tabTypeArgs.SMALLINT = "short int"
+                tabTypeArgs.TINYINT  = "char"
+                tabTypeArgs.VARCHAR  = "QString"
+                tabTypeArgs.DOUBLE   = "double"
+                tabTypeArgs.NUMERIC  = "double"
+                tabTypeArgs.BOOLEAN  = "bool"
+                tabTypeArgs.DATE     = "QDate"
+                tabTypeArgs.TIME     = "QTime"
+                tabTypeArgs.DATETIME = "QDateTime"
+                tabTypeArgs.BLOB     = "ETKSQLite3VariantDataBlob"
+                tabTypeArgs.VARIANT  = "etkVariant"
+            else
+                tabTypeArgs.INTEGER  = "etkInt64"
+                tabTypeArgs.BIGINT   = "etkInt64"
+                tabTypeArgs.INT      = "long"
+                tabTypeArgs.SMALLINT = "short int"
+                tabTypeArgs.TINYINT  = "char"
+                tabTypeArgs.VARCHAR  = "etkString"
+                tabTypeArgs.DOUBLE   = "double"
+                tabTypeArgs.NUMERIC  = "double"
+                tabTypeArgs.BOOLEAN  = "bool"
+                tabTypeArgs.DATE     = "etkDate"
+                tabTypeArgs.TIME     = "etkTime"
+                tabTypeArgs.DATETIME = "etkDateTime"
+                tabTypeArgs.BLOB     = "ETKSQLite3VariantDataBlob"
+                tabTypeArgs.VARIANT  = "etkVariant"
+            end
         end
 
         -- 13.2> Override default types by user types
@@ -1128,9 +1209,14 @@ else
         ----------------------------------------------------------------
         -- 14> Table that contains all prefix to use into stucture
         -- 14.1> Init default types
-        if (strwxOrQToRBoost == "qt") then
+        if (strwxOrQToRSTL == "qt") then
             tabPrefixTypeMembers.wxLongLong = "wxll"
             tabPrefixTypeMembers.wxDateTime = "wxdt"
+        else
+            if (strwxOrQToRSTL == "stl") then
+                tabPrefixTypeMembers.wxLongLong = "etkll"
+                tabPrefixTypeMembers.wxDateTime = "etkdt"
+            end
         end
 
         -- 14.2> Override default types by user types
@@ -1155,7 +1241,31 @@ else
                 end
             end
         until not bFind
-        -- 14> Table that contains all type used as function parameters
+
+        -- 14> Find Table comments
+        ----------------------------------------------------------------
+        --
+        -- Close brace (end table description) (not captured) <-------------------------------------------------------
+        -- All columns descriptions <-----------------------------------------------------------------------------   |
+        -- Open brace (begin table description) (not captured) <------------------------------------             |   |
+        -- Table name <-----------------------------------------------------------                 |             |   |
+        -- Beginning of table comment<--------------    open brace <-------      |      -> close brace           |   |
+        --                               __________|______________        |  ____|____  |          |           __|__ |
+        --                             /                          \       | /         \ |          |          /     \|(end)
+        local regExpression =         "ETK_SQLITE3_COMMENT_TABLE[ \t]*%(([a-zA-Z_]+)%)[ \t\r\n]*{[ \t\r\n]*([^}]+)}"
+        local iCommentBegin, iCommentEnd
+        local strTableName,strColumnComment
+        local dicCommentTables = {}
+        iCommentBegin, iCommentEnd, strTableName, strColumnComment = string.find(strWS3Content, regExpression, iCommentBegin)
+        while iCommentBegin ~= nil do
+            local indexBegin, indexEnd = ComputeIndexes2RemoveBlankLine(strColumnComment, 0, string.len(strColumnComment) - 1, true, false)
+            dicCommentTables[strTableName] = string.sub(strColumnComment, indexBegin, indexEnd)
+            iCommentBegin, iCommentEnd = ComputeIndexes2RemoveBlankLine(strWS3Content, iCommentBegin - 1, iCommentEnd + 1, false, true)
+            strWS3Content = string.sub(strWS3Content, 0, iCommentBegin) .. string.sub(strWS3Content, iCommentEnd)
+            iCommentBegin, iCommentEnd, strTableName, strColumnComment = string.find(strWS3Content, regExpression, iCommentBegin)
+        end
+
+        -- 15> Table that contains all type used as function parameters
         ----------------------------------------------------------------
 
         --
@@ -1166,11 +1276,11 @@ else
         -- Beginning of table <---------------------    open brace <-------      |      -> close brace           |   |
         --                               __________|______________        |  ____|____  |          |           __|__ |
         --                             /                          \       | /         \ |          |          /     \|(end)
-        local regExpression =         "ETK_SQLITE3_DECLARE_TABLE[ \t]*%(([a-zA-Z_]+)%)[ \t\r\n]*{[ \t\r\n]*([^}]+)}"
+              regExpression =         "ETK_SQLITE3_DECLARE_TABLE[ \t]*%(([a-zA-Z_]+)%)[ \t\r\n]*{[ \t\r\n]*([^}]+)}"
         local strRegexSearchForeignKey = "DECLARE_FOREIGN_KEY%(([%a_][%a%d_]*)%.([%a_][%a%d]*)%)" -- to find foreign key
         local strRegexSearchDataImplementation = "DECLARE_DATA_IMPLEMENTATION%([ \t]*([%a%d_ %.\\/]*)[\t]*,[ \t]*([%a%d_ %.\\/]*[\t]*)%)" -- to find implentation files for structure
-        local iExpressionBegin,iLastExpressionBegin,iExpressionEnd= 1,1
-        local indexBegin,indexEnd,strTableName,strColumnDescriptions
+        local iExpressionBegin, iLastExpressionBegin, iExpressionEnd = 1,1
+        local indexBegin,indexEnd,strColumnDescriptions
         local strCPPColumnImplementation,strCPPColumnAdd,strCPPColumnDeclaration,strCPPColumnVariablesDeclaration,strCPPConstructorVariablesImplementation
         local strHDeclareVariablesGetterSetters,strCPPImplementVariablesGetterSetters,strCPPTableConstruction,strCPPTableConstructionFK,strCPPTableConstructionPK
         local iNbPrimaryKey,bHasAutoincrementPrimaryKey
@@ -1178,7 +1288,7 @@ else
         local iNbTableFound = 0
 
         -- Extract table to generate
-        iExpressionBegin,iExpressionEnd,strTableName,strColumnDescriptions = string.find(strWS3Content,regExpression,iExpressionEnd)
+        iExpressionBegin, iExpressionEnd, strTableName, strColumnDescriptions = string.find(strWS3Content, regExpression, iExpressionEnd)
         -- Read all tables
         while string.len(strError) == 0 and iExpressionBegin ~= nil do
             -- New Table, reset implementations
@@ -1443,7 +1553,7 @@ else
                             strTemplateSourceFileCopy = ReplaceRepeatSection(setReplace,strTemplateSourceFileCopy);
                         end
 
-                        strCPPColumnDeclaration = strCPPColumnDeclaration .. string.format("    static const ETKSQLite3Column     %s%s;",strPrefixColumn,strColumName)
+                        strCPPColumnDeclaration = strCPPColumnDeclaration .. string.format("    static const ETKSQLite3Column       %s%s;",strPrefixColumn,strColumName)
                         -- Add Datas used to make the binding
                         strCPPColumnVariablesDeclaration = strCPPColumnVariablesDeclaration ..
                                                            string.format("    %s%s%s%s%s;"
@@ -1662,6 +1772,7 @@ else
                 end
 
                 -- Replace header
+                strTemplateHeaderFileCopy = string.gsub(strTemplateHeaderFileCopy,"$COMMENT_TABLE%$", function() return dicCommentTables[strTableName] or "" end)
                 strTemplateHeaderFileCopy = string.gsub(strTemplateHeaderFileCopy,"$PREFIX_TABLE%$",strPrefixTable)
                 strTemplateHeaderFileCopy = string.gsub(strTemplateHeaderFileCopy,"$PREFIX_STRUCT%$",strPrefixStruct)
                 strTemplateHeaderFileCopy = string.gsub(strTemplateHeaderFileCopy,"$TABLE_NAME%$",strTableName)

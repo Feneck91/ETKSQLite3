@@ -221,7 +221,6 @@ set(QT_HEADER_FILES
     ../include/wx4qt/wx/confbase.h
     ../include/wx4qt/wx/datetime.h
     ../include/wx4qt/wx/dynarray.h
-    ../include/wx4qt/wx/dynlib.h
     ../include/wx4qt/wx/file.h
     ../include/wx4qt/wx/filename.h
     ../include/wx4qt/wx/messagedialog.h
@@ -244,7 +243,6 @@ set(QT_HEADER_FILES
 set(QT_SOURCE_FILES
     # Internal files for library
     ../src/wx4qt/implements.cpp
-    ../src/wx4qt/dynlib.cpp
     ../src/wx4qt/file.cpp
     ../src/wx4qt/filename.cpp
     ../src/wx4qt/messagedialog.cpp
@@ -263,38 +261,11 @@ set(QT_SOURCE_FILES
 )
 
 # =============================================================================
-# Define Qt specific header files (wrappers)
-# =============================================================================
-set(QT_HEADER_FILES
-    ../include/wx4qt/wx/arrstr.h
-    ../include/wx4qt/wx/buffer.h
-    ../include/wx4qt/wx/confbase.h
-    ../include/wx4qt/wx/datetime.h
-    ../include/wx4qt/wx/dynarray.h
-    ../include/wx4qt/wx/dynlib.h
-    ../include/wx4qt/wx/file.h
-    ../include/wx4qt/wx/filename.h
-    ../include/wx4qt/wx/messagedialog.h
-    ../include/wx4qt/wx/hashmap.h
-    ../include/wx4qt/wx/longlong.h
-    ../include/wx4qt/wx/logger.h
-    ../include/wx4qt/wx/regex.h
-    ../include/wx4qt/wx/string.h
-    ../include/wx4qt/wx/thread.h
-    ../include/wx4qt/wx/tokenzr.h
-    ../include/wx4qt/wx/variant.h
-    ../include/wx4qt/wx/wx.h
-    ../include/wx4qt/wx/wxprec.h
-    ../include/wx4qt/wx/wxtype.h
-)
-
-# =============================================================================
 # Define STL specific source files (wrappers implementation)
 # =============================================================================
 set(STL_SOURCE_FILES
     # Internal files for library
     ../src/wx4stl/implements.cpp
-    ../src/wx4stl/dynlib.cpp
     ../src/wx4stl/file.cpp
     ../src/wx4stl/filename.cpp
     ../src/wx4stl/messagedialog.cpp
@@ -321,7 +292,6 @@ set(STL_HEADER_FILES
     ../include/wx4stl/wx/confbase.h
     ../include/wx4stl/wx/datetime.h
     ../include/wx4stl/wx/dynarray.h
-    ../include/wx4stl/wx/dynlib.h
     ../include/wx4stl/wx/file.h
     ../include/wx4stl/wx/filename.h
     ../include/wx4stl/wx/messagedialog.h
@@ -376,11 +346,86 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(-Wall -Wextra -Wpedantic -finput-charset=Latin1 -fexec-charset=UTF-8 -Werror -fpic)
 endif()
 
+function(find_wxwidgets_auto)
+    set(options)
+    set(oneValueArgs ROOT_DIR LIB_DIR)
+    set(multiValueArgs)
+    cmake_parse_arguments(FWX "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(NOT FWX_ROOT_DIR)
+        message(FATAL_ERROR "find_wxwidgets_auto requires ROOT_DIR=<path to wxWidgets>")
+    endif()
+    if(NOT FWX_LIB_DIR)
+        set(FWX_LIB_DIR "${FWX_ROOT_DIR}/lib/vc_x64_dll")
+    endif()
+
+    # --- Chercher une lib monolithic wxmsw*.lib ---
+    find_library(WXWIDGETS_LIB_RELEASE
+        NAMES wxmsw33u wxmsw32u
+        PATHS ${FWX_LIB_DIR}
+        NO_DEFAULT_PATH
+    )
+    find_library(WXWIDGETS_LIB_DEBUG
+        NAMES wxmsw33ud wxmsw32ud
+        PATHS ${FWX_LIB_DIR}
+        NO_DEFAULT_PATH
+    )
+
+    if(WXWIDGETS_LIB_RELEASE OR WXWIDGETS_LIB_DEBUG)
+        # === Mode MONOLITHIC ===
+        message(STATUS "wxWidgets detected in MONOLITHIC mode")
+
+        set(FRAMEWORK_LIBS
+            $<$<CONFIG:Debug>:${WXWIDGETS_LIB_DEBUG}>
+            $<$<CONFIG:Release>:${WXWIDGETS_LIB_RELEASE}>
+            $<$<CONFIG:RelWithDebInfo>:${WXWIDGETS_LIB_RELEASE}>
+            $<$<CONFIG:MinSizeRel>:${WXWIDGETS_LIB_RELEASE}>
+            gdiplus msimg32 winmm comctl32 uuid oleacc uxtheme rpcrt4 shlwapi version wsock32
+        )
+
+        set(FRAMEWORK_INCLUDE_DIRS "${FWX_ROOT_DIR}/include"
+                                   $<$<CONFIG:Debug>:${FWX_LIB_DIR}/mswud>
+                                   $<$<CONFIG:Release>:${FWX_LIB_DIR}/mswu>
+                                   $<$<CONFIG:RelWithDebInfo>:${FWX_LIB_DIR}/mswu>
+                                   $<$<CONFIG:MinSizeRel>:${FWX_LIB_DIR}/mswu>)
+
+        # Cible moderne
+        add_library(wxWidgets::wxWidgets INTERFACE IMPORTED)
+        set_target_properties(wxWidgets::wxWidgets PROPERTIES
+            INTERFACE_LINK_LIBRARIES "${FRAMEWORK_LIBS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${FRAMEWORK_INCLUDE_DIRS}"
+        )
+    else()
+        # === Mode MODULES ===
+        message(STATUS "wxWidgets monolithic libs not found → falling back to MODULE mode")
+
+        set(wxWidgets_ROOT_DIR "${FWX_ROOT_DIR}" CACHE PATH "" FORCE)
+        set(wxWidgets_LIB_DIR  "${FWX_LIB_DIR}" CACHE PATH "" FORCE)
+
+        find_package(wxWidgets REQUIRED core base)
+        include(${wxWidgets_USE_FILE})
+
+        set(FRAMEWORK_LIBS "${wxWidgets_LIBRARIES}")
+        set(FRAMEWORK_INCLUDE_DIRS "${wxWidgets_INCLUDE_DIRS}")
+
+        add_library(wxWidgets::wxWidgets INTERFACE IMPORTED)
+        set_target_properties(wxWidgets::wxWidgets PROPERTIES
+            INTERFACE_LINK_LIBRARIES "${FRAMEWORK_LIBS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${FRAMEWORK_INCLUDE_DIRS}"
+        )
+    endif()
+
+    # Exporter les variables au parent
+    set(FRAMEWORK_LIBS "${FRAMEWORK_LIBS}" PARENT_SCOPE)
+    set(FRAMEWORK_INCLUDE_DIRS "${FRAMEWORK_INCLUDE_DIRS}" PARENT_SCOPE)
+endfunction()
+
 # Fonction to create a specific framework library
 function(create_framework_library framework)
     if(${framework})
         # Define library name
         set(LIB_NAME "${framework}")
+        unset(INSTALL_ETKSQLITE3_HEADERS)
 
         # =============================================================================
         # Define specific sources and headers files
@@ -388,19 +433,23 @@ function(create_framework_library framework)
         if(framework STREQUAL "wxETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES})
-            find_package(wxWidgets REQUIRED)
-            #find_package(wxWidgets REQUIRED core base)
-            # Link with wxWidgets libs
-            #set(FRAMEWORK_LIBS wxWidgets::core wxWidgets::base)
-            set(FRAMEWORK_LIBS ${wxWidgets_LIBRARIES})
+            find_wxwidgets_auto(ROOT_DIR ${wxWidgets_ROOT_DIR}
+                                LIB_DIR  ${wxWidgets_LIB_DIR}
+            )
+            # Choose correct library
+            set(FRAMEWORK_LIBS
+                $<$<CONFIG:Debug>:${WXWIDGETS_LIB_DEBUG}>
+                $<$<CONFIG:Release>:${WXWIDGETS_LIB_RELEASE}>
+                $<$<CONFIG:RelWithDebInfo>:${WXWIDGETS_LIB_RELEASE}>
+                $<$<CONFIG:MinSizeRel>:${WXWIDGETS_LIB_RELEASE}>
+            )
             set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_WXWIDGETS)
-            set(WX_INCLUDE_DIRS PRIVATE ${wxWidgets_INCLUDE_DIRS} PARENT_SCOPE)
+            
             # Mandatory options for wxWidgets
+            add_definitions(-DwxWidgets_USE_DLL=1)
             add_definitions(-DwxUSE_UNICODE=1)
             add_definitions(-DwxUSE_DATETIME=1)
             add_definitions(-DwxUSE_STL=1)
-            # Inclure wxWidgets folders
-            include(${wxWidgets_USE_FILE})
         elseif(framework STREQUAL "qtETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${QT_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES} ${QT_HEADER_FILES})
@@ -424,10 +473,12 @@ function(create_framework_library framework)
             endif()
             set(FRAMEWORK_LIBS ${QT_LIBRARIES})
             set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_QT)
+            set(INSTALL_ETKSQLITE3_HEADERS ../include/wx4qt)
         elseif(framework STREQUAL "stlETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${STL_SOURCE_FILES})
             set(ETKSQLITE3_HEADERS ${COMMON_HEADER_FILES} ${STL_HEADER_FILES})
             set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_STL)
+            set(INSTALL_ETKSQLITE3_HEADERS ../include/wx4stl)
         else()
             message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${framework} is selected but not supported. Error into CMake file!")
         endif()
@@ -472,10 +523,9 @@ function(create_framework_library framework)
         # Define specific sources and headers files
         # =============================================================================
         if(framework STREQUAL "wxETKSQLite3")
-            target_include_directories(${LIB_NAME} PUBLIC $(WX_INCLUDE_DIRS) ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+            target_include_directories(${LIB_NAME} PUBLIC ${wxWidgets_INCLUDE_DIRS} ../include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src ${FRAMEWORK_INCLUDE_DIRS})
         elseif(framework STREQUAL "qtETKSQLite3")
             # Include directories
-            #target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
             target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4qt ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src ${QT_INCLUDE_DIRS} )
         elseif(framework STREQUAL "stlETKSQLite3")
             target_include_directories(${LIB_NAME} PUBLIC ../include/ETKSQLite3 ../include/wx4stl ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
@@ -483,7 +533,7 @@ function(create_framework_library framework)
             message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${framework} is selected but not supported. Error into CMake file!")
         endif()
 
-        target_link_libraries(${LIB_NAME}      PRIVATE ${FRAMEWORK_LIBS})
+        target_link_libraries(${LIB_NAME} PRIVATE ${FRAMEWORK_LIBS})
         target_compile_definitions(${LIB_NAME} PRIVATE ${FRAMEWORK_DEFINITIONS})
 
         # Define suffix depending of library type
@@ -492,6 +542,7 @@ function(create_framework_library framework)
         else()
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif()
+        set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_LINK_LIBRARIES "${wxWidgets_LIB_DIR}")
 
         # =============================================================================
         # Copy result to bin / lib
@@ -517,12 +568,15 @@ function(create_framework_library framework)
         endif()
         # Copy lib
         if (WIN32)
-            # Define ouput folder for windows
-            set(DESTINATION_DIR_LIB "${CMAKE_CURRENT_SOURCE_DIR}/lib/win32")
+            # Define dir lib root for windows
+            set(OS_DIR_LIB "win32")
         else()
-            # Define ouput folder for linux
-            set(DESTINATION_DIR_LIB "${CMAKE_CURRENT_SOURCE_DIR}/lib/linux")
+            # Define dir lib root for linux
+            set(OS_DIR_LIB "linux")
         endif()
+        # Define ouput folder for windows / linux
+        set(DESTINATION_DIR_LIB "${CMAKE_CURRENT_SOURCE_DIR}/lib/${OS_DIR_LIB}")
+        
         # Create destination folder if it doesn't exits
         add_custom_command(TARGET ${LIB_NAME} POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E make_directory
@@ -542,17 +596,23 @@ function(create_framework_library framework)
         endif()
         # And make the install
         install(TARGETS ${LIB_NAME}
-                ARCHIVE DESTINATION lib
-                LIBRARY DESTINATION lib
-                PUBLIC_HEADER DESTINATION include/${framework}
+                ARCHIVE DESTINATION lib/${OS_DIR_LIB}/$<CONFIGURATION>
+                LIBRARY DESTINATION lib/${OS_DIR_LIB}/$<CONFIGURATION>
         )
+        install(DIRECTORY ../include/ETKSQLite3/ DESTINATION include/ETKSQLite3)
+        install(DIRECTORY ${WXSQLITE3_DIR}/include/ DESTINATION include/wxSQLite3)
+        # Optionnel : Installer d'autres fichiers
+        if(INSTALL_ETKSQLITE3_HEADERS)
+            install(DIRECTORY ../include/${INSTALL_ETKSQLITE3_HEADERS} DESTINATION include/${INSTALL_ETKSQLITE3_HEADERS})
+        endif()
     endif()
 endfunction()
 
 # =============================================================================
 # Add Target intall
 # =============================================================================
-add_custom_target(Installation ALL
+add_custom_target(Installation
+    DEPENDS ETKSQLite3
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --config $<CONFIGURATION>
     COMMENT "Installing ETKSQLite3...")
 

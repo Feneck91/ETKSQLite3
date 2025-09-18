@@ -77,6 +77,8 @@ bool wxIsspace(wxChar _cChar)
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Static member
+const size_t wxString::npos     = (size_t) -1;
 const wxChar * wxEmptyString    = wxT("");
 
 wxString::wxString()
@@ -191,6 +193,7 @@ wxCharBuffer wxString::ToUTF8() const
 {
     wxCharBuffer buffer;
     buffer.assign(begin(), end());
+    buffer.push_back('\0');
     return buffer;
 }
 

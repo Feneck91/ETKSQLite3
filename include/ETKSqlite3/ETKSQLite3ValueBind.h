@@ -32,7 +32,7 @@
  * It ccntains value pointer and type and is used to bind value to SQL.
  *
  * @author Stéphane Château
- * @version Name : wxETKSQLite3<br>
+ * @version Name : ETKSQLite3<br>
  *          Revision : <b>1.0</b>
  */
 class EXPORT_IMPORT ETKSQLite3ValueBindBase : public ETKSQLite3::IRefCountImpl<ETKSQLite3ValueBindBase>
@@ -149,7 +149,7 @@ protected:
  * It ccntains value pointer and type and is used to bind value to SQL.
  *
  * @author Stéphane Château
- * @version Name : wxETKSQLite3<br>
+ * @version Name : ETKSQLite3<br>
  *          Revision : <b>1.0</b>
  */
 class EXPORT_IMPORT ETKSQLite3ValueBind : public ETKSQLite3ValueBindBase
@@ -171,6 +171,8 @@ private:
         eDataTypeDouble,
         eDataTypeString,
         eDataTypeDateTime,
+        eDataTypeDate,
+        eDataTypeTime,
         eDataTypeBool
     }                                   m_eDataType;
 
@@ -189,6 +191,8 @@ private:
         double *                m_pDoubleValue;
         etkString *             m_petkStringValue;
         etkDateTime *           m_petkDateTimeValue;
+        etkDate *               m_petkDateValue;
+        etkTime *               m_petkTimeValue;
         bool *                  m_pBool;
     }                                   m_eDataPtr;
 public:
@@ -274,6 +278,20 @@ public:
     /**
      * Constructor.
      *
+     * @param _petkDateValue Value's pointer of type etkDate to bind.
+     */
+    ETKSQLite3ValueBind(etkDate *_petkDateValue);
+
+    /**
+     * Constructor.
+     *
+     * @param _petkTimeValue Value's pointer of type etkTime to bind.
+     */
+    ETKSQLite3ValueBind(etkTime *_petkTimeValue);
+
+    /**
+     * Constructor.
+     *
      * @param _pBoolValue Value's pointer of type bool to bind.
      */
     ETKSQLite3ValueBind(bool *_pBoolValue);
@@ -352,7 +370,7 @@ protected:
  * It ccntains value pointer and type and is used to bind value to SQL.
  *
  * @author Stéphane Château
- * @version Name : wxETKSQLite3<br>
+ * @version Name : ETKSQLite3<br>
  *          Revision : <b>1.0</b>
  */
 template<class TYPE> class ETKSQLite3ValueBindOther : public ETKSQLite3ValueBind

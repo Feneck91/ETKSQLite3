@@ -45,7 +45,7 @@ enum
     wxRE_DEFAULT  = wxRE_EXTENDED
 };
 
-class wxRegEx
+class EXPORT_IMPORT wxRegEx
 {
 public:
     // Constructeur par défaut

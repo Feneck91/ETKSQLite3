@@ -290,59 +290,67 @@ template <class TYPE> bool ETKSQLite3ResultSet<TYPE>::InitBindFrom()
             if (wxSQLite3ResultSet::GetColumnCount()>0)
             {   // Find into record column, the corresponding indexes
                 int *pIndexes  = new int[wxSQLite3ResultSet::GetColumnCount()];
-                // Set all contents of pIndexes to -1
-                for (int iIndexColumnToSet = 0;iIndexColumnToSet < wxSQLite3ResultSet::GetColumnCount();pIndexes[iIndexColumnToSet++]=-1);
-                int iColFound = 0; // At the end, should be equal to wxSQLite3ResultSet::GetColumnCount()
-                                   // If not, all columns are not binded, the user could directly access to
-                                   // these values by calling wxSQLite3ResultSet functions
-                for (size_t nIndex = 0;nIndex < TYPE::GetColumnCount();++nIndex)
+                try
                 {
-                    try
+                    // Set all contents of pIndexes to -1
+                    for (int iIndexColumnToSet = 0;iIndexColumnToSet < wxSQLite3ResultSet::GetColumnCount();pIndexes[iIndexColumnToSet++]=-1);
+                    int iColFound = 0; // At the end, should be equal to wxSQLite3ResultSet::GetColumnCount()
+                                       // If not, all columns are not binded, the user could directly access to
+                                       // these values by calling wxSQLite3ResultSet functions
+                    for (size_t nIndex = 0;nIndex < TYPE::GetColumnCount();++nIndex)
                     {
-                        int iIndexColumnFound;
-                        iIndexColumnFound = FindColumnIndex(TYPE::GetColumn(nIndex));
-                        // Here, iIndexColumnFound is always found and valid else exception is raised
-                        ++iColFound;
-                        wxASSERT_MSG(iIndexColumnFound >= 0 && iIndexColumnFound < wxSQLite3ResultSet::GetColumnCount(),wxT("Bad index returns by sqlite3!"));
-                        /*
-                        wxASSERT_MSG(pIndexes[iIndexColumnFound] == -1,
-                                     wxString::Format(wxT("Index (%d) returns by sqlite3 found twice (previous = %d) - Column[%d]=%s!"),
-                                                      nIndex,
-                                                      pIndexes[iIndexColumnFound],
-                                                      iIndexColumnFound,
-                                                      TYPE::GetColumn(nIndex).GetFullName().wx_str()));
+                        try
+                        {
+                            int iIndexColumnFound;
+                            iIndexColumnFound = FindColumnIndex(TYPE::GetColumn(nIndex));
+                            // Here, iIndexColumnFound is always found and valid else exception is raised
+                            ++iColFound;
+                            wxASSERT_MSG(iIndexColumnFound >= 0 && iIndexColumnFound < wxSQLite3ResultSet::GetColumnCount(),wxT("Bad index returns by sqlite3!"));
+                            /*
+                            wxASSERT_MSG(pIndexes[iIndexColumnFound] == -1,
+                                         wxString::Format(wxT("Index (%d) returns by sqlite3 found twice (previous = %d) - Column[%d]=%s!"),
+                                                          nIndex,
+                                                          pIndexes[iIndexColumnFound],
+                                                          iIndexColumnFound,
+                                                          TYPE::GetColumn(nIndex).GetFullName().wx_str()));
 
-                        wxLogDebug(wxT("Column[%d] %s -> Record[%d] %s"),
-                                   iIndexColumnFound,
-                                   (wxSQLite3ResultSet::GetTableName(iIndexColumnFound)+wxT(".")+wxSQLite3ResultSet::GetColumnName(iIndexColumnFound)).wx_str(),
-                                   nIndex,
-                                   TYPE::GetColumn(nIndex).GetFullName().wx_str());
-                        */
-                        pIndexes[iIndexColumnFound] = nIndex; // Record index found
+                            wxLogDebug(wxT("Column[%d] %s -> Record[%d] %s"),
+                                       iIndexColumnFound,
+                                       (wxSQLite3ResultSet::GetTableName(iIndexColumnFound)+wxT(".")+wxSQLite3ResultSet::GetColumnName(iIndexColumnFound)).wx_str(),
+                                       nIndex,
+                                       TYPE::GetColumn(nIndex).GetFullName().wx_str());
+                            */
+                            pIndexes[iIndexColumnFound] = static_cast<int>(nIndex); // Record index found
+                        }
+                        catch (wxSQLite3Exception &)
+                        {   // It is not a bug, own struct just have more information than the request, just
+                            // the request want a part of this struct, else it will mandatory to create a class for each
+                            // request (and all columns in the result should not exists in struct)
+                            wxLogDebug(wxString::Format(wxT("'%s' column couldn't be binded because it doesn't exist into wxSQLite3ResultSet recordset (it is not a bug)"),
+                                                        TYPE::GetColumn(nIndex).GetFullName().wx_str()));
+                        }
                     }
-                    catch (wxSQLite3Exception &_ex)
-                    {   // It is not a bug, own struct just have more information than the request, just
-                        // the request want a part of this struct, else it will mandatory to create a class for each
-                        // request (and all columns in the result should not exists in struct)
-                        wxLogDebug(wxString::Format(wxT("'%s' column couldn't be binded because it doesn't exist into wxSQLite3ResultSet recordset (it is not a bug)"),
-                                                    TYPE::GetColumn(nIndex).GetFullName().wx_str()));
-                    }
-                }
-                // Put indexes in correct orders into m_arrayBindIndex
-                for (iColFound=0;iColFound<wxSQLite3ResultSet::GetColumnCount();++iColFound)
-                {
-                    m_arrayBindIndex.Add(pIndexes[iColFound]);
-                    if (pIndexes[iColFound] == -1)
+                    // Put indexes in correct orders into m_arrayBindIndex
+                    for (iColFound=0;iColFound<wxSQLite3ResultSet::GetColumnCount();++iColFound)
                     {
-                        wxLogDebug(wxString::Format(wxT("wxSQLite3ResultSet '%s.%s' column is not be binded because the matched column's data doesn't exists (it is not a bug)"),
-                                                    wxSQLite3ResultSet::GetTableName(iColFound).wx_str(),wxSQLite3ResultSet::GetColumnName(iColFound).wx_str()));
+                        m_arrayBindIndex.Add(pIndexes[iColFound]);
+                        if (pIndexes[iColFound] == -1)
+                        {
+                            wxLogDebug(wxString::Format(wxT("wxSQLite3ResultSet '%s.%s' column is not be binded because the matched column's data doesn't exists (it is not a bug)"),
+                                                        wxSQLite3ResultSet::GetTableName(iColFound).wx_str(),wxSQLite3ResultSet::GetColumnName(iColFound).wx_str()));
+                        }
+                    }
+                    if (iColFound != wxSQLite3ResultSet::GetColumnCount())
+                    {
+                        wxLogDebug(wxString::Format(wxT("Binding data: cannot found all the resultset columns into own structure, found only %d/%d"),
+                                                    iColFound,
+                                                    wxSQLite3ResultSet::GetColumnCount()));
                     }
                 }
-                if (iColFound != wxSQLite3ResultSet::GetColumnCount())
+                catch(...)
                 {
-                    wxLogDebug(wxString::Format(wxT("Binding data: cannot found all the resultset columns into own structure, found only %d/%d"),
-                                                iColFound,
-                                                wxSQLite3ResultSet::GetColumnCount()));
+                    delete []pIndexes;
+                    throw;
                 }
                 delete []pIndexes;
             }

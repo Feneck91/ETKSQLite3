@@ -65,6 +65,7 @@ void ETKSQLite3Request::Where(const ETKSQLite3Expression &_rExprWhere)
 {
     wxASSERT(!_rExprWhere.IsJoin());
     GetCriterionRequest().SetWhere(_rExprWhere);
+    DeleteStatement();
 }
 
 const ETKSQLite3Expression & ETKSQLite3Request::GetWhere()

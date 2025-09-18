@@ -22,11 +22,12 @@ $COLUMNS_VARIABLES_DECLARATIONS$
     //@}
 };}
 
+$COMMENT_TABLE$
 class $EXPORT_IMPORT$$PREFIX_TABLE$$TABLE_NAME$ : protected $PREFIX_STRUCT$$TABLE_NAME$, public ETKSQLite3Record
 {
 private:
     /// @name SQL string to create the $TABLE_NAME$ table into database.
-    static const wxString               STR_TABLE_CONSTRUCTION;
+    static const etkString              STR_TABLE_CONSTRUCTION;
 
 public:
     /**
@@ -37,7 +38,7 @@ public:
     typedef $PREFIX_STRUCT$$TABLE_NAME$ tdTypeStruct;
 
     /// @name Name of the $TABLE_NAME$ table.
-    static const wxString               TABLE_NAME;
+    static const etkString              TABLE_NAME;
 
     /// @name Columns of the $TABLE_NAME$ table.
     //@{
@@ -112,5 +113,5 @@ $DECLARE_VARIABLES_GETTER_SETTER$
      *
      * @return The SQL string that could be used to construct the table into the database.
      */
-    static wxString                     GetSQLTableConstruction();
+    static etkString                    GetSQLTableConstruction();
 };

@@ -11,133 +11,131 @@
 #include <wx/longlong.h>
 #include <wx/string.h>
 
-#define wxLongLong                              wxQLongLong
-
-wxQLongLong::wxQLongLong()
+wxLongLong::wxLongLong()
     : m_i64Value(0)
 {
 }
 
-wxQLongLong::wxQLongLong(int64_t _i64Value)
+wxLongLong::wxLongLong(int64_t _i64Value)
     : m_i64Value(_i64Value)
 {
 }
 
-wxQLongLong::wxQLongLong(int _iValue)
+wxLongLong::wxLongLong(int _iValue)
     : m_i64Value(_iValue)
 {
 }
 
-wxQLongLong::wxQLongLong(long _lValue)
+wxLongLong::wxLongLong(long _lValue)
     : m_i64Value(_lValue)
 {
 }
 
-wxQLongLong::wxQLongLong(unsigned long _ulValue)
+wxLongLong::wxLongLong(unsigned long _ulValue)
     : m_i64Value(_ulValue)
 {
 }
 
-wxQLongLong::wxQLongLong(const wxQLongLong &_rValue)
+wxLongLong::wxLongLong(const wxLongLong &_rValue)
     : m_i64Value(_rValue.GetValue())
 {
 }
 
-int64_t wxQLongLong::GetValue() const
+int64_t wxLongLong::GetValue() const
 {
     return m_i64Value;
 }
 
-wxQLongLong::operator const int64_t &() const
+wxLongLong::operator const int64_t &() const
 {
     return m_i64Value;
 }
 
-const wxQLongLong wxQLongLong::operator+(wxQLongLong &_rValue)
+const wxLongLong wxLongLong::operator+(wxLongLong &_rValue)
 {
-    return wxQLongLong(GetValue() + _rValue.GetValue());
+    return wxLongLong(GetValue() + _rValue.GetValue());
 }
 
-const wxQLongLong wxQLongLong::operator-(wxQLongLong &_rValue)
+const wxLongLong wxLongLong::operator-(wxLongLong &_rValue)
 {
-    return wxQLongLong(GetValue() - _rValue.GetValue());
+    return wxLongLong(GetValue() - _rValue.GetValue());
 }
 
-const wxQLongLong wxQLongLong::operator*(wxQLongLong &_rValue)
+const wxLongLong wxLongLong::operator*(wxLongLong &_rValue)
 {
-    return wxQLongLong(GetValue() * _rValue.GetValue());
+    return wxLongLong(GetValue() * _rValue.GetValue());
 }
 
-const wxQLongLong wxQLongLong::operator/(wxQLongLong &_rValue)
+const wxLongLong wxLongLong::operator/(wxLongLong &_rValue)
 {
-    return wxQLongLong(GetValue() / _rValue.GetValue());
+    return wxLongLong(GetValue() / _rValue.GetValue());
 }
 
-const wxQLongLong & wxQLongLong::operator+=(wxQLongLong &_rValue)
+const wxLongLong & wxLongLong::operator+=(wxLongLong &_rValue)
 {
     m_i64Value+=_rValue.GetValue(); return *this;
 }
 
-const wxQLongLong & wxQLongLong::operator-=(wxQLongLong &_rValue)
+const wxLongLong & wxLongLong::operator-=(wxLongLong &_rValue)
 {
     m_i64Value-=_rValue.GetValue(); return *this; }
-const wxQLongLong & wxQLongLong::operator*=(wxQLongLong &_rValue)
+const wxLongLong & wxLongLong::operator*=(wxLongLong &_rValue)
 {
     m_i64Value*=_rValue.GetValue(); return *this; }
-const wxQLongLong & wxQLongLong::operator/=(wxQLongLong &_rValue)
+const wxLongLong & wxLongLong::operator/=(wxLongLong &_rValue)
 {
     m_i64Value/=_rValue.GetValue(); return *this; }
 
-const wxQLongLong wxQLongLong::operator+(int _iValue)
+const wxLongLong wxLongLong::operator+(int _iValue)
 {
-    return wxQLongLong(GetValue() + ((int64_t) _iValue));
+    return wxLongLong(GetValue() + ((int64_t) _iValue));
 }
 
-const wxQLongLong wxQLongLong::operator-(int _iValue)
+const wxLongLong wxLongLong::operator-(int _iValue)
 {
-    return wxQLongLong(GetValue() - ((int64_t) _iValue));
+    return wxLongLong(GetValue() - ((int64_t) _iValue));
 }
 
-const wxQLongLong wxQLongLong::operator*(int _iValue)
+const wxLongLong wxLongLong::operator*(int _iValue)
 {
-    return wxQLongLong(GetValue() * ((int64_t) _iValue));
+    return wxLongLong(GetValue() * ((int64_t) _iValue));
 }
 
-const wxQLongLong wxQLongLong::operator/(int _iValue)
-{ return wxQLongLong(GetValue() / ((int64_t) _iValue));
+const wxLongLong wxLongLong::operator/(int _iValue)
+{ return wxLongLong(GetValue() / ((int64_t) _iValue));
 }
 
-const wxQLongLong & wxQLongLong::operator+=(int _iValue)
+const wxLongLong & wxLongLong::operator+=(int _iValue)
 {
     m_i64Value+=((int64_t) _iValue); return *this;
 }
 
-const wxQLongLong & wxQLongLong::operator-=(int _iValue)
+const wxLongLong & wxLongLong::operator-=(int _iValue)
 {
     m_i64Value-=((int64_t) _iValue); return *this;
 }
 
-const wxQLongLong & wxQLongLong::operator*=(int _iValue)
+const wxLongLong & wxLongLong::operator*=(int _iValue)
 {
     m_i64Value*=((int64_t) _iValue); return *this;
 }
 
-const wxQLongLong & wxQLongLong::operator/=(int _iValue)
+const wxLongLong & wxLongLong::operator/=(int _iValue)
 {
     m_i64Value/=((int64_t) _iValue); return *this;
 }
 
-const wxQLongLong    wxQLongLong::operator-()
+const wxLongLong    wxLongLong::operator-()
 {
-    return wxQLongLong(-GetValue());
+    return wxLongLong(-GetValue());
 }
 
-bool wxQLongLong::operator==(const wxQLongLong &_rValue) const
+bool wxLongLong::operator==(const wxLongLong &_rValue) const
 {
     return GetValue() == _rValue.GetValue();
 }
 
-wxString wxQLongLong::ToString() const
+wxString wxLongLong::ToString() const
 {
     return wxString::number(GetValue());
 }

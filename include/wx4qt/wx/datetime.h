@@ -21,6 +21,8 @@
 
 #define wxDateTime          wxQDateTime
 #define wxInvalidDateTime   QDateTime()
+#define wxDate              QDate
+#define wxTime              QTime
 
 #define MILLISECONDS_PER_DAY 86400000l
 // this is the integral part of JDN of the midnight of Jan 1, 1970

@@ -33,12 +33,12 @@ class wxMessageDialog
 {
 private:
     void * m_pParent; // Generic pointer for parent window (can be HWND, NSWindow*, etc.)
-    std::string m_strTitle;
     std::string m_strMessage;
+    std::string m_strTitle;
     long m_lStyle;
 
 public:
-    wxMessageDialog(void* _pParent, const std::string& _strTitle, const std::string& _strMessage, long _lStyle);
+    wxMessageDialog(void* _pParent, const std::string& _strMessage, const std::string& _strTitle, long _lStyle);
     long ShowModal();
 };
 

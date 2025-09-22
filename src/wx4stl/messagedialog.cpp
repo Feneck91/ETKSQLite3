@@ -17,8 +17,8 @@
 #ifdef WIN32
 // Windows version
 #include <windows.h>
-wxMessageDialog::wxMessageDialog(void* _pParent, const std::string& _strTitle, const std::string& _strMessage, long _lStyle)
-    : m_pParent(_pParent), m_strTitle(_strTitle), m_strMessage(_strMessage), m_lStyle(_lStyle)
+wxMessageDialog::wxMessageDialog(void* _pParent, const std::string& _strMessage, const std::string& _strTitle, long _lStyle)
+    : m_pParent(_pParent), m_strMessage(_strMessage), m_strTitle(_strTitle), m_lStyle(_lStyle)
 {
 }
 
@@ -93,8 +93,8 @@ long wxMessageDialog::ShowModal()
 // Version Linux/macOS (GTK+ or native API)
 #include <gtk/gtk.h>
 
-wxMessageDialog::wxMessageDialog(void* _pParent, const std::string& _strTitle, const std::string& _strMessage, long _lStyle)
-    : m_pParent(_pParent), m_strTitle(_strTitle), m_strMessage(_strMessage), m_lStyle(_lStyle)
+wxMessageDialog::wxMessageDialog(void* _pParent, const std::string& _strMessage, const std::string& _strTitle, long _lStyle)
+    : m_pParent(_pParent), m_strMessage(_strMessage), m_strTitle(_strTitle), m_lStyle(_lStyle)
 {
 }
 

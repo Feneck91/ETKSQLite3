@@ -163,6 +163,12 @@ if (MSVC)
     endforeach()
 
     string(REGEX REPLACE "/W[1-3]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # Workaround to fix warning D9025: substitution of '/W3' by '/W4'
+    # What /permissive- does in MSVC:
+    # /permissive- tells MSVC to follow the standard C++ rules strictly.
+    # Without it, MSVC is more permissive and allows non-standard behaviors.
+    # For example: in template code, MSVC lets you omit this-> when accessing dependent members.
+    # With /permissive-, you must follow the standard (like GCC/Clang).
+    add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/permissive->)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic -finput-charset=Latin1 -fexec-charset=UTF-8 -Werror -fpic)
 endif()

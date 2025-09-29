@@ -594,6 +594,24 @@ function ReplaceRepeatSection(tblReplace,strTemplateFileContent)
 end
 
 --[[--------------------------------------------------------------------------
+ Get the directory of a file.
+
+ Use to be able to load file that are in the same directory as the file.
+
+ Parameters :
+-------------
+    _strPath : Full file path
+
+ Return :
+---------
+    The path of the file
+
+----------------------------------------------------------------------------]]
+local function GetDirName(_strPath)
+    return _strPath:match[[^@?(.*[\/])[^\/]-$]]
+end
+
+--[[--------------------------------------------------------------------------
  Get the relative path of the script.
 
  Use to be able to load file that are in the same directory as the file.
@@ -608,7 +626,7 @@ end
 
 ----------------------------------------------------------------------------]]
 function GetRelativePath()
-    return debug.getinfo(1, "S").source:match[[^@?(.*[\/])[^\/]-$]]
+    return GetDirName(debug.getinfo(1, "S").source)
 end
 
 --[[--------------------------------------------------------------------------
@@ -779,7 +797,7 @@ else
 
             if (bFindInclude) then
                 -- Find one include
-                local strIncludeFilePath = GetFilePath(GetRelativePath(strFileNameWS3)) .. Trim(strBlocContent)
+                local strIncludeFilePath = GetFilePath(GetDirName(strFileNameWS3)) .. Trim(strBlocContent)
 
                 --------------------------------------------
                 -- Read the include file content
@@ -788,6 +806,7 @@ else
                     strError = string.format("Error while reading included file (see $INCLUDE_FILE$ tag) - %s",strIncludeFileContent)
                 else
                     -- Update, remove the bloc and replate it by the contents of the loaded file
+                    strIncludeFileContent = strIncludeFileContent:gsub("%%", "%%%%")
                     bFind,strBlocContent,strWS3Content = RemoveFirstBloc("INCLUDE_FILE",
                                                                          string.gsub(strWS3Content,"$INCLUDE_FILE%$",strIncludeFileContent .. "$INCLUDE_FILE$",1),
                                                                          false)

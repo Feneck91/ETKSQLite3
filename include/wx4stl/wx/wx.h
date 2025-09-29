@@ -38,7 +38,6 @@
 #define wxMax(a,b)                              (((a) > (b)) ? (a) : (b))
 #define WXUNUSED(x)
 #define DWORD                                   unsigned long
-//#define LPCWSTR                                 wchar_t *
 
 /*  sometimes the value of a variable is *really* not used, to suppress  the */
 /*  resulting warning you may pass it to this function */

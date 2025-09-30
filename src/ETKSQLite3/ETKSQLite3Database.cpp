@@ -83,15 +83,17 @@ wxFileName ETKSQLite3Database::GetDatabaseFilePath() const
     return wxFileName(wxConfigBase::Get()->Read(STR_DATABASE_KEY_NAME_PATH, _T("")));
 }
 
-bool ETKSQLite3Database::Create(etkString _strDatabaseFilePath)
+bool ETKSQLite3Database::Create(etkString _strDatabaseFilePath, bool _bThrowException)
 {
     bool bRet = false;
+    bool bFileExistsBeforeCreate = false;
     Close();
 
     try
     {   // Database object creation
         m_pDatabase = new wxSQLite3Database();
         // Database file creation
+        bFileExistsBeforeCreate = wxFileExists(_strDatabaseFilePath);
         m_pDatabase->Open(_strDatabaseFilePath, GetEncryptKey(), WXSQLITE_OPEN_READWRITE | WXSQLITE_OPEN_CREATE);
         ExecuteConfigAfterOpenOrCreate();
         // Database structure creation
@@ -107,38 +109,24 @@ bool ETKSQLite3Database::Create(etkString _strDatabaseFilePath)
         }
     }
     catch(wxSQLite3Exception &_ex)
-    {   // Error while creating the database
+    {   // Error while creating / open the database
+        if (_bThrowException)
+        {
+            UnInitClean(bFileExistsBeforeCreate ? etkString(etkEmptyString) : _strDatabaseFilePath);
+            throw;
+        }
         LogDatabaseException(_ex, true, true); // log and display error to the user
         bRet = false;
     }
 
     if (!bRet)
     {   // Error, the database is not created
-        if (m_pDatabase != nullptr)
-        {
-            if (IsOpened())
-            {   // Not only created, must be opened
-                try
-                {
-                    UnInitCallbacks();
-                }
-                catch (wxSQLite3Exception &_ex)
-                {
-                    LogDatabaseException(_ex, true, true); // log and display error to the user
-                }
-            }
-
-            wxDELETE(m_pDatabase); // Not opened !
-        }
-        if (wxFileExists(_strDatabaseFilePath))
-        {   // Delete created file because it's failed
-            ::wxRemoveFile(_strDatabaseFilePath);
-        }
+        UnInitClean(bFileExistsBeforeCreate ? etkString(etkEmptyString) : _strDatabaseFilePath);
     }
     return bRet;
 }
 
-bool ETKSQLite3Database::Open(etkString _strDatabaseFilePath)
+bool ETKSQLite3Database::Open(etkString _strDatabaseFilePath, bool _bThrowException)
 {
     bool bRet = false;
     Close();
@@ -168,19 +156,12 @@ bool ETKSQLite3Database::Open(etkString _strDatabaseFilePath)
             }
             catch(wxSQLite3Exception &_ex)
             {   // Error while open the database
-                LogDatabaseException(_ex, true, true); // log and display error to the user
-                if (m_pDatabase != nullptr)
+                UnInitClean(etkEmptyString);
+                if (_bThrowException)
                 {
-                    try
-                    {
-                        UnInitCallbacks();
-                    }
-                    catch (wxSQLite3Exception &_ex)
-                    {
-                        LogDatabaseException(_ex, true, true); // log and display error to the user
-                    }
+                    throw;
                 }
-                wxDELETE(m_pDatabase); // Not opened !
+                LogDatabaseException(_ex, true, true); // log and display error to the user
             }
         }
         else
@@ -201,6 +182,30 @@ bool ETKSQLite3Database::Open(etkString _strDatabaseFilePath)
     return bRet;
 }
 
+void ETKSQLite3Database::UnInitClean(etkString _strPathFileToDelete)
+{
+    if (m_pDatabase != nullptr)
+    {
+        if (IsOpened())
+        {   // Not only created, must be opened
+            try
+            {
+                UnInitCallbacks();
+            }
+            catch (wxSQLite3Exception &_ex)
+            {
+                LogDatabaseException(_ex, true, true); // log and display error to the user
+            }
+        }
+
+        wxDELETE(m_pDatabase); // Not opened !
+    }
+    if (!_strPathFileToDelete.IsEmpty() && wxFileExists(_strPathFileToDelete))
+    {   // If ask to delete the file, delete it
+        ::wxRemoveFile(_strPathFileToDelete);
+    }
+}
+
 void ETKSQLite3Database::CloseAndClearIni()
 {
     if (IsOpened())
@@ -208,7 +213,7 @@ void ETKSQLite3Database::CloseAndClearIni()
         Close();
         // Update ini file to automatically don't load this any database file as startup
         wxConfigBase::Get()->SetPath(STR_DATABASE_SECTION_NAME);
-        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, wxEmptyString);
+        wxConfigBase::Get()->Write(STR_DATABASE_KEY_NAME_PATH, etkEmptyString);
         wxLogVerbose(wxT("Closed current opened SQLite3 database file and clear ini file from automatically loading as startup."));
     }
 }
@@ -257,7 +262,7 @@ ETKSQLite3RequestSelector ETKSQLite3Database::GetSelector()
 etkString ETKSQLite3Database::GetSQLDatabaseSchema() const
 {
     wxFAIL_MSG(wxT("Empty database SQL creation command"));
-    return wxEmptyString;
+    return etkEmptyString;
 }
 
 void ETKSQLite3Database::SetSQLDatabaseSchema(etkString _strSQLSchema)
@@ -286,7 +291,7 @@ void ETKSQLite3Database::LogDatabaseException(const wxSQLite3Exception &_rExcept
 
 etkString ETKSQLite3Database::GetEncryptKey() const
 {
-    return wxEmptyString;
+    return etkEmptyString;
 }
 
 wxSQLite3Statement ETKSQLite3Database::PrepareEmptyStatement(etkString _strStatementSQL)

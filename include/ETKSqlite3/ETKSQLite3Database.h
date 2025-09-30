@@ -411,18 +411,20 @@ public:
      * Create a new database file.
      *
      * @param _strDatabaseFilePath Database file path to create.
+     * @param _bThrowException Indicate if exception should be raised or log / display error whould be done.
      * @return true is the database is correctly created, false else.
      */
-    bool                                Create(etkString _strDatabaseFilePath);
+    bool                                Create(etkString _strDatabaseFilePath, bool _bThrowException = false);
 
     /**
      * Open an existing database file.
      *
      * @param _strDatabaseFilePath Database file path to open. If empty string, the database file path is read from
      *                             current ini file.
+     * @param _bThrowException Indicate if exception should be raised or log / display error whould be done.
      * @return true is the database is correctly opened, false else.
      */
-    bool                                Open(etkString _strDatabaseFilePath = wxEmptyString);
+    bool                                Open(etkString _strDatabaseFilePath = wxEmptyString, bool _bThrowException = false);
 
     /**
      * Ask if the database is correctly opened or not.
@@ -609,7 +611,7 @@ private:
      * Execute SQL request with transaction or not, using wxSQLite3Statement class.
      *
      * If the request fails while execution, the transaction is rollback only when using transaction
-     * or an exception is raised if not using transaction..
+     * or an exception is raised if not using transaction.
      *
      * @param _rstmRequest Statement request.
      * @param _bLogError If true, log database error.
@@ -625,7 +627,7 @@ private:
      * Execute SQL request with transaction or not.
      *
      * If the request fails while execution, the transaction is rollback only when using transaction
-     * or an exception is raised if not using transaction..
+     * or an exception is raised if not using transaction.
      *
      * @param _rstmRequest Statement request.
      * @param _bLogError If true, log database error.
@@ -636,6 +638,15 @@ private:
      *                           must be protected by try / catch statement.
      */
     int                                 ExecuteSQL(etkString _strSQL, bool _bLogError, bool _bDisplayMsgBox, bool _bUseTransaction);
+
+    /**
+     * Clean internal pointers.
+     *
+     * If the open / create failed, this function is called to clean internal pointers.
+     *
+     * @param _strPathFileToDelete File to delete. Use empty string to do nothing.
+     */
+    void                                UnInitClean(etkString _strPathFileToDelete);
 
 protected:
     /**

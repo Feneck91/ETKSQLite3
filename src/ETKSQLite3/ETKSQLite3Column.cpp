@@ -299,9 +299,9 @@ ETKSQLite3Expression ETKSQLite3Column::In(const ETKSQLite3Expression &_rExpressi
 ETKSQLite3Expression ETKSQLite3Column::Like(const ETKSQLite3Expression &_rExpression) const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationLike,
-                                  ETKSQLite3Expression(*this),
-                                  _rExpression
-                                 );
+                                ETKSQLite3Expression(*this),
+                                _rExpression
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::As(etkString _strTableName, etkString _strAsName) const
@@ -309,13 +309,14 @@ ETKSQLite3Expression ETKSQLite3Column::As(etkString _strTableName, etkString _st
     ETKSQLite3Column column(*this);
     column.SetTableName(_strTableName);
     return ETKSQLite3Expression(ETKSQLite3Value(GetFullName(), ETKSQLite3Expression::eOperationAs), // GetFullName() is not used into select but used into inner join (very important)
-                                  ETKSQLite3Expression(column),
-                                  // _strTableName+column.GetColumnName() is the automatic alias
-                                  ETKSQLite3Expression(_strAsName.IsEmpty()
-                                                         ? _strTableName+column.GetColumnName()
-                                                         : _strAsName,
-                                                         ETKSQLite3Expression::eExpressionTypeValue)
-                                 );
+                                ETKSQLite3Expression(column),
+                                // _strTableName+column.GetColumnName() is the automatic alias
+                                ETKSQLite3Expression(_strAsName.IsEmpty()
+                                                     ? _strTableName+column.GetColumnName()
+                                                     : _strAsName,
+                                                     ETKSQLite3Expression::eExpressionTypeValue
+                                                    )
+                               );
 }
 
 void ETKSQLite3Column::ChangeAs(etkString _strTableName, etkString _strAsName)
@@ -328,32 +329,32 @@ void ETKSQLite3Column::ChangeAs(etkString _strTableName, etkString _strAsName)
 ETKSQLite3Column ETKSQLite3Column::ComputeColumnChangeAs(etkString _strTableName, etkString _strAsName) const
 {
     return ETKSQLite3Column(GetTableName(), _strAsName.IsEmpty()
-                              ? _strTableName + GetColumnName()
-                              : _strAsName);
+                            ? _strTableName + GetColumnName()
+                            : _strAsName);
 }
 
 ETKSQLite3Expression ETKSQLite3Column::IsNull() const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationIsNull,
-                                  ETKSQLite3Expression(*this),
-                                  ETKSQLite3Expression()
-                                 );
+                                ETKSQLite3Expression(*this),
+                                ETKSQLite3Expression()
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::IsNotNull() const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationIsNotNull,
-                                  ETKSQLite3Expression(*this),
-                                  ETKSQLite3Expression()
-                                 );
+                                ETKSQLite3Expression(*this),
+                                ETKSQLite3Expression()
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::operator!=(const ETKSQLite3Expression &_rExpression) const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationDifferent,
-                                  ETKSQLite3Expression(*this),
-                                  _rExpression
-                                 );
+                                ETKSQLite3Expression(*this),
+                                _rExpression
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::operator>(const ETKSQLite3Expression &_rExpression) const
@@ -380,33 +381,33 @@ ETKSQLite3Expression ETKSQLite3Column::operator<=(const ETKSQLite3Expression &_r
 ETKSQLite3Expression ETKSQLite3Column::operator*(const ETKSQLite3Expression &_rExpression) const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationMult,
-                                  ETKSQLite3Expression(*this),
-                                  _rExpression
-                                 );
+                                ETKSQLite3Expression(*this),
+                                _rExpression
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::operator/(const ETKSQLite3Expression &_rExpression) const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationDiv,
-                                  ETKSQLite3Expression(*this),
-                                  _rExpression
-                                 );
+                                ETKSQLite3Expression(*this),
+                                _rExpression
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::operator+(const ETKSQLite3Expression &_rExpression) const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationAdd,
-                                  ETKSQLite3Expression(*this),
-                                  _rExpression
-                                 );
+                                ETKSQLite3Expression(*this),
+                                _rExpression
+                               );
 }
 
 ETKSQLite3Expression ETKSQLite3Column::operator-(const ETKSQLite3Expression &_rExpression) const
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationSub,
-                                  ETKSQLite3Expression(*this),
-                                  _rExpression
-                                 );
+                                ETKSQLite3Expression(*this),
+                                _rExpression
+                               );
 }
 
 // Column expression operators

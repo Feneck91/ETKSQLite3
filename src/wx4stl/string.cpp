@@ -221,14 +221,14 @@ wxString wxString::Left(size_t count) const
 {
     return (count >= this->length())
         ? *this
-        : substr(0, count);
+        : wxString(substr(0, count));
 }
 
 wxString wxString::Right(size_t count) const
 {
     return (count >= length())
         ? *this
-        : this->substr(length() - count, count);
+        : wxString(substr(length() - count, count));
 }
 
 const wxChar *wxString::wx_str() const
@@ -270,10 +270,9 @@ void wxString::Replace(const wxChar *_pstrBefore,const wxChar *_pstrAfter)
 // Adds count copies of chPad to the beginning, or to the end of the string (the default).
 wxString & wxString::Pad(size_t count, wxChar chPad, bool fromRight)
 {
-    if (length() < count)
+    if (count > 0)
     {
-        size_t paddingLength = count - length();
-        std::string padding(paddingLength, chPad);
+        std::string padding(count, chPad);
 
         if (fromRight)
         {

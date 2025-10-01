@@ -184,9 +184,20 @@ void wxString::Replace(const wxChar *_pstrBefore,const wxChar *_pstrAfter)
 }
 
 // Adds count copies of chPad to the beginning, or to the end of the string (the default).
-wxString & wxString::Pad (size_t count, wxChar chPad, bool fromRight)
+wxString & wxString::Pad(size_t count, wxChar chPad, bool fromRight)
 {
-    operator=(fromRight ? leftJustified(static_cast<int>(count), chPad) : rightJustified(static_cast<int>(count), chPad));
+    if (count > 0)
+    {
+        QString padding(static_cast<int>(count), chPad);
+        if (fromRight)
+        {
+            append(padding);   // ajoute à droite
+        }
+        else
+        {
+            prepend(padding);  // ajoute à gauche
+        }
+    }
     return *this;
 }
 

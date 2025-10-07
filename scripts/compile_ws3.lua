@@ -1288,21 +1288,23 @@ else
         ----------------------------------------------------------------
 
         --
-        -- Close brace (end table description) (not captured) <-------------------------------------------------------
-        -- All columns descriptions <-----------------------------------------------------------------------------   |
-        -- Open brace (begin table description) (not captured) <------------------------------------             |   |
-        -- Table name <-----------------------------------------------------------                 |             |   |
-        -- Beginning of table <---------------------    open brace <-------      |      -> close brace           |   |
-        --                               __________|______________        |  ____|____  |          |           __|__ |
-        --                             /                          \       | /         \ |          |          /     \|(end)
-              regExpression =         "ETK_SQLITE3_DECLARE_TABLE[ \t]*%(([a-zA-Z_]+)%)[ \t\r\n]*{[ \t\r\n]*([^}]+)}"
+        -- Close brace (end table description) (not captured) <---------------------------------------------------------------
+        -- All columns descriptions <-------------------------------------------------------------------------------------   |
+        -- Open brace (begin table description) (not captured) <--------------------------------------------             |   |
+        -- Table name <-------------------------------------------------------------------                 |             |   |
+        -- Beginning of table <--------------------------------    open brace <----      |      -> close brace           |   |
+        --                                          __________|___________        |  ____|___   |          |            _|_  |
+        --                                        /                       \       | /        \  |          |           /   \ |(end)
+              regExpression            =         "ETK_SQLITE3_DECLARE_TABLE[ \t]*%(([a-zA-Z_]+)%)[ \t\r\n]*{[ \t\r\n]*([^}]+)}"
         local strRegexSearchForeignKey = "DECLARE_FOREIGN_KEY%(([%a_][%a%d_]*)%.([%a_][%a%d]*)%)" -- to find foreign key
+        local strRegexSearchIndex      = "DECLARE_INDEX%(([^)]+)%)" -- to find index
         local strRegexSearchDataImplementation = "DECLARE_DATA_IMPLEMENTATION%([ \t]*([%a%d_ %.\\/]*)[\t]*,[ \t]*([%a%d_ %.\\/]*[\t]*)%)" -- to find implentation files for structure
         local iExpressionBegin, iLastExpressionBegin, iExpressionEnd = 1,1
         local indexBegin,indexEnd,strColumnDescriptions
         local strCPPColumnImplementation,strCPPColumnAdd,strCPPColumnDeclaration,strCPPColumnVariablesDeclaration,strCPPConstructorVariablesImplementation
-        local strHDeclareVariablesGetterSetters,strCPPImplementVariablesGetterSetters,strCPPTableConstruction,strCPPTableConstructionFK,strCPPTableConstructionPK
+        local strHDeclareVariablesGetterSetters,strCPPImplementVariablesGetterSetters,strCPPTableConstruction,strCPPTableConstructionFK,strCPPTableConstructionPK,strCPPTableConstructionINDEX
         local iNbPrimaryKey,bHasAutoincrementPrimaryKey
+        local dicColumnsName -- Columns names to check INDEX columns
         local strTemplateHeaderFileCopy,strTemplateSourceFileCopy
         local iNbTableFound = 0
 
@@ -1321,11 +1323,13 @@ else
             strCPPTableConstruction                     = "" -- To create the SQL used to create the table
             strCPPTableConstructionFK                   = "" -- To create the SQL used to create the table (Foreign key)
             strCPPTableConstructionPK                   = "" -- To create the SQL used to create the primary key
+            strCPPTableConstructionINDEX                = "" -- To create the SQL used to create the index
             iNbPrimaryKey                               = 0
             bHasAutoincrementPrimaryKey                 = false
             strTemplateHeaderFileCopy                   = strTemplateHeaderFile
             strTemplateSourceFileCopy                   = strTemplateSourceFile
             bUserStructImplementation                   = false
+            dicColumnsName                              = {}
 
             -- Table name
             strCPPColumnDeclaration = ""
@@ -1359,7 +1363,8 @@ else
             strResults = string.gsub(strResults,"\t"," ")               -- <-- Remove TAB char
             strResults = string.replaceall(strResults,"  "," ")         -- <-- Keep only one space to split the fields
             strResults = Trim(strResults)                               -- <-- Remove spaces in begin or end of the string
-            local bIsCol, strColumName, strType, strCppType, bIsNull, bIsNotNull, bIsPrimary, bIsUnique, bIsAutoIncrement
+            local bIsCol, bIsForeignKey, bIsIndex, strColumName, strType, strCppType, bIsNull, bIsNotNull, bIsPrimary, bIsUnique, bIsAutoIncrement
+            local lstIndex = {}
             local iIndexInColums, iLine , bOnDeleteCascade, bOnUpdateCascade, bOnDeleteSetNull, bOnUpdateSetNull, strFKTable, strFKColumn, bUserStructImplementation
             iLine     = 0
 
@@ -1369,233 +1374,240 @@ else
                 if (strResult == "$$**$$" or iLine==0) then
                     -- Start a new column declaration
                     if ((iLine ~= 0 and not bUserStructImplementation) or (iLine ~= 1 and bUserStructImplementation)) then
-                        if ((iLine ~= 1 and not bUserStructImplementation) or (iLine > 2 and bUserStructImplementation)) then
-                            -- If not first line
-                            strCPPColumnImplementation               = strCPPColumnImplementation .. "\n"
-                            strCPPColumnAdd                          = strCPPColumnAdd .. "\n"
-                            strCPPColumnDeclaration                  = strCPPColumnDeclaration .. "\n"
-                            strCPPColumnVariablesDeclaration         = strCPPColumnVariablesDeclaration .. "\n"
-                            strHDeclareVariablesGetterSetters        = strHDeclareVariablesGetterSetters .. "\n\n"
-                            strCPPImplementVariablesGetterSetters    = strCPPImplementVariablesGetterSetters .. "\n"
-                            strCPPTableConstruction                  = strCPPTableConstruction .. "\n"
-                        end
+                        if (not bIsIndex) then
+                            if ((iLine ~= 1 and not bUserStructImplementation) or (iLine > 2 and bUserStructImplementation)) then
+                                -- If not first line
+                                strCPPColumnImplementation               = strCPPColumnImplementation .. "\n"
+                                strCPPColumnAdd                          = strCPPColumnAdd .. "\n"
+                                strCPPColumnDeclaration                  = strCPPColumnDeclaration .. "\n"
+                                strCPPColumnVariablesDeclaration         = strCPPColumnVariablesDeclaration .. "\n"
+                                strHDeclareVariablesGetterSetters        = strHDeclareVariablesGetterSetters .. "\n\n"
+                                strCPPImplementVariablesGetterSetters    = strCPPImplementVariablesGetterSetters .. "\n"
+                                strCPPTableConstruction                  = strCPPTableConstruction .. "\n"
+                            end
 
-                        local strPrefixType,strPrefixTypeMember = "",""
-                        if (tabTypeMembersRef[strType] ~= nil) then
-                            -- Member type to pass as reference
-                            strPrefixType = tabTypeMembersRef[strType]
-                        elseif (tabTypeMembersCopy[strType] ~= nil) then
-                            -- Member type to pass as copy
-                            strPrefixType = tabTypeMembersCopy[strType]
-                        end
+                            local strPrefixType,strPrefixTypeMember = "",""
+                            if (tabTypeMembersRef[strType] ~= nil) then
+                                -- Member type to pass as reference
+                                strPrefixType = tabTypeMembersRef[strType]
+                            elseif (tabTypeMembersCopy[strType] ~= nil) then
+                                -- Member type to pass as copy
+                                strPrefixType = tabTypeMembersCopy[strType]
+                            end
 
-                        strPrefixTypeMember = tabPrefixTypeMembers[strCppType]
-                        if (strPrefixTypeMember == nil) then
-                            strPrefixTypeMember = strPrefixType -- If not defined, same as prefix type
-                        end
+                            strPrefixTypeMember = tabPrefixTypeMembers[strCppType]
+                            if (strPrefixTypeMember == nil) then
+                                strPrefixTypeMember = strPrefixType -- If not defined, same as prefix type
+                            end
 
-                        --------------------------
-                        -- Source code generation
-                        -- Contruct the SQL string used to build the table
-                        local strDatabaseType = tabDatabaseMembers[strType] or strType -- tabDatabaseMembers[strType] if defined, strType else
+                            --------------------------
+                            -- Source code generation
+                            -- Contruct the SQL string used to build the table
+                            local strDatabaseType = tabDatabaseMembers[strType] or strType -- tabDatabaseMembers[strType] if defined, strType else
 
-                        strCPPTableConstruction     =   strCPPTableConstruction ..
-                                                        string.format("%s\"%s %s%s%s%s%s%s,\""
-                                                                      ,string.rep(" ",22 + string.len(strTableName))
-                                                                      ,strColumName
-                                                                      ,strDatabaseType
-                                                                      ,(bIsPrimary and bIsAutoIncrement) and " PRIMARY KEY" or "" -- bIsPrimary ? "PRIMARY" : ""
-                                                                      ,bIsNull and " NULL" or ""                        -- bIsNull ? "NULL" : ""
-                                                                      ,bIsNotNull and " NOT NULL" or ""                 -- bIsNotNull ? "NOT NULL" : ""
-                                                                      ,bIsAutoIncrement and " AUTOINCREMENT" or ""      -- bIsAutoIncrement ? "AUTOINCREMENT" : ""
-                                                                      ,bIsUnique and " UNIQUE" or ""                    -- bIsUnique ? "UNIQUE" : ""
-                                                                     )
+                            strCPPTableConstruction     =   strCPPTableConstruction ..
+                                                            string.format("%s\"%s %s%s%s%s%s%s,\""
+                                                                          ,string.rep(" ",22 + string.len(strTableName))
+                                                                          ,strColumName
+                                                                          ,strDatabaseType
+                                                                          ,(bIsPrimary and bIsAutoIncrement) and " PRIMARY KEY" or "" -- bIsPrimary ? "PRIMARY" : ""
+                                                                          ,bIsNull and " NULL" or ""                        -- bIsNull ? "NULL" : ""
+                                                                          ,bIsNotNull and " NOT NULL" or ""                 -- bIsNotNull ? "NOT NULL" : ""
+                                                                          ,bIsAutoIncrement and " AUTOINCREMENT" or ""      -- bIsAutoIncrement ? "AUTOINCREMENT" : ""
+                                                                          ,bIsUnique and " UNIQUE" or ""                    -- bIsUnique ? "UNIQUE" : ""
+                                                                         )
 
-                        -- Compute primary key needed
-                        if (bIsPrimary) then
-                            iNbPrimaryKey = iNbPrimaryKey + 1
-                            if (not bIsAutoIncrement) then
-                                -- Add all primary keys only if no AUTOINCREMENT field
-                                strCPPTableConstructionPK = strCPPTableConstructionPK ..
-                                                            string.format("%s%s"
-                                                                          ,(string.len(strCPPTableConstructionPK) ~= 0) and "," or ""
+                            -- Compute primary key needed
+                            if (bIsPrimary) then
+                                iNbPrimaryKey = iNbPrimaryKey + 1
+                                if (not bIsAutoIncrement) then
+                                    -- Add all primary keys only if no AUTOINCREMENT field
+                                    strCPPTableConstructionPK = strCPPTableConstructionPK ..
+                                                                string.format("%s%s"
+                                                                              ,(string.len(strCPPTableConstructionPK) ~= 0) and "," or ""
+                                                                              ,strColumName
+                                                                             )
+                                else
+                                    bHasAutoincrementPrimaryKey = true
+                                end
+                            end
+
+                            -- Compute Foreign key / INDEX if needed
+                            if (bIsCol == false) then
+                                if (bIsForeignKey == true) then
+                                    -- Only for foreign key
+                                    strCPPTableConstructionFK = strCPPTableConstructionFK ..
+                                                                string.format("\n%s\"  FOREIGN KEY(%s)\"\n%s\"    REFERENCES %s(%s)%s%s%s%s,\""
+                                                                              ,string.rep(" ",22 + string.len(strTableName))
+                                                                              ,strColumName
+                                                                              ,string.rep(" ",22 + string.len(strTableName))
+                                                                              ,strFKTable
+                                                                              ,strFKColumn
+                                                                              ,bOnDeleteCascade and string.format("\"\n%s\"      ON DELETE CASCADE",string.rep(" ",22 + string.len(strTableName))) or ""
+                                                                              ,bOnDeleteSetNull and string.format("\"\n%s\"      ON DELETE SET NULL",string.rep(" ",22 + string.len(strTableName))) or ""
+                                                                              ,bOnUpdateCascade and string.format("\"\n%s\"      ON UPDATE CASCADE",string.rep(" ",22 + string.len(strTableName))) or ""
+                                                                              ,bOnUpdateSetNull and string.format("\"\n%s\"      ON UPDATE SET NULL",string.rep(" ",22 + string.len(strTableName))) or ""
+                                                                             )
+                                end
+                            end
+
+                            strCPPColumnImplementation  =   strCPPColumnImplementation ..
+                                                            string.format("const ETKSQLite3Column %s%s::%s%s%s= ETKSQLite3Column(TABLE_NAME,_T(\"%s\"));"
+                                                                          ,strPrefixTable
+                                                                          ,strTableName
+                                                                          ,strPrefixColumn
+                                                                          ,strColumName
+                                                                          ,string.rep(" ",math.max(1,16 - string.len(strColumName) - (string.len(strTableName) % 4)))
                                                                           ,strColumName
                                                                          )
+
+                            if (tabTypeBind[strType] ~= nil) then
+                                -- Binding type
+                                strCPPColumnAdd = strCPPColumnAdd ..
+                                                  string.format("    AddColumn(ETKSQLite3Column(%s%s,%sETKSQLite3ColumnAttributes(%s(&%s%s%s)%s)));"
+                                                                ,strPrefixColumn
+                                                                ,strColumName
+                                                                ,string.rep(" ",math.max(1,17 - string.len(strColumName)))
+                                                                ,tabTypeBind[strType]
+                                                                ,strPrefixMembers             -- m_ or other if override
+                                                                ,strPrefixTypeMember          -- l for integer (long), str for string, ... other if override
+                                                                ,strColumName
+                                                                ,(bIsPrimary and (bIsAutoIncrement or strDatabaseType=="INTEGER")) and ",false" or ""  -- Add this column when adding new record ? No for primary integer primary key
+                                                               )
                             else
-                                bHasAutoincrementPrimaryKey = true
+                                -- No binding type
+                                strCPPColumnAdd = strCPPColumnAdd ..
+                                                  string.format("    AddColumn(ETKSQLite3Column(%s%s,%sETKSQLite3ColumnAttributes(&%s%s%s%s)));"
+                                                                ,strPrefixColumn
+                                                                ,strColumName
+                                                                ,string.rep(" ",math.max(1,17 - string.len(strColumName)))
+                                                                ,strPrefixMembers             -- m_ or other is override
+                                                                ,strPrefixTypeMember          -- l for integer (long), str for string, ... other if override
+                                                                ,strColumName
+                                                                ,(bIsPrimary and (bIsAutoIncrement or strDatabaseType=="INTEGER")) and ",false" or ""  -- Add this column when adding new record ? No for primary integer primary key
+                                                             )
                             end
-                        end
 
-                        -- Compute Foreign key if needed
-                        if (bIsCol == false) then
-                            -- Only for foreign key
-                            strCPPTableConstructionFK = strCPPTableConstructionFK ..
-                                                        string.format("\n%s\"  FOREIGN KEY(%s)\"\n%s\"    REFERENCES %s(%s)%s%s%s%s,\""
-                                                                      ,string.rep(" ",22 + string.len(strTableName))
-                                                                      ,strColumName
-                                                                      ,string.rep(" ",22 + string.len(strTableName))
-                                                                      ,strFKTable
-                                                                      ,strFKColumn
-                                                                      ,bOnDeleteCascade and string.format("\"\n%s\"      ON DELETE CASCADE",string.rep(" ",22 + string.len(strTableName))) or ""
-                                                                      ,bOnDeleteSetNull and string.format("\"\n%s\"      ON DELETE SET NULL",string.rep(" ",22 + string.len(strTableName))) or ""
-                                                                      ,bOnUpdateCascade and string.format("\"\n%s\"      ON UPDATE CASCADE",string.rep(" ",22 + string.len(strTableName))) or ""
-                                                                      ,bOnUpdateSetNull and string.format("\"\n%s\"      ON UPDATE SET NULL",string.rep(" ",22 + string.len(strTableName))) or ""
-                                                                     )
-                        end
+                            -- The structure that contains data could be a wxString and all getter and setter could be
+                            -- QString (for example)
+                            local strTypeArg = tabTypeArgs[strType]
 
-                        strCPPColumnImplementation  =   strCPPColumnImplementation ..
-                                                        string.format("const ETKSQLite3Column %s%s::%s%s%s= ETKSQLite3Column(TABLE_NAME,_T(\"%s\"));"
-                                                                      ,strPrefixTable
-                                                                      ,strTableName
-                                                                      ,strPrefixColumn
-                                                                      ,strColumName
-                                                                      ,string.rep(" ",math.max(1,16 - string.len(strColumName) - (string.len(strTableName) % 4)))
-                                                                      ,strColumName
-                                                                     )
+                            if (strTypeArg == nil) then
+                                strTypeArg = tabTypeMembers[strType]
+                            end
 
-                        if (tabTypeBind[strType] ~= nil) then
-                            -- Binding type
-                            strCPPColumnAdd = strCPPColumnAdd ..
-                                              string.format("    AddColumn(ETKSQLite3Column(%s%s,%sETKSQLite3ColumnAttributes(%s(&%s%s%s)%s)));"
-                                                            ,strPrefixColumn
-                                                            ,strColumName
-                                                            ,string.rep(" ",math.max(1,17 - string.len(strColumName)))
-                                                            ,tabTypeBind[strType]
-                                                            ,strPrefixMembers             -- m_ or other if override
-                                                            ,strPrefixTypeMember          -- l for integer (long), str for string, ... other if override
-                                                            ,strColumName
-                                                            ,(bIsPrimary and (bIsAutoIncrement or strDatabaseType=="INTEGER")) and ",false" or ""  -- Add this column when adding new record ? No for primary integer primary key
-                                                           )
-                        else
-                            -- No binding type
-                            strCPPColumnAdd = strCPPColumnAdd ..
-                                              string.format("    AddColumn(ETKSQLite3Column(%s%s,%sETKSQLite3ColumnAttributes(&%s%s%s%s)));"
-                                                            ,strPrefixColumn
-                                                            ,strColumName
-                                                            ,string.rep(" ",math.max(1,17 - string.len(strColumName)))
-                                                            ,strPrefixMembers             -- m_ or other is override
-                                                            ,strPrefixTypeMember          -- l for integer (long), str for string, ... other if override
-                                                            ,strColumName
-                                                            ,(bIsPrimary and (bIsAutoIncrement or strDatabaseType=="INTEGER")) and ",false" or ""  -- Add this column when adding new record ? No for primary integer primary key
-                                                         )
-                        end
+                            if (tabTypeMembersRef[strType] ~= nil) then
+                                -- Getter and setter with Reference
+                                local strParamArgument = strPrefixArgumentsReference .. tabTypeMembersRef[strType] .. strColumName
 
-                        -- The structure that contains data could be a wxString and all getter and setter could be
-                        -- QString (for example)
-                        local strTypeArg = tabTypeArgs[strType]
-
-                        if (strTypeArg == nil) then
-                            strTypeArg = tabTypeMembers[strType]
-                        end
-
-                        if (tabTypeMembersRef[strType] ~= nil) then
-                            -- Getter and setter with Reference
-                            local strParamArgument = strPrefixArgumentsReference .. tabTypeMembersRef[strType] .. strColumName
-
-                            strHDeclareVariablesGetterSetters = strHDeclareVariablesGetterSetters ..
-                                                                string.format("    const %s &%sGet%s() const;\n    void %sSet%s(const %s &%s);"
-                                                                              ,strTypeArg
-                                                                              ,string.rep(" ",math.max(1,28 - string.len(strTypeArg)))
-                                                                              ,strColumName
-                                                                              ,string.rep(" ",31)
-                                                                              ,strColumName
-                                                                              ,strTypeArg
-                                                                              ,strParamArgument
-                                                                             )
-
-                            strCPPImplementVariablesGetterSetters = strCPPImplementVariablesGetterSetters ..
-                                                                    string.format("const %s &%s%s::Get%s() const\n{\n    return %s%s%s;\n}\n\nvoid %s%s::Set%s(const %s &%s)\n{\n    %s%s%s = %s;\n}\n"
+                                strHDeclareVariablesGetterSetters = strHDeclareVariablesGetterSetters ..
+                                                                    string.format("    const %s &%sGet%s() const;\n    void %sSet%s(const %s &%s);"
                                                                                   ,strTypeArg
-                                                                                  ,strPrefixTable
-                                                                                  ,strTableName
+                                                                                  ,string.rep(" ",math.max(1,28 - string.len(strTypeArg)))
                                                                                   ,strColumName
-                                                                                  ,strPrefixMembers
-                                                                                  ,strPrefixTypeMember
-                                                                                  ,strColumName
-                                                                                  ,strPrefixTable
-                                                                                  ,strTableName
+                                                                                  ,string.rep(" ",31)
                                                                                   ,strColumName
                                                                                   ,strTypeArg
-                                                                                  ,strParamArgument
-                                                                                  ,strPrefixMembers
-                                                                                  ,strPrefixTypeMember
-                                                                                  ,strColumName
                                                                                   ,strParamArgument
                                                                                  )
-                        else -- if (tabTypeMembersRef[strType] ~= nil) then
-                            -- // Getter and setter by copy
-                            local strParamArgument = ""
-                            if (tabTypeMembersCopy[strType] ~= nil) then
-                                strParamArgument = tabTypeMembersCopy[strType]
-                            end
-                            strParamArgument = strPrefixArgumentsCopy .. strParamArgument .. strColumName
 
-                            strHDeclareVariablesGetterSetters = strHDeclareVariablesGetterSetters ..
-                                                                string.format("    %s%sGet%s() const;\n    void %sSet%s(%s %s);"
-                                                                              ,strTypeArg
-                                                                              ,string.rep(" ",math.max(1,36 - string.len(strTypeArg)))
-                                                                              ,strColumName
-                                                                              ,string.rep(" ",31)
-                                                                              ,strColumName
-                                                                              ,strTypeArg
-                                                                              ,strParamArgument
-                                                                             )
+                                strCPPImplementVariablesGetterSetters = strCPPImplementVariablesGetterSetters ..
+                                                                        string.format("const %s &%s%s::Get%s() const\n{\n    return %s%s%s;\n}\n\nvoid %s%s::Set%s(const %s &%s)\n{\n    %s%s%s = %s;\n}\n"
+                                                                                      ,strTypeArg
+                                                                                      ,strPrefixTable
+                                                                                      ,strTableName
+                                                                                      ,strColumName
+                                                                                      ,strPrefixMembers
+                                                                                      ,strPrefixTypeMember
+                                                                                      ,strColumName
+                                                                                      ,strPrefixTable
+                                                                                      ,strTableName
+                                                                                      ,strColumName
+                                                                                      ,strTypeArg
+                                                                                      ,strParamArgument
+                                                                                      ,strPrefixMembers
+                                                                                      ,strPrefixTypeMember
+                                                                                      ,strColumName
+                                                                                      ,strParamArgument
+                                                                                     )
+                            else -- if (tabTypeMembersRef[strType] ~= nil) then
+                                -- // Getter and setter by copy
+                                local strParamArgument = ""
+                                if (tabTypeMembersCopy[strType] ~= nil) then
+                                    strParamArgument = tabTypeMembersCopy[strType]
+                                end
+                                strParamArgument = strPrefixArgumentsCopy .. strParamArgument .. strColumName
 
-                            strCPPImplementVariablesGetterSetters = strCPPImplementVariablesGetterSetters ..
-                                                                    string.format("%s %s%s::Get%s() const\n{\n    return %s%s%s;\n}\n\nvoid %s%s::Set%s(%s %s)\n{\n    %s%s%s = %s;\n}\n"
+                                strHDeclareVariablesGetterSetters = strHDeclareVariablesGetterSetters ..
+                                                                    string.format("    %s%sGet%s() const;\n    void %sSet%s(%s %s);"
                                                                                   ,strTypeArg
-                                                                                  ,strPrefixTable
-                                                                                  ,strTableName
+                                                                                  ,string.rep(" ",math.max(1,36 - string.len(strTypeArg)))
                                                                                   ,strColumName
-                                                                                  ,strPrefixMembers
-                                                                                  ,strPrefixTypeMember
-                                                                                  ,strColumName
-                                                                                  ,strPrefixTable
-                                                                                  ,strTableName
+                                                                                  ,string.rep(" ",31)
                                                                                   ,strColumName
                                                                                   ,strTypeArg
-                                                                                  ,strParamArgument
-                                                                                  ,strPrefixMembers
-                                                                                  ,strPrefixTypeMember
-                                                                                  ,strColumName
                                                                                   ,strParamArgument
                                                                                  )
-                        end -- if (tabTypeMembersRef[strType] ~= nil) then / else
 
-                        -- If not user implementation, remove only tags, else it is already done when user implementation
-                        -- has been read
-                        if (bUserStructImplementation) then
-                            local setReplace = {["COLUMN_NAME"]   = strColumName,
-                                                ["VARIABLE_NAME"] = strPrefixMembers .. strPrefixTypeMember .. strColumName,
-                                                ["VARIABLE_TYPE"] = strTypeArg}
-                            strTemplateHeaderFileCopy = ReplaceRepeatSection(setReplace,strTemplateHeaderFileCopy);
-                            strTemplateSourceFileCopy = ReplaceRepeatSection(setReplace,strTemplateSourceFileCopy);
-                        end
+                                strCPPImplementVariablesGetterSetters = strCPPImplementVariablesGetterSetters ..
+                                                                        string.format("%s %s%s::Get%s() const\n{\n    return %s%s%s;\n}\n\nvoid %s%s::Set%s(%s %s)\n{\n    %s%s%s = %s;\n}\n"
+                                                                                      ,strTypeArg
+                                                                                      ,strPrefixTable
+                                                                                      ,strTableName
+                                                                                      ,strColumName
+                                                                                      ,strPrefixMembers
+                                                                                      ,strPrefixTypeMember
+                                                                                      ,strColumName
+                                                                                      ,strPrefixTable
+                                                                                      ,strTableName
+                                                                                      ,strColumName
+                                                                                      ,strTypeArg
+                                                                                      ,strParamArgument
+                                                                                      ,strPrefixMembers
+                                                                                      ,strPrefixTypeMember
+                                                                                      ,strColumName
+                                                                                      ,strParamArgument
+                                                                                     )
+                            end -- if (tabTypeMembersRef[strType] ~= nil) then / else
 
-                        strCPPColumnDeclaration = strCPPColumnDeclaration .. string.format("    static const ETKSQLite3Column       %s%s;",strPrefixColumn,strColumName)
-                        -- Add Datas used to make the binding
-                        strCPPColumnVariablesDeclaration = strCPPColumnVariablesDeclaration ..
-                                                           string.format("    %s%s%s%s%s;"
-                                                                         ,strCppType
-                                                                         ,string.rep(" ",math.max(1,36 - string.len(strCppType)))
-                                                                         ,strPrefixMembers
-                                                                         ,strPrefixTypeMember
-                                                                         ,strColumName
-                                                                        )
+                            -- If not user implementation, remove only tags, else it is already done when user implementation
+                            -- has been read
+                            if (bUserStructImplementation) then
+                                local setReplace = {["COLUMN_NAME"]   = strColumName,
+                                                    ["VARIABLE_NAME"] = strPrefixMembers .. strPrefixTypeMember .. strColumName,
+                                                    ["VARIABLE_TYPE"] = strTypeArg}
+                                strTemplateHeaderFileCopy = ReplaceRepeatSection(setReplace,strTemplateHeaderFileCopy);
+                                strTemplateSourceFileCopy = ReplaceRepeatSection(setReplace,strTemplateSourceFileCopy);
+                            end
 
-                        if (string.len(strImplementInitVariableConstructor) ~= 0) then
-                            -- If initialisation is set, add it
-                            strCPPConstructorVariablesImplementation = strCPPConstructorVariablesImplementation ..
-                                                                       string.format("    %s%s%s%s;\n"
-                                                                                     ,strPrefixMembers
-                                                                                     ,strPrefixTypeMember
-                                                                                     ,strColumName
-                                                                                     ,strImplementInitVariableConstructor
-                                                                                    )
-                        end
+                            strCPPColumnDeclaration = strCPPColumnDeclaration .. string.format("    static const ETKSQLite3Column       %s%s;",strPrefixColumn,strColumName)
+                            -- Add Datas used to make the binding
+                            strCPPColumnVariablesDeclaration = strCPPColumnVariablesDeclaration ..
+                                                               string.format("    %s%s%s%s%s;"
+                                                                             ,strCppType
+                                                                             ,string.rep(" ",math.max(1,36 - string.len(strCppType)))
+                                                                             ,strPrefixMembers
+                                                                             ,strPrefixTypeMember
+                                                                             ,strColumName
+                                                                            )
+
+                            if (string.len(strImplementInitVariableConstructor) ~= 0) then
+                                -- If initialisation is set, add it
+                                strCPPConstructorVariablesImplementation = strCPPConstructorVariablesImplementation ..
+                                                                           string.format("    %s%s%s%s;\n"
+                                                                                         ,strPrefixMembers
+                                                                                         ,strPrefixTypeMember
+                                                                                         ,strColumName
+                                                                                         ,strImplementInitVariableConstructor
+                                                                                        )
+                            end
+                        end -- else
                     end -- if ((iLine ~= 0 and not bUserStructImplementation) or (iLine ~= 1 and bUserStructImplementation)) then / else
                     -- Set Column default values
-                    bIsCol                    = nil -- null: no type, true: column, false: foreign key
+                    bIsCol                    = nil -- null: no type, true: column else other
+                    bIsForeignKey             = nil -- true: foreign key
+                    bIsIndex                  = false -- true: index
+                    lstIndex                  = {}
                     strColumName              = nil
                     strType                   = nil
                     strCppType                = nil
@@ -1616,7 +1628,7 @@ else
                 else -- if strResult == "$$**$$" or iLine==0
                     switch(iIndexInColums) : caseof
                     {
-                        [0]     =   function(x) -- DECLARE_COLUMN or DECLARE_FOREIGN_KEY
+                        [0]     =   function(x) -- DECLARE_COLUMN or DECLARE_FOREIGN_KEY or DECLARE_INDEX
                                         if (strResult == "DECLARE_COLUMN") then
                                             bIsCol = true
                                         elseif (string.find(strResult,strRegexSearchForeignKey)) then
@@ -1624,6 +1636,22 @@ else
                                             local iFKStart,iFKEnd
                                             iFKStart,iFKEnd,strFKTable,strFKColumn = string.find(strResult,strRegexSearchForeignKey)
                                             bIsCol = false -- It is a foreign key
+                                            bIsForeignKey = true
+                                        elseif (string.find(strResult,strRegexSearchIndex)) then
+                                            -- Find column(s) name(s)
+                                            local iFKStart,iFKEnd, strAllColumns
+                                            iFKStart,iFKEnd,strAllColumns = string.find(strResult,strRegexSearchIndex)
+                                            for iIndex,strResult in ipairs(string.split(strAllColumns,",")) do
+                                                strResult = Trim(strResult)
+                                                if (not dicColumnsName[strResult]) then
+                                                    -- Error
+                                                    strError = string.format("Table %s - line %d (DECLARE_INDEX(%s) : the columns '%s' is unknown!",strTableName, iLine, strAllColumns, strResult)
+                                                    break
+                                                end
+                                            end
+                                            table.insert(lstIndex, strAllColumns) -- The last index contains all coluums
+                                            bIsCol = false -- It is a Index
+                                            bIsIndex = true
                                         elseif (string.find(strResult,strRegexSearchDataImplementation)) then
                                             -- Find data implementation
                                             local iStartDataImpl,iEndDataImpl,bReadOK,strDataHeaderImplFile,strDataSourceImplFile
@@ -1653,24 +1681,41 @@ else
                                             bIsCol = false -- It is an implementation sources
                                         else
                                             -- Error
-                                            strError = string.format("Table %s - line %d: '%s' is unknown, waiting DECLARE_COLUMN or DECLARE_FOREIGN_KEY(table.col) or DECLARE_DATA_IMPLEMENTATION(template header file, template source file)",strTableName,iLine,strResult)
+                                            strError = string.format("Table %s - line %d: '%s' is unknown, waiting DECLARE_COLUMN or DECLARE_FOREIGN_KEY(table.col) or DECLARE_INDEX(col1[,col2,col3...]) or DECLARE_DATA_IMPLEMENTATION(template header file, template source file)",strTableName,iLine,strResult)
                                         end
                                     end,
                         [1]     =   function(x) -- Column name
                                         strColumName = strResult
+                                        -- Add to list columns name list to check INDEX
+                                        if (bIsIndex == false) then
+                                            dicColumnsName[strColumName] = true
+                                        else
+                                            strCPPTableConstructionINDEX = strCPPTableConstructionINDEX ..
+                                                                           string.format("\n        \"CREATE INDEX %s ON %s(%s);\""
+                                                                                         ,strColumName
+                                                                                         ,strTableName
+                                                                                         ,lstIndex[#lstIndex]
+                                                                                        )
+                                            print(string.format("Index %s ON %s(%s)",strColumName,strTableName,lstIndex[#lstIndex]))
+                                        end
                                         if (strDataSourceImpl ~= nil) then
                                             -- Error
                                             strError = string.format("Table %s - line %d: after DECLARE_DATA_IMPLEMENTATION, no more information is needed!",strTableName,iLine)
                                         end
                                     end,
                         [2]     =   function(x) -- Type
-                                        if (tabTypeMembers[strResult] ~= nil) then
-                                            -- Test if this type is supported
-                                            strType = strResult
-                                            strCppType = tabTypeMembers[strType] -- C++ type for this column type
-                                        else
+                                        if (bIsIndex == true) then
                                             -- Error
-                                            strError = string.format("Table %s - line %d (column='%s') : type '%s' is unknown!",strTableName,iLine,strColumName,strResult)
+                                            strError = string.format("Table %s - line %d (column=DECLARE_INDEX(%s) %s : too much columns for INDEX declaration!", strTableName, iLine, lstIndex[#lstIndex], strColumName)
+                                        else
+                                            if (tabTypeMembers[strResult] ~= nil) then
+                                                -- Test if this type is supported
+                                                strType = strResult
+                                                strCppType = tabTypeMembers[strType] -- C++ type for this column type
+                                            else
+                                                -- Error
+                                                strError = string.format("Table %s - line %d (column='%s') : type '%s' is unknown!",strTableName,iLine,strColumName,strResult)
+                                            end
                                         end
                                     end,
                         default =   function(x) -- Other keywords
@@ -1698,7 +1743,7 @@ else
                                         elseif (strResult == "AUTOINCREMENT") then
                                             bIsAutoIncrement = true
                                         elseif (strResult == "ON_DELETE_CASCADE") then
-                                            if (bIsCol == false) then
+                                            if (bIsCol == false and bIsForeignKey == true) then
                                                 -- it is a foreign key, delete is accepted
                                                 if (bOnDeleteSetNull) then
                                                     -- Error, using both not compatible delete
@@ -1711,7 +1756,7 @@ else
                                                 strError = string.format("Table %s - line %d (column='%s'): attribute '%s' not allowed for a DECLARE_COLUMN column, only avalaible for foreign key, use DECLARE_FOREIGN_KEY instead!",strTableName,iLine,strColumName,strResult)
                                             end
                                         elseif (strResult == "ON_DELETE_SET_NULL") then
-                                            if (bIsCol == false) then
+                                            if (bIsCol == false and bIsForeignKey == true) then
                                                 -- it is a foreign key, delete is accepted
                                                 if (bOnDeleteCascade) then
                                                     -- Error, using both not compatible delete
@@ -1724,7 +1769,7 @@ else
                                                 strError = string.format("Table %s - line %d (column='%s'): attribute '%s' not allowed for a DECLARE_COLUMN column, only avalaible for foreign key, use DECLARE_FOREIGN_KEY instead!",strTableName,iLine,strColumName,strResult)
                                             end
                                         elseif (strResult == "ON_UPDATE_CASCADE") then
-                                            if (bIsCol == false) then
+                                            if (bIsCol == false and bIsForeignKey == true) then
                                                 -- it is a foreign key, update is accepted
                                                 if (bOnUpdateSetNull) then
                                                     -- Error, using both not compatible update
@@ -1737,7 +1782,7 @@ else
                                                 strError = string.format("Table %s - line %d (column='%s'): attribute '%s' not allowed for a DECLARE_COLUMN column, only avalaible for foreign key, use DECLARE_FOREIGN_KEY instead!",strTableName,iLine,strColumName,strResult)
                                             end
                                         elseif (strResult == "ON_UPDATE_SET_NULL") then
-                                            if (bIsCol == false) then
+                                            if (bIsCol == false and bIsForeignKey == true) then
                                                 -- it is a foreign key, update is accepted
                                                 if (bOnUpdateCascade) then
                                                     -- Error, using both not compatible update
@@ -1822,7 +1867,8 @@ else
 
                 -- Prepare table construction : remove indentation of first line + remove last ',"'
                 strCPPTableConstruction = strCPPTableConstruction .. strCPPTableConstructionFK
-                strTemplateSourceFileCopy = string.gsub(strTemplateSourceFileCopy,"$SQL_TABLE_CONSTRUCTION%$",string.sub(strCPPTableConstruction,24 + string.len(strTableName),string.len(strCPPTableConstruction) -2))
+                strTemplateSourceFileCopy = string.gsub(strTemplateSourceFileCopy,"$SQL_TABLE_CONSTRUCTION%$",string.sub(strCPPTableConstruction,24 + string.len(strTableName),string.len(strCPPTableConstruction) - 2))
+                strTemplateSourceFileCopy = string.gsub(strTemplateSourceFileCopy,"$SQL_TABLE_INDEX_CONSTRUCTION%$", strCPPTableConstructionINDEX)
 
                 -- Add header description before class implementation
                 strHContent = strHContent .. string.sub(strWS3Content,iLastExpressionBegin,iExpressionBegin - 1) .. "/*\n"

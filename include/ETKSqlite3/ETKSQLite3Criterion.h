@@ -28,6 +28,7 @@ class ETKSQLite3ColumnAttributes;
 class ETKSQLite3ValueBind;
 class ETKSQLite3RequestSelector;
 class ETKSQLite3Criterion;
+class ETKSQLite3Record;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +76,7 @@ public:
      *   <li> <b>eOperationLike</b>: LIKE  between two expressions, in this case the value is not used.
      *   <li> <b>eOperationAs</b>: AS between two expressions, in this case the value is not used.
      *   <li> <b>eOperationAsSelect</b>: AS into selector (use << or Add), in this case only the keyword AS is generated else not.
+     *   <li> <b>eOperationAsSelectFrom</b>: AS into selector (use << dbAs(const ETKSQLite3Record &) with record.
      *   <li> <b>eOperationAsJoin</b>: AS  between two expressions used after JOIN keyword, the value is the table name of original table.
      *   <li> <b>eOperationDifferent</b>: DIFFERENCE between two expressions, in this case the value is not used.
      *   <li> <b>eOperationCount</b>: Used into request operator to count the record number.
@@ -122,9 +124,11 @@ public:
         eOperationLower,
         eOperationLowerOrEqual,
         eOperationEqual,
+        eOperationExists,
         eOperationLike,
         eOperationAs,
         eOperationAsSelect,
+        eOperationAsSelectFrom,
         eOperationAsJoin,
         eOperationDifferent,
         eOperationCount,
@@ -1121,12 +1125,12 @@ private:
      *   <li> ORDER BY <i>nom_colonne</i> DESC
      * </ul>
      */
-    ETKSQLite3Expression              m_exprOrderBy;
+    ETKSQLite3Expression                m_exprOrderBy;
 
     /**
      * Used to record Join request.
      */
-    ETKSQLite3Expression              m_exprJoin;
+    ETKSQLite3Expression                m_exprJoin;
 
     /**
      * Used to record Where expression.
@@ -1134,12 +1138,12 @@ private:
      * This expression is used to construct the where of the request, it is
      * not used for all request type (not used for INSERT).
      */
-    ETKSQLite3Expression              m_exprWhere;
+    ETKSQLite3Expression                m_exprWhere;
 
     /**
      * Used to record From expression.
      */
-    ETKSQLite3Expression              m_exprFrom;
+    ETKSQLite3Expression                m_exprFrom;
 
     /**
      * Selection flag of DISTINCT type request.
@@ -1148,6 +1152,11 @@ private:
      * Is false by default.
      */
     bool                                m_bDistinct;
+
+    /**
+     * If not 0, use to add LIMIT to request.
+     */
+    int                                 m_iLimit;
 
     /**
      * Request type.
@@ -1216,7 +1225,7 @@ public:
      * @param _rExpresion Expression to copy into this.
      * @return Reference to this that contains assigned expression.
      */
-    const ETKSQLite3Criterion&        operator=(const ETKSQLite3Expression& _rExpresion);
+    const ETKSQLite3Criterion&          operator=(const ETKSQLite3Expression& _rExpresion);
 
     /**
      * Assignment operator from a criterion.
@@ -1224,7 +1233,7 @@ public:
      * @param _rCriterion Criterion to copy into this.
      * @return Reference to this that contains assigned expression.
      */
-    const ETKSQLite3Criterion&        operator=(const ETKSQLite3Criterion& _rCriterion);
+    const ETKSQLite3Criterion&          operator=(const ETKSQLite3Criterion& _rCriterion);
 
     /**
      * Assignment operator from a selector.
@@ -1234,7 +1243,7 @@ public:
      * @param _rSelector Selector to copy into this.
      * @return Reference to this that contains assigned expression.
      */
-    const ETKSQLite3Criterion&        operator=(const ETKSQLite3RequestSelector& _rSelector);
+    const ETKSQLite3Criterion&          operator=(const ETKSQLite3RequestSelector& _rSelector);
 
     /**
      * AND operator from an expression.
@@ -1242,7 +1251,7 @@ public:
      * @param _rExpresion Expression to make operation with this.
      * @return Reference to this that contains new created expression.
      */
-    ETKSQLite3Criterion               operator&&(const ETKSQLite3Expression& _rExpresion) const;
+    ETKSQLite3Criterion                 operator&&(const ETKSQLite3Expression& _rExpresion) const;
 
     /**
      * AND operator from a criterion.
@@ -1250,7 +1259,7 @@ public:
      * @param _rCriterion criterion to make operation with this.
      * @return Reference to this that contains new created expression.
      */
-    ETKSQLite3Criterion               operator&&(const ETKSQLite3Criterion & _rCriterion) const;
+    ETKSQLite3Criterion                 operator&&(const ETKSQLite3Criterion & _rCriterion) const;
     //@}
 
 // Public methods
@@ -1269,7 +1278,7 @@ public:
      *
      * @param _rColumn Column on wich the sort should be apply.
      */
-    ETKSQLite3Criterion &             AddOrderByAscending(const ETKSQLite3Column& _rColumn);
+    ETKSQLite3Criterion &               AddOrderByAscending(const ETKSQLite3Column& _rColumn);
 
     /**
      * Apply descendant sort order.
@@ -1278,7 +1287,7 @@ public:
      *
      * @param _rColumn Column on wich the sort should be apply.
      */
-    ETKSQLite3Criterion &             AddOrderByDescending(const ETKSQLite3Column& _rColumn);
+    ETKSQLite3Criterion &               AddOrderByDescending(const ETKSQLite3Column& _rColumn);
 
     /**
      * Add a list of order by.
@@ -1299,7 +1308,7 @@ public:
      * @return Reference to this that contains new created expression.
      * @see SetDistinct
      */
-    ETKSQLite3Criterion &             Distinct();
+    ETKSQLite3Criterion &               Distinct();
 
     /**
      * Used to know if the expression is null or not.
@@ -1344,6 +1353,20 @@ public:
      * @return true if the distinct mode is set, false else.
      */
     bool                                GetDistinct() const;
+
+    /**
+     * Add limit.
+     *
+     * @param _iLimit Number of limit rows.
+     */
+    void                                SetLimit(int _iLimit);
+
+    /**
+     * Get limit.
+     *
+     * @return Number of limit rows, 0 if not used.
+     */
+    int                                 GetLimit() const;
 
     /**
      * Set the Where expression.
@@ -1438,31 +1461,57 @@ protected:
      */
     virtual tdStringList &              UpdateTablesList(tdStringList &_rlstTablesList) const;
 
+    /**
+     * Set The order by.
+     *
+     * @param _rExprOrderBy Expression used for order by.
+     */
     void                                SetOrderBy(const ETKSQLite3Expression &_rExprOrderBy = ETKSQLite3Expression());
+
+    /**
+     * Get The order by.
+     *
+     * @return The Expression used for order by.
+     */
     const ETKSQLite3Expression &        GetOrderBy() const;
 
-
+    /**
+     * Format an order by for sql request.
+     *
+     * @return The ORDER BY SQL string.
+     */
     etkString                           GetOrderByAsString() const;
+
+    /**
+     * Format a limit for sql request.
+     *
+     * @return The LIMIT(x) SQL string.
+     */
+    etkString                           GetLimitAsString() const;
 };
 
-EXPORT_IMPORT ETKSQLite3Expression    operator==(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator>(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator>=(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator<(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    operator<=(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      operator==(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      operator>(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      operator>=(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      operator<(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      operator<=(const ETKSQLite3Value &_rValue, const ETKSQLite3Column &_rColumn);
 
-EXPORT_IMPORT ETKSQLite3Expression    dbCount();
-EXPORT_IMPORT ETKSQLite3Expression    dbCount(const ETKSQLite3Column& _rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    dbDistinct(const ETKSQLite3Column& _rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    dbCount(const ETKSQLite3Expression& _rExpression);
-EXPORT_IMPORT ETKSQLite3Expression    dbMax(const ETKSQLite3Column& _rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    dbMin(const ETKSQLite3Column& _rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    dbSum(const ETKSQLite3Column& _rColumn);
-EXPORT_IMPORT ETKSQLite3Expression    dbCast(const ETKSQLite3Column& _rColumn, etkString _strCast);
-EXPORT_IMPORT ETKSQLite3Expression    dbSubString(const ETKSQLite3Expression &_rExpression, const ETKSQLite3Expression &_rExpressionStart, const ETKSQLite3Expression &_rExpressionLength);
-EXPORT_IMPORT ETKSQLite3Expression    dbAs(const ETKSQLite3Expression& _rExpression, etkString _strAsName);
-EXPORT_IMPORT ETKSQLite3Expression    dbAs(const ETKSQLite3Criterion& _rCriterion, etkString _strAsName);
+EXPORT_IMPORT ETKSQLite3Expression      dbCount();
+EXPORT_IMPORT ETKSQLite3Expression      dbCount(const ETKSQLite3Column& _rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      dbExists(const ETKSQLite3RequestSelector& _rSelector);
+EXPORT_IMPORT ETKSQLite3Expression      dbExists(const ETKSQLite3Criterion& _rCriterion);
+EXPORT_IMPORT ETKSQLite3Expression      dbExists(const ETKSQLite3Expression& _rExpression);
+EXPORT_IMPORT ETKSQLite3Expression      dbDistinct(const ETKSQLite3Column& _rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      dbCount(const ETKSQLite3Expression& _rExpression);
+EXPORT_IMPORT ETKSQLite3Expression      dbMax(const ETKSQLite3Column& _rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      dbMin(const ETKSQLite3Column& _rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      dbSum(const ETKSQLite3Column& _rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      dbCast(const ETKSQLite3Column& _rColumn, etkString _strCast);
+EXPORT_IMPORT ETKSQLite3Expression      dbSubString(const ETKSQLite3Expression &_rExpression, const ETKSQLite3Expression &_rExpressionStart, const ETKSQLite3Expression &_rExpressionLength);
+EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Expression& _rExpression, etkString _strAsName);
+EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Criterion& _rCriterion, etkString _strAsName);
+EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Record &_rRecord, etkString _strAsName);
 // Directly format a sql request
-EXPORT_IMPORT ETKSQLite3Expression    dbSQL(etkString _strSQLRequest);
+EXPORT_IMPORT ETKSQLite3Expression      dbSQL(etkString _strSQLRequest);
 
 #endif // INCLUDE_ETK_SQLITE3_CRITERION_H

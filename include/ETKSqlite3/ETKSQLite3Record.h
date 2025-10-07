@@ -128,17 +128,27 @@ public:
      * @param _strTableName New table name.
      * @return A reference to this.
      */
-    const ETKSQLite3Record &            ChangeTableName(etkString _strTableName);
+    const ETKSQLite3Record &            ChangeTableName(etkString _strAliasTableName);
 
     /**
-     * Generate expression with an 'AS' SQL on each column.
+     * Generate expression with an 'AS' SQL on table.
      *
-     * When using the As on column you can choose the as value, in the case of using on record
-     * you cannot choose this value, it is also automatically computed by concatenate the new table name
-     * with the column name for each columns.
+     * When using the As on Table, all the table has this alias.
+     * \code{.c++}
+     * ETKSQLite3RequestSelector selector = db.GetSelector();
+     * selectorVariables << TUser().As(wxT("u")); // Same as selectorVariables << dbAs(TUser(), wxT("u"));
+     * \endcode
      *
-     * @see ChangeAs,ETKSQLite3Column::As
-     * @param _strTableName New table name.
+     * SQL generation:
+     * \code{.sql}
+     * SELECT u.UserFirstName,
+     *        u.UserName,
+     *        u.Age,
+     * FROM User as u
+     * \endcode
+     *
+     * @see ChangeAs, ETKSQLite3Column::As
+     * @param _strAliasTableName Table alias name.
      * @return A generated expression.
      */
     ETKSQLite3Expression                As(etkString _strTableName) const;

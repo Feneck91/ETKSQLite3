@@ -82,6 +82,12 @@ ETKSQLite3RequestSelector & ETKSQLite3RequestSelector::AddOrderByDescending(cons
     return *this;
 }
 
+ETKSQLite3RequestSelector & ETKSQLite3RequestSelector::SetLimit(int _iLimit)
+{
+    GetCriterionRequest().SetLimit(_iLimit);
+    return *this;
+}
+
 wxSQLite3ResultSet ETKSQLite3RequestSelector::ExecuteQuery()
 {
     wxSQLite3ResultSet resultSet;

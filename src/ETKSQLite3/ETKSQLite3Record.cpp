@@ -55,15 +55,16 @@ const ETKSQLite3Record & ETKSQLite3Record::ChangeTableName(etkString _strTableNa
     return *this;
 }
 
-ETKSQLite3Expression ETKSQLite3Record::As(etkString _strTableName) const
+ETKSQLite3Expression ETKSQLite3Record::As(etkString _strAliasTableName) const
 {
-    ETKSQLite3Expression exprRet;
+    ETKSQLite3Expression expression;
+
     for (tdListColumns::const_iterator it=m_lstColumns.begin();it!=m_lstColumns.end();++it)
     {   // Add all columns of record into this
-        exprRet << it->As(_strTableName);
+        expression << ETKSQLite3Column(_strAliasTableName, (*it).GetColumnName());
     }
 
-    return exprRet;
+    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationAsSelectFrom, expression, ETKSQLite3Expression(ETKSQLite3Expression::eOperationAs, ETKSQLite3Value(GetTableName(), ETKSQLite3Value::eExpressionTypeValue), ETKSQLite3Value(_strAliasTableName, ETKSQLite3Value::eExpressionTypeValue)));
 }
 
 void ETKSQLite3Record::ChangeAs(etkString _strTableName)

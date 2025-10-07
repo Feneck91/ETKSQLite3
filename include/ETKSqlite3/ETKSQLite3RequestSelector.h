@@ -84,9 +84,9 @@ public:
      * Add all colums by calling \<\< operator with all columns parameters.
      *
      * @param _rRecord Record to select.
-     * @return A reference to this used to cascade \<\< operators.
+     * @return A reference to this used to cascade other operators (like \<\< operators).
      */
-    ETKSQLite3RequestSelector &       operator<<(const ETKSQLite3Record &_rRecord);
+    ETKSQLite3RequestSelector &         operator<<(const ETKSQLite3Record &_rRecord);
 
     /**
      * Add a column into of the table into the selector.
@@ -94,9 +94,9 @@ public:
      * Select the list of columns to get into the SQL request.
      *
      * @param _rColumn Column to add.
-     * @return A reference to this used to cascade \<\< operators.
+     * @return A reference to this used to cascade other operators (like \<\< operators).
      */
-    ETKSQLite3RequestSelector &       operator<<(const ETKSQLite3Column &_rColumn);
+    ETKSQLite3RequestSelector &         operator<<(const ETKSQLite3Column &_rColumn);
 
     /**
      * Add a criterion into the select.
@@ -106,9 +106,9 @@ public:
      * All are put near each other, separate with comma.
      *
      * @param _rCriterion Criterion to add.
-     * @return A reference to this used to cascade \<\< operators.
+     * @return A reference to this used to cascade other operators (like \<\< operators).
      */
-    ETKSQLite3RequestSelector &       operator<<(const ETKSQLite3Criterion &_rCriterion);
+    ETKSQLite3RequestSelector &         operator<<(const ETKSQLite3Criterion &_rCriterion);
 
     /**
      * Add an expresion into the select.
@@ -118,9 +118,9 @@ public:
      * All are put near each other, separate with comma.
      *
      * @param _rExpression Expression to add.
-     * @return A reference to this used to cascade \<\< operators.
+     * @return A reference to this used to cascade other operators (like \<\< operators).
      */
-    ETKSQLite3RequestSelector &       operator<<(const ETKSQLite3Expression &_rExpression);
+    ETKSQLite3RequestSelector &         operator<<(const ETKSQLite3Expression &_rExpression);
     //@}
 
     /** @name Order By.
@@ -134,8 +134,9 @@ public:
      * Add this order to other ORDER BY already present.
      *
      * @param _rColumn Column on wich the sort should be apply.
+     * @return A reference to this used to cascade other operators (like \<\< operators).
      */
-    ETKSQLite3RequestSelector &       AddOrderByAscending(const ETKSQLite3Column& _rColumn);
+    ETKSQLite3RequestSelector &         AddOrderByAscending(const ETKSQLite3Column& _rColumn);
 
     /**
      * Apply descendant sort order.
@@ -143,9 +144,18 @@ public:
      * Add this order to other ORDER BY already present.
      *
      * @param _rColumn Column on wich the sort should be apply.
+     * @return A reference to this used to cascade other operators (like \<\< operators).
      */
-    ETKSQLite3RequestSelector &       AddOrderByDescending(const ETKSQLite3Column& _rColumn);
+    ETKSQLite3RequestSelector &         AddOrderByDescending(const ETKSQLite3Column& _rColumn);
     //@}
+
+    /**
+     * Add limit.
+     *
+     * @param _iLimit Number of limit rows.
+     * @return A reference to this used to cascade other operators (like \<\< operators).
+     */
+    ETKSQLite3RequestSelector &         SetLimit(int _iLimit);
 
     /**
      * Execute the request.

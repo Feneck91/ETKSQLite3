@@ -137,6 +137,12 @@ bool wxQLongLong::operator==(const wxQLongLong &_rValue) const
     return GetValue() == _rValue.GetValue();
 }
 
+wxQLongLong & wxQLongLong::operator=(const wxQLongLong &_rValue)
+{
+    m_i64Value = _rValue.m_i64Value;
+    return *this;
+}
+
 wxString wxQLongLong::ToString() const
 {
     return wxString(QString::number(GetValue()));

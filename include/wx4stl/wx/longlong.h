@@ -49,6 +49,7 @@ public:
 
     const wxLongLong        operator-();
     bool                    operator==(const wxLongLong &_rValue) const;
+    wxLongLong &            operator=(const wxLongLong &_rValue);
     wxString                ToString() const;
 };
 

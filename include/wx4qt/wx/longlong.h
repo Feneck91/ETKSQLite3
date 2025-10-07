@@ -31,27 +31,28 @@ public:
     int64_t GetValue() const;
     operator const int64_t &() const;
 
-    const wxQLongLong    operator+(wxQLongLong &_rValue);
-    const wxQLongLong    operator-(wxQLongLong &_rValue);
-    const wxQLongLong    operator*(wxQLongLong &_rValue);
-    const wxQLongLong    operator/(wxQLongLong &_rValue);
-    const wxQLongLong & operator+=(wxQLongLong &_rValue);
-    const wxQLongLong & operator-=(wxQLongLong &_rValue);
-    const wxQLongLong & operator*=(wxQLongLong &_rValue);
-    const wxQLongLong & operator/=(wxQLongLong &_rValue);
+    const wxQLongLong       operator+(wxQLongLong &_rValue);
+    const wxQLongLong       operator-(wxQLongLong &_rValue);
+    const wxQLongLong       operator*(wxQLongLong &_rValue);
+    const wxQLongLong       operator/(wxQLongLong &_rValue);
+    const wxQLongLong &     operator+=(wxQLongLong &_rValue);
+    const wxQLongLong &     operator-=(wxQLongLong &_rValue);
+    const wxQLongLong &     operator*=(wxQLongLong &_rValue);
+    const wxQLongLong &     operator/=(wxQLongLong &_rValue);
 
-    const wxQLongLong    operator+(int _iValue);
-    const wxQLongLong    operator-(int _iValue);
-    const wxQLongLong    operator*(int _iValue);
-    const wxQLongLong    operator/(int _iValue);
-    const wxQLongLong & operator+=(int _iValue);
-    const wxQLongLong & operator-=(int _iValue);
-    const wxQLongLong & operator*=(int _iValue);
-    const wxQLongLong & operator/=(int _iValue);
+    const wxQLongLong       operator+(int _iValue);
+    const wxQLongLong       operator-(int _iValue);
+    const wxQLongLong       operator*(int _iValue);
+    const wxQLongLong       operator/(int _iValue);
+    const wxQLongLong &     operator+=(int _iValue);
+    const wxQLongLong &     operator-=(int _iValue);
+    const wxQLongLong &     operator*=(int _iValue);
+    const wxQLongLong &     operator/=(int _iValue);
 
-    const wxQLongLong    operator-();
-    bool                operator==(const wxQLongLong &_rValue) const;
-    wxString            ToString() const;
+    const wxQLongLong       operator-();
+    bool                    operator==(const wxQLongLong &_rValue) const;
+    wxQLongLong &           operator=(const wxQLongLong &_rValue);
+    wxString                ToString() const;
 };
 
 #endif // WX_LONG_LONG_HEADER

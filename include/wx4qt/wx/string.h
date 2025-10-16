@@ -16,6 +16,7 @@
 #define WX_STRING_HEADER
 
 #include <wx/wxtype.h>
+#include <memory>
 #include <QString>
 
 #ifdef _UNICODE
@@ -25,14 +26,37 @@
 #endif // _UNICODE
 
 #define wxChar                                  char
-#define wxCharBuffer                            wxQByteArray
 extern EXPORT_IMPORT const wxChar*              wxEmptyString;
 #define wxNOT_FOUND (-1)
 
 #define _T(x)                                   x
 #define wxS(x)                                  x
 
-using wxQByteArray = QByteArray;
+class wxSharedBuffer : public std::enable_shared_from_this<wxSharedBuffer>
+{
+private:
+    QByteArray m_ByteArray;
+
+public:
+    EXPORT_IMPORT wxSharedBuffer() = default;
+    EXPORT_IMPORT void setByteArray(const QByteArray & _qBytArray);
+    EXPORT_IMPORT const char* getConstData() const;
+};
+
+class wxCharBuffer
+{
+public:
+    EXPORT_IMPORT wxCharBuffer();
+    EXPORT_IMPORT wxCharBuffer(wxSharedBuffer *pSharedBuffer);
+    EXPORT_IMPORT wxCharBuffer(const char *_pszString);
+    EXPORT_IMPORT void operator = (const QByteArray & _qBytArray);
+    EXPORT_IMPORT const char* c_str() const;
+    EXPORT_IMPORT operator const char*() const;
+    EXPORT_IMPORT std::shared_ptr<wxSharedBuffer> & getSharedBuffer();
+    EXPORT_IMPORT bool isInit() const;
+private:
+    std::shared_ptr<wxSharedBuffer>         m_pSharedBuffer;
+};
 
 /**
  * wxString wrapper class.
@@ -40,7 +64,8 @@ using wxQByteArray = QByteArray;
 class EXPORT_IMPORT wxString : public QString
 {
 private:
-    mutable QByteArray  m_convertToChar; // Used to convert to const char *
+    mutable wxCharBuffer m_convertToChar; // Used to convert to const char *
+
 public:
     static const size_t npos;
 public:

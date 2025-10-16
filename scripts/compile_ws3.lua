@@ -1639,17 +1639,38 @@ else
                                             bIsForeignKey = true
                                         elseif (string.find(strResult,strRegexSearchIndex)) then
                                             -- Find column(s) name(s)
-                                            local iFKStart,iFKEnd, strAllColumns
+                                            local iFKStart,iFKEnd, strAllColumns, strAllColumnsConstructed
                                             iFKStart,iFKEnd,strAllColumns = string.find(strResult,strRegexSearchIndex)
+                                            
+                                            strAllColumnsConstructed = ""
                                             for iIndex,strResult in ipairs(string.split(strAllColumns,",")) do
                                                 strResult = Trim(strResult)
-                                                if (not dicColumnsName[strResult]) then
+                                                local strColumnName = strResult
+                                                local strColumnNameOrdered = ""
+                                                local arrColumnASCDESC = string.split(strResult,":")
+                                                if (#arrColumnASCDESC == 2) then
+                                                    strColumnName = arrColumnASCDESC[1]
+                                                    if (arrColumnASCDESC[2] == "DESC" or arrColumnASCDESC[2] == "ASC") then
+                                                        strColumnNameOrdered = " " .. arrColumnASCDESC[2]
+                                                    else
+                                                        strError = string.format("Table %s - line %d (DECLARE_INDEX(%s) : the index ordered '%s' is unknown!",strTableName, iLine, strAllColumns, arrColumnASCDESC[2])
+                                                        break
+                                                    end
+                                                elseif (#arrColumnASCDESC ~= 1) then
+                                                    strError = string.format("Table %s - line %d (DECLARE_INDEX(%s) : syntax error, you can use DECLARE_INDEX(MyCol[:DESC / ASC]) IDX_Table_Col!",strTableName, iLine, strAllColumns)
+                                                    break
+                                                end
+                                                if (not dicColumnsName[strColumnName]) then
                                                     -- Error
                                                     strError = string.format("Table %s - line %d (DECLARE_INDEX(%s) : the columns '%s' is unknown!",strTableName, iLine, strAllColumns, strResult)
                                                     break
                                                 end
+                                                if (string.len(strAllColumnsConstructed) > 0) then
+                                                    strAllColumnsConstructed = strAllColumnsConstructed .. ","
+                                                end
+                                                strAllColumnsConstructed = strAllColumnsConstructed .. strColumnName .. strColumnNameOrdered
                                             end
-                                            table.insert(lstIndex, strAllColumns) -- The last index contains all coluums
+                                            table.insert(lstIndex, strAllColumnsConstructed) -- The last index contains all coluums
                                             bIsCol = false -- It is a Index
                                             bIsIndex = true
                                         elseif (string.find(strResult,strRegexSearchDataImplementation)) then
@@ -1690,12 +1711,16 @@ else
                                         if (bIsIndex == false) then
                                             dicColumnsName[strColumName] = true
                                         else
+                                            if (string.len(strCPPTableConstructionINDEX) > 0) then
+                                                strCPPTableConstructionINDEX = strCPPTableConstructionINDEX .. "\"\n        \""
+                                            end
                                             strCPPTableConstructionINDEX = strCPPTableConstructionINDEX ..
-                                                                           string.format("\n        \"CREATE INDEX %s ON %s(%s);\""
-                                                                                         ,strColumName
-                                                                                         ,strTableName
-                                                                                         ,lstIndex[#lstIndex]
+                                                                           string.format("CREATE INDEX %s ON %s(%s);",
+                                                                                         strColumName,
+                                                                                         strTableName,
+                                                                                         lstIndex[#lstIndex]
                                                                                         )
+                                                                           
                                             print(string.format("Index %s ON %s(%s)",strColumName,strTableName,lstIndex[#lstIndex]))
                                         end
                                         if (strDataSourceImpl ~= nil) then

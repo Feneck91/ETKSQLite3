@@ -144,7 +144,7 @@ bool ETKSQLite3Request::PrepareStatement()
 
 bool ETKSQLite3Request::IsStatementInitialized() const
 {
-    return m_pStatement!=nullptr && m_pStatement->IsOk();
+    return m_pStatement != nullptr && m_pStatement->IsOk();
 }
 
 void ETKSQLite3Request::DeleteStatement()

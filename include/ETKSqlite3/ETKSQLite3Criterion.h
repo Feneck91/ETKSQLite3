@@ -1146,6 +1146,11 @@ private:
     ETKSQLite3Expression                m_exprFrom;
 
     /**
+     * Used to record GROUP BY expression.
+     */
+    ETKSQLite3Expression                m_exprGroupBy;
+
+    /**
      * Selection flag of DISTINCT type request.
      *
      * Used, when a request is post to suppress twice columns in database response.
@@ -1422,21 +1427,48 @@ public:
      * This expression is used to construct the Join of the request, it is
      * not used for all request type (only for SELECT).
      *
-     * @return The Join expression.
+     * @see GetJoin
+     * @param _rExprJoin The Join expression.
      */
     void                                SetJoin(const ETKSQLite3Expression &_rExprJoin = ETKSQLite3Expression());
 
     /**
      * Get the Join expression.
      *
+     * @see SetJoin
      * @return The Join expression.
      */
     const ETKSQLite3Expression &        GetJoin() const;
 
     /**
+     * Add a group by.
+     *
+     * @see GetGroupBy, SetGroupBy
+     * @param _rGroupBy Group By expression.
+     * @return An expression that can be used to call Add again.
+     */
+    ETKSQLite3Expression &              AddGroupBy(const ETKSQLite3Expression &_rGroupBy);
+
+    /**
+     * Set the Group By expression.
+     *
+     * @see AddGroupBy, GetGroupBy
+     * @param _rExprGroupBy Group By expression.
+     */
+    void                                SetGroupBy(const ETKSQLite3Expression &_rExprGroupBy = ETKSQLite3Expression());
+
+    /**
+     * Get the Group By expression.
+     *
+     * @see AddGroupBy, SetGroupBy
+     * @return The Group By expression.
+     */
+    const ETKSQLite3Expression &        GetGroupBy() const;
+
+    /**
      * Construct SQL request with internal informations.
      */
-    etkString                            GetSQL() const;
+    etkString                           GetSQL() const;
 
     /**
      * Bind a column data of a statement.
@@ -1511,6 +1543,46 @@ EXPORT_IMPORT ETKSQLite3Expression      dbSubString(const ETKSQLite3Expression &
 EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Expression& _rExpression, etkString _strAsName);
 EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Criterion& _rCriterion, etkString _strAsName);
 EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Record &_rRecord, etkString _strAsName);
+
+// Functor to extract key from key-value
+template<typename Pair> struct ETKSQLite3PairFirstExtractor
+{
+    typename Pair::first_type operator()(const Pair& pair) const
+    {
+        return pair.first;
+    }
+};
+
+// Functor to extract value from key-value
+template<typename Pair> struct ETKSQLite3PairSecondExtractor
+{
+    typename Pair::first_type operator()(const Pair& pair) const
+    {
+        return pair.second;
+    }
+};
+
+template<typename Iterator, typename Extractor>
+              ETKSQLite3Expression      dbList(Iterator _itBegin, Iterator _itEnd, Extractor _extractor)
+                                        {
+                                            ETKSQLite3Expression expr;
+                                            while (_itBegin != _itEnd)
+                                            {
+                                                expr.Add(_extractor(*_itBegin++)); // Add value pointed by iterator
+                                            }
+                                            return expr;
+                                        }
+
+template<typename Iterator>
+              ETKSQLite3Expression      dbList(Iterator _itBegin, Iterator _itEnd)
+                                        {
+                                            ETKSQLite3Expression expr;
+                                            while (_itBegin != _itEnd)
+                                            {
+                                                expr.Add(*_itBegin++); // Add value pointed by iterator
+                                            }
+                                            return expr;
+                                        }
 // Directly format a sql request
 EXPORT_IMPORT ETKSQLite3Expression      dbSQL(etkString _strSQLRequest);
 

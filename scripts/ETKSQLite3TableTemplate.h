@@ -28,6 +28,8 @@ class $EXPORT_IMPORT$$PREFIX_TABLE$$TABLE_NAME$ : protected $PREFIX_STRUCT$$TABL
 private:
     /// @name SQL string to create the $TABLE_NAME$ table into database.
     static const etkString              STR_TABLE_CONSTRUCTION;
+    /// @name SQL string to create all index of $TABLE_NAME$ table into database.
+    static const etkString              STR_TABLE_CONSTRUCTION_INDEX;
 
 public:
     /**
@@ -114,4 +116,14 @@ $DECLARE_VARIABLES_GETTER_SETTER$
      * @return The SQL string that could be used to construct the table into the database.
      */
     static etkString                    GetSQLTableConstruction();
+
+    /**
+     * Get the SQL to be able to construct the index for table $TABLE_NAME$ into database.
+     *
+     * Separate the table construction and index could be useful to ba able to create the index
+     * after filling the database (could be faster if lot of rows must be inserted quickly).
+     *
+     * @return The SQL string that could be used to create table's index.
+     */
+    static etkString                    GetSQLTableIndexConstruction();
 };

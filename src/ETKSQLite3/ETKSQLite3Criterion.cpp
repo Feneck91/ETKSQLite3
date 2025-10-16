@@ -1215,7 +1215,15 @@ etkString ETKSQLite3Expression::GetAsString() const
         }
         case eOperationAsSelect :
         {   // Into select, generate AS into expression
-            strOperatorAsString.Printf(_T("(%s) AS %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            wxString strExpr1 = m_pExpression1->GetAsString();
+            if (strExpr1.Len() > 2 && strExpr1[0] == _T('(') && strExpr1[strExpr1.Len() - 1] == _T(')'))
+            {   // Don't put too much ()
+                strOperatorAsString.Printf(_T("%s AS %s"), strExpr1.c_str(), m_pExpression2->GetAsString().c_str());
+            }
+            else
+            {
+                strOperatorAsString.Printf(_T("(%s) AS %s"),strExpr1.c_str(), m_pExpression2->GetAsString().c_str());
+            }
             break;
         }
         case eOperationAsSelectFrom :
@@ -2116,7 +2124,8 @@ const ETKSQLite3Criterion& ETKSQLite3Criterion::operator=(const ETKSQLite3Criter
     SetJoin(_rCriterion.GetJoin());         // Copy joins criterion
     SetWhere(_rCriterion.GetWhere());       // Copy Where criterion
     SetFrom(_rCriterion.GetFrom());         // Copy From criterion
-    SetLimit(_rCriterion.GetLimit());       // Copy From criterion
+    SetLimit(_rCriterion.GetLimit());       // Copy Limit criterion
+    SetGroupBy(_rCriterion.GetGroupBy());   // Copy Group By criterion
 
     ETKSQLite3Expression::operator=(_rCriterion); // Call = on base class
     return *this;
@@ -2157,6 +2166,7 @@ void ETKSQLite3Criterion::Clear()
     m_exprJoin.Clear();
     m_exprWhere.Clear();
     m_exprFrom.Clear();
+    m_exprGroupBy.Clear();
     m_bDistinct = false;
 }
 
@@ -2233,14 +2243,14 @@ int ETKSQLite3Criterion::GetLimit() const
     return m_iLimit;
 }
 
-const ETKSQLite3Expression & ETKSQLite3Criterion::GetOrderBy() const
-{
-    return m_exprOrderBy;
-}
-
 void ETKSQLite3Criterion::SetOrderBy(const ETKSQLite3Expression &_rExprOrderBy)
 {
     m_exprOrderBy = _rExprOrderBy;
+}
+
+const ETKSQLite3Expression & ETKSQLite3Criterion::GetOrderBy() const
+{
+    return m_exprOrderBy;
 }
 
 void ETKSQLite3Criterion::SetJoin(const ETKSQLite3Expression &_rExprJoin)
@@ -2251,6 +2261,22 @@ void ETKSQLite3Criterion::SetJoin(const ETKSQLite3Expression &_rExprJoin)
 const ETKSQLite3Expression & ETKSQLite3Criterion::GetJoin() const
 {
     return m_exprJoin;
+}
+
+ETKSQLite3Expression & ETKSQLite3Criterion::AddGroupBy(const ETKSQLite3Expression &_rGroupBy)
+{
+    m_exprGroupBy.Add(_rGroupBy);
+    return m_exprGroupBy;
+}
+
+void ETKSQLite3Criterion::SetGroupBy(const ETKSQLite3Expression &_rExprGroupBy)
+{
+    m_exprGroupBy = _rExprGroupBy;
+}
+
+const ETKSQLite3Expression & ETKSQLite3Criterion::GetGroupBy() const
+{
+    return m_exprGroupBy;
 }
 
 void ETKSQLite3Criterion::SetWhere(const ETKSQLite3Expression &_rExprWhere)
@@ -2392,11 +2418,17 @@ etkString ETKSQLite3Criterion::GetSQL() const
                 strSQLRequest += etkString::Format(_T(" WHERE (%s)"), GetWhere().FormatRequest().c_str());
             }
 
+            if (!GetGroupBy().IsNull())
+            {
+                strSQLRequest += etkString::Format(_T(" GROUP BY %s"), GetGroupBy().FormatRequest().c_str());
+            }
+
             // Request contains ORDER BY ?
             if (CanHaveOrderBy())
             {   // Only if it is not an operator like MIN/MAX/COUNT/ etc...
                 strSQLRequest += GetOrderByAsString(); // Add ORDER BY to others if defined
             }
+
             if (GetLimit() != 0)
             {
                 strSQLRequest += GetLimitAsString(); // Add LIMIT to others if defined
@@ -2568,7 +2600,7 @@ ETKSQLite3Expression dbSubString(const ETKSQLite3Expression &_rExpression, const
 
 ETKSQLite3Expression dbAs(const ETKSQLite3Expression& _rExpression, etkString _strAsName)
 {
-    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationAs, _rExpression, ETKSQLite3Value(_strAsName));
+    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationAs, _rExpression, ETKSQLite3Value(_strAsName, ETKSQLite3Expression::eExpressionTypeValue));
 }
 
 ETKSQLite3Expression dbAs(const ETKSQLite3Criterion& _rCriterion, etkString _strAsName)
@@ -2576,7 +2608,7 @@ ETKSQLite3Expression dbAs(const ETKSQLite3Criterion& _rCriterion, etkString _str
     ETKSQLite3Expression exprAdd;
 
     exprAdd.Add(_rCriterion);
-    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationAs, exprAdd, ETKSQLite3Value(_strAsName));
+    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationAsSelect, exprAdd, ETKSQLite3Value(_strAsName, ETKSQLite3Expression::eExpressionTypeValue));
 }
 
 ETKSQLite3Expression dbAs(const ETKSQLite3Record &_rRecord, etkString _strAsName)

@@ -44,10 +44,62 @@ wxChar* wxTmemchr(const wxChar* s, wxChar c, size_t l)
     return NULL;
 }
 
-
 bool wxIsspace(wxChar _cChar)
 {
     return _cChar == wxT(' ');
+}
+
+void wxSharedBuffer::setByteArray(const QByteArray & _qBytArray)
+{
+    if (m_ByteArray != _qBytArray)
+    {
+        m_ByteArray = _qBytArray;
+    }
+}
+const char* wxSharedBuffer::getConstData() const
+{
+    return m_ByteArray.constData();
+}
+
+wxCharBuffer::wxCharBuffer()
+    : m_pSharedBuffer(std::make_shared<wxSharedBuffer>())
+{
+}
+
+wxCharBuffer::wxCharBuffer(wxSharedBuffer *pSharedBuffer)
+    : m_pSharedBuffer(pSharedBuffer)
+{
+}
+
+wxCharBuffer::wxCharBuffer(const char *_pszString)
+{
+    m_pSharedBuffer = std::make_shared<wxSharedBuffer>();
+    QString strString(_pszString);
+    m_pSharedBuffer->setByteArray(strString.toUtf8());
+}
+
+void wxCharBuffer::operator = (const QByteArray & _qBytArray)
+{
+    m_pSharedBuffer->setByteArray(_qBytArray);
+}
+const char* wxCharBuffer::c_str() const
+{
+    return m_pSharedBuffer->getConstData();
+}
+
+wxCharBuffer::operator const char*() const
+{
+    return m_pSharedBuffer->getConstData();
+}
+
+std::shared_ptr<wxSharedBuffer> & wxCharBuffer::getSharedBuffer()
+{
+    return m_pSharedBuffer;
+}
+
+bool wxCharBuffer::isInit() const
+{
+    return m_pSharedBuffer.operator bool();
 }
 
 wxString::wxString()
@@ -99,7 +151,7 @@ wxString::operator const char *() const
 {
     m_convertToChar = toUtf8();
 
-    return m_convertToChar;
+    return wxCharBuffer(m_convertToChar).c_str();
 }
 
 int wxString::Len() const
@@ -124,7 +176,9 @@ bool wxString::IsSameAs(const wxString &_rstrString, bool bIsCaseSensitive) cons
 
 wxCharBuffer wxString::ToUTF8() const
 {
-    return toUtf8();
+    m_convertToChar= toUtf8();
+
+    return wxCharBuffer(m_convertToChar);
 }
 
 wxString wxString::FromUTF8(const char *pszText,size_t _stLength)
@@ -170,7 +224,7 @@ const wxChar *wxString::utf8_str() const
 {
     m_convertToChar = toUtf8();
 
-    return m_convertToChar.toStdString().c_str();
+    return m_convertToChar;
 }
 
 wxString wxString::SubString(size_t nStart, size_t nLen) const

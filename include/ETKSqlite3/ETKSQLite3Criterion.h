@@ -386,6 +386,12 @@ public:
      */
     void                                SetExpressionOrOperationType(eExpressionOrOperationType _expressionType);
 
+    /**
+     * Clear this content.
+     *
+     * After calling this function, this instance can be reuse.
+     */
+    void                                Clear();
 protected:
     /**
      * Bind a column data of a statement.
@@ -395,11 +401,6 @@ protected:
      * @param _bForInsertRequest If true if it's bind for an insert request (for INSERT request, the primary key is computed and should be null).
      */
     virtual void                        BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const;
-
-    /**
-     * Clear this content.
-     */
-    void                                Clear();
 
     /**
      * Used to know if the operation type is AND or OR.
@@ -946,6 +947,18 @@ public:
      */
     const ETKSQLite3Expression *        GetExpression2() const;
 
+    /**
+     * Get the expression as string.
+     *
+     * @return Espression computed as string.
+     */
+    virtual etkString                    GetAsString() const;
+
+    /**
+     * Clear all expression and delete them to prevent memory leaks.
+     */
+    void                                Clear();
+
 protected:
     /**
      * Bind a column data of a statement.
@@ -957,13 +970,6 @@ protected:
     virtual void                        BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const;
 
     /**
-     * Get the expression as string.
-     *
-     * @return Espression computed as string.
-     */
-    virtual etkString                    GetAsString() const;
-
-    /**
      * Format AND or OR expression.
      *
      * Is used to omit operator if one the both expression is empty.
@@ -972,11 +978,6 @@ protected:
      * @return Formatted string.
      */
     etkString                           GetAsStringForOperator(etkString strOperator) const;
-
-    /**
-     * Clear all expression and delete them to prevent memory leaks.
-     */
-    void                                Clear();
 
     /**
      * Test if this kind of operator could have an ORDER BY statement.
@@ -1282,6 +1283,7 @@ public:
      * Add this order to other ORDER BY already present.
      *
      * @param _rColumn Column on wich the sort should be apply.
+     * @return A new criterion with this order by.
      */
     ETKSQLite3Criterion &               AddOrderByAscending(const ETKSQLite3Column& _rColumn);
 
@@ -1291,6 +1293,7 @@ public:
      * Add this order to other ORDER BY already present.
      *
      * @param _rColumn Column on wich the sort should be apply.
+     * @return A new criterion with this order by.
      */
     ETKSQLite3Criterion &               AddOrderByDescending(const ETKSQLite3Column& _rColumn);
 
@@ -1543,6 +1546,14 @@ EXPORT_IMPORT ETKSQLite3Expression      dbSubString(const ETKSQLite3Expression &
 EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Expression& _rExpression, etkString _strAsName);
 EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Criterion& _rCriterion, etkString _strAsName);
 EXPORT_IMPORT ETKSQLite3Expression      dbAs(const ETKSQLite3Record &_rRecord, etkString _strAsName);
+/**
+ * Make a column that can be used in set order of selector.
+ *
+ * @param _rColumn Column on wich the as should be apply.
+ * @param _strAs Will replace table name like: 'AsColumn'.'ColumnName'.
+ * @return A new column that can be used into AddOrderByAscending / AddOrderByDescending selector.
+ */
+EXPORT_IMPORT ETKSQLite3Column          dbAsColumn(const ETKSQLite3Column& _rColumn, etkString _strAs);
 
 // Functor to extract key from key-value
 template<typename Pair> struct ETKSQLite3PairFirstExtractor

@@ -2620,3 +2620,8 @@ ETKSQLite3Expression dbSQL(etkString _strSQLRequest)
 {
     return ETKSQLite3Value(_strSQLRequest, ETKSQLite3Expression::eExpressionTypeSQL);
 }
+
+ETKSQLite3Column dbAsColumn(const ETKSQLite3Column& _rColumn, etkString _strAs)
+{
+    return ETKSQLite3Column(_strAs, _rColumn.GetColumnName());
+}

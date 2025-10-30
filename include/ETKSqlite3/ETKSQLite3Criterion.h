@@ -950,6 +950,8 @@ public:
     /**
      * Get the expression as string.
      *
+     * Call GetAsStringIterative() to don't use recursion that can make a stack overflow.
+     *
      * @return Espression computed as string.
      */
     virtual etkString                    GetAsString() const;
@@ -968,16 +970,6 @@ protected:
      * @param _bForInsertRequest If true if it's bind for an insert request (for INSERT request, the primary key is computed and should be NULL).
      */
     virtual void                        BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const;
-
-    /**
-     * Format AND or OR expression.
-     *
-     * Is used to omit operator if one the both expression is empty.
-     *
-     * @param strOperator {etkString} - Operator (AND or OR).
-     * @return Formatted string.
-     */
-    etkString                           GetAsStringForOperator(etkString strOperator) const;
 
     /**
      * Test if this kind of operator could have an ORDER BY statement.
@@ -999,6 +991,44 @@ private:
      * @param _rExpression2 Expression 2 (right expression).
      */
     void                                Assign2Expressions(const ETKSQLite3Expression &_rExpression1, const ETKSQLite3Expression &_rExpression2);
+
+    /**
+     * Get the expression as string.
+     *
+     * Is called by GetAsString() to remove recursion that can make a stack overflow.
+     *
+     * @return Espression computed as string.
+     */
+    etkString                           GetAsStringIterative() const;
+
+    /**
+     * Get the expression as string for the node.
+     *
+     * Is called by GetAsStringIterative() for each node to compute.
+     *
+     * @param _rstrOperatorAsString String where to put the result.
+     * @param _pExpression Pointer on expression.
+     * @param _pExpression1 Pointer on expression 1.
+     * @param _rstrExpression1 String expression already computed for expression 1.
+     * @param _pExpression2 Pointer on expression 2.
+     * @param _rstrExpression2 String expression already computed for expression 2.
+     * @return The expression for the node _pExpression.
+     */
+    static void                         InternalAsStringForNode(etkString & _rstrOperatorAsString, const ETKSQLite3Expression *_pExpression, const ETKSQLite3Expression *_pExpression1, const etkString & _rstrExpression1, const ETKSQLite3Expression *_pExpression2, const etkString & _rstrExpression2);
+
+    /**
+     * Format AND or OR expression.
+     *
+     * Is used to omit operator if one the both expression is empty.
+     *
+     * @param strOperator Operator (AND or OR).
+     * @param _pExpression1 Pointer on expression 1.
+     * @param _rstrExpression1 String expression already computed for expression 1.
+     * @param _pExpression2 Pointer on expression 2.
+     * @param _rstrExpression2 String expression already computed for expression 2.
+     * @return Formatted string.
+     */
+    static etkString                    InternalGetAsStringForOperator(etkString _strOperator, const ETKSQLite3Expression *_pExpression1, const etkString & _rstrExpression1, const ETKSQLite3Expression *_pExpression2, const etkString & _rstrExpression2);
 
     friend class ETKSQLite3Criterion;
 

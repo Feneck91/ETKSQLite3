@@ -1113,34 +1113,84 @@ ETKSQLite3Expression & ETKSQLite3Expression::operator<<(const ETKSQLite3Expressi
     return *this;
 }
 
-etkString ETKSQLite3Expression::GetAsStringForOperator(etkString strOperator) const
-{
-    etkString strReturn;
 
-    if (m_pExpression1==nullptr || m_pExpression1->GetExpressionOrOperationType() == eExpressionTypeNothing)
-    {
-        if (m_pExpression2!=nullptr && m_pExpression2->GetExpressionOrOperationType() != eExpressionTypeNothing)
-        {   // Expression 1 is empty and expresssion 2 is empty
-            strReturn = m_pExpression2->GetAsString();
-        }
-    }
-    else if (m_pExpression2==nullptr || m_pExpression2->GetExpressionOrOperationType() == eExpressionTypeNothing)
-    {   // Expression is not empty ans 2 is empty
-        strReturn = m_pExpression1->GetAsString();
-    }
-    else
-    {   // Both Expression 1 and 2 are not empty
-        strReturn.Printf(_T("(%s %s %s)"), m_pExpression1->GetAsString().c_str(), strOperator.c_str(), m_pExpression2->GetAsString().c_str());
-    }
-
-    return strReturn;
-}
+#include <stack>
 
 etkString ETKSQLite3Expression::GetAsString() const
 {
-    etkString strOperatorAsString;
+    return GetAsStringIterative();
+}
 
-    switch (GetExpressionOrOperationType())
+etkString ETKSQLite3Expression::GetAsStringIterative() const
+{
+    struct Frame
+    {
+        const ETKSQLite3Expression* m_pExpression;
+        bool                        m_bIsVisited;
+    };
+
+    etkString strResult;
+    std::stack<Frame> stackFrame;
+    std::stack<etkString> stackString;
+
+    stackFrame.push({ this, false });
+
+    while (!stackFrame.empty())
+    {
+        Frame frame = stackFrame.top();
+        stackFrame.pop();
+
+        const ETKSQLite3Expression * pExpression = frame.m_pExpression;
+        if (pExpression != nullptr)
+        {
+            if (frame.m_bIsVisited)
+            {
+                // Get SQL String already generated
+                etkString left, right;
+                if (pExpression->m_pExpression2 != nullptr)
+                {
+                    right = stackString.top();
+                    stackString.pop();
+                }
+                if (pExpression->m_pExpression1 != nullptr)
+                {
+                    left = stackString.top();
+                    stackString.pop();
+                }
+
+                etkString strCurrentSQLNode;
+                InternalAsStringForNode(strCurrentSQLNode, pExpression, pExpression->m_pExpression1, left, pExpression->m_pExpression2, right);
+                stackString.push(strCurrentSQLNode);
+            }
+            else
+            {
+                // First stack the current node
+                stackFrame.push({ pExpression, true });
+
+                // Then children, begin with right to have left called before
+                if (pExpression->m_pExpression2 != nullptr)
+                {
+                    stackFrame.push({ pExpression->m_pExpression2, false });
+                }
+                if (pExpression->m_pExpression1 != nullptr)
+                {
+                    stackFrame.push({ pExpression->m_pExpression1, false });
+                }
+            }
+        }
+
+        if (!stackString.empty())
+        {
+            strResult = stackString.top();
+        }
+    }
+
+    return strResult;
+}
+
+void ETKSQLite3Expression::InternalAsStringForNode(etkString & _rstrOperatorAsString, const ETKSQLite3Expression *_pExpression, const ETKSQLite3Expression *_pExpression1, const etkString & _rstrExpression1, const ETKSQLite3Expression *_pExpression2, const etkString & _rstrExpression2)
+{
+    switch (_pExpression->GetExpressionOrOperationType())
     {
         case eExpressionTypeNothing :
         {   // Nothing to do
@@ -1149,122 +1199,121 @@ etkString ETKSQLite3Expression::GetAsString() const
         case eExpressionOrderByASC :
         case eExpressionOrderByDESC :
         {
-            strOperatorAsString = ETKSQLite3Value::GetAsString();
-            if (m_pExpression1 != nullptr)
+            _rstrOperatorAsString = _pExpression->ETKSQLite3Value::GetAsString();
+            if (!_rstrExpression1.IsEmpty())
             {   // Add all Orderby
-                strOperatorAsString += _T(",") + m_pExpression1->GetAsString();
+                _rstrOperatorAsString += _T(",") + _rstrExpression1;
             }
             break;
         }
         case eOperationAddComma :
         {
-            strOperatorAsString.Printf(_T("%s,%s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s,%s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationOr :
         {
-            strOperatorAsString = GetAsStringForOperator(_T("OR"));
+            _rstrOperatorAsString = InternalGetAsStringForOperator(_T("OR"), _pExpression1, _rstrExpression1, _pExpression2, _rstrExpression2);
             break;
         }
         case eOperationAnd :
         {
-            strOperatorAsString = GetAsStringForOperator(_T("AND"));
+            _rstrOperatorAsString = InternalGetAsStringForOperator(_T("AND"), _pExpression1, _rstrExpression1, _pExpression2, _rstrExpression2);
             break;
         }
         case eOperationUpper :
         {
-            strOperatorAsString.Printf(_T("%s > %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s > %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationUpperOrEqual :
         {
-            strOperatorAsString.Printf(_T("%s >= %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s >= %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationLower :
         {
-            strOperatorAsString.Printf(_T("%s < %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s < %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationLowerOrEqual :
         {
-            strOperatorAsString.Printf(_T("%s <= %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s <= %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationEqual :
         {
-            strOperatorAsString.Printf(_T("%s = %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s = %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationExists :
-        {   // Must contains two expression of column name type
-            wxASSERT(m_pExpression1 != nullptr);
-            wxASSERT(m_pExpression2 == nullptr);
-            strOperatorAsString.Printf(_T("EXISTS (%s)"), m_pExpression1->GetAsString().c_str());
+        {
+            wxASSERT(!_rstrExpression1.IsEmpty());
+            wxASSERT(_rstrExpression2.IsEmpty());
+            _rstrOperatorAsString.Printf(_T("EXISTS (%s)"), _rstrExpression1.c_str());
             break;
         }
         case eOperationLike :
         {
-            strOperatorAsString.Printf(_T("%s LIKE %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s LIKE %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationAs :
         {   // The name hase changed, used only this one into expression
-            strOperatorAsString.Printf(_T("%s"), m_pExpression1->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s"), _rstrExpression1.c_str());
             break;
         }
         case eOperationAsSelect :
         {   // Into select, generate AS into expression
-            wxString strExpr1 = m_pExpression1->GetAsString();
-            if (strExpr1.Len() > 2 && strExpr1[0] == _T('(') && strExpr1[strExpr1.Len() - 1] == _T(')'))
+            if (_rstrExpression1.Len() > 2 && _rstrExpression1[0] == _T('(') && _rstrExpression1[_rstrExpression1.Len() - 1] == _T(')'))
             {   // Don't put too much ()
-                strOperatorAsString.Printf(_T("%s AS %s"), strExpr1.c_str(), m_pExpression2->GetAsString().c_str());
+                _rstrOperatorAsString.Printf(_T("%s AS %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             }
             else
             {
-                strOperatorAsString.Printf(_T("(%s) AS %s"),strExpr1.c_str(), m_pExpression2->GetAsString().c_str());
+                _rstrOperatorAsString.Printf(_T("(%s) AS %s"),_rstrExpression1.c_str(), _rstrExpression2.c_str());
             }
             break;
         }
         case eOperationAsSelectFrom :
         {
             // m_pExpression2 contains AS but here, it is on SELECT, the AS is goes to FROM xx AS <asname>
-            strOperatorAsString = m_pExpression1->GetAsString();
+            _rstrOperatorAsString = _rstrExpression1;
             break;
         }
         case eOperationAsJoin :
         {   // Generate after the join keyword, when using alias, must generate 2 tables names
-            strOperatorAsString.Printf(_T("%s %s"), GetTableName().c_str(), m_pExpression1->GetTableName().c_str());
+            _rstrOperatorAsString.Printf(_T("%s %s"), _pExpression->GetTableName().c_str(), _pExpression1->GetTableName().c_str());
             break;
         }
         case eOperationDifferent :
         {
-            strOperatorAsString.Printf(_T("%s <> %s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s <> %s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationNot :
         {
-            strOperatorAsString.Printf(_T("NOT (%s)"), m_pExpression1->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("NOT (%s)"), _rstrExpression1.c_str());
             break;
         }
         case eOperationMult :
         {
-            strOperatorAsString.Printf(_T("(%s * %s)"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("(%s * %s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationDiv :
         {
-            strOperatorAsString.Printf(_T("(%s / %s)"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("(%s / %s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationAdd :
         {
-            strOperatorAsString.Printf(_T("(%s + %s)"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("(%s + %s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationSub :
         {
-            strOperatorAsString.Printf(_T("(%s - %s)"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("(%s - %s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eExpressionTypeValue :
@@ -1273,20 +1322,20 @@ etkString ETKSQLite3Expression::GetAsString() const
         case eExpressionRequestSelector :
         case eExpressionColumnNameFull :
         {
-            strOperatorAsString = ETKSQLite3Value::GetAsString();
+            _rstrOperatorAsString = _pExpression->ETKSQLite3Value::GetAsString();
             break;
         }
         case eExpressionColumnNameOnly :
         {
-            strOperatorAsString = ETKSQLite3Value::GetColumnName();
+            _rstrOperatorAsString = _pExpression->ETKSQLite3Value::GetColumnName();
             break;
         }
         case eOperationJoin :
         {   // Must contains two expression of column name type
-            wxASSERT(m_pExpression1 != nullptr && m_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull);
-            wxASSERT(m_pExpression2 != nullptr && m_pExpression2->GetExpressionOrOperationType() == eExpressionColumnNameFull);
+            wxASSERT(!_rstrExpression1.IsEmpty() && _pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull);
+            wxASSERT(!_rstrExpression2.IsEmpty() && _pExpression2->GetExpressionOrOperationType() == eExpressionColumnNameFull);
 
-            strOperatorAsString.Printf(_T(" JOIN %s ON %s = %s"), m_pExpression2->GetTableName().c_str(), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T(" JOIN %s ON %s = %s"), _pExpression2->GetTableName().c_str(), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationInnerJoin :
@@ -1295,7 +1344,7 @@ etkString ETKSQLite3Expression::GetAsString() const
         case eOperationFullJoin :
         {   // Must contains two expression of column name type
             etkString strJoinOperator;
-            switch (GetExpressionOrOperationType())
+            switch (_pExpression->GetExpressionOrOperationType())
             {
                 case eOperationInnerJoin :
                     strJoinOperator = _T("INNER JOIN");
@@ -1313,146 +1362,168 @@ etkString ETKSQLite3Expression::GetAsString() const
                     wxFAIL; // Not allowed
             }
 
-            wxASSERT(m_pExpression1 != nullptr);
-            wxASSERT(m_pExpression2 != nullptr);
-            if (   m_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull
-                && m_pExpression2->GetExpressionOrOperationType() == eExpressionColumnNameFull
+            wxASSERT(!_rstrExpression1.IsEmpty());
+            wxASSERT(!_rstrExpression2.IsEmpty());
+            if (   _pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull
+                && _pExpression2->GetExpressionOrOperationType() == eExpressionColumnNameFull
                )
             {   // Take table name
-                strOperatorAsString.Printf(_T(" %s %s ON %s = %s"), strJoinOperator.c_str(), m_pExpression2->GetTableName().c_str(), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+                _rstrOperatorAsString.Printf(_T(" %s %s ON %s = %s"), strJoinOperator.c_str(), _pExpression2->GetTableName().c_str(), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             }
             else
             {
-                strOperatorAsString.Printf(_T(" %s %s ON %s"), strJoinOperator.c_str(), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+                _rstrOperatorAsString.Printf(_T(" %s %s ON %s"), strJoinOperator.c_str(), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             }
             break;
         }
         case eOperationIn:
         {   // Must contains one expression of column name type + one SQL formatted expression
-            wxASSERT(m_pExpression1 != nullptr);
-            wxASSERT(m_pExpression2 != nullptr);
-            wxASSERT(m_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull);
-            wxASSERT(m_pExpression2->GetExpressionOrOperationType() == eExpressionTypeSQL);
-            strOperatorAsString.Printf(_T(" %s IN (%s)"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            wxASSERT(!_rstrExpression1.IsEmpty());
+            wxASSERT(!_rstrExpression2.IsEmpty());
+            wxASSERT(_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull);
+            wxASSERT(_pExpression2->GetExpressionOrOperationType() == eExpressionTypeSQL);
+            _rstrOperatorAsString.Printf(_T(" %s IN (%s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationCount :
         {
-            if (m_pExpression1 != nullptr)
+            if (!_rstrExpression1.IsEmpty())
             {
-                if (m_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull)
+                if (_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull)
                 {
-                    strOperatorAsString.Printf(_T("COUNT (%s)"), m_pExpression1->GetColumnName().c_str());
+                    _rstrOperatorAsString.Printf(_T("COUNT (%s)"), _pExpression1->GetColumnName().c_str());
                 }
                 else
                 {
-                    strOperatorAsString.Printf(_T("COUNT (%s)"), m_pExpression1->GetAsString().c_str());
+                    _rstrOperatorAsString.Printf(_T("COUNT (%s)"), _rstrExpression1.c_str());
                 }
             }
             else
             {
-                etkString strTmpString = ETKSQLite3Value::GetAsString();
-                if (strTmpString.length() == 0 || ETKSQLite3Value::GetColumnName()==_T("*"))
+                etkString strTmpString = _pExpression->ETKSQLite3Value::GetAsString();
+                if (strTmpString.length() == 0 || _pExpression->ETKSQLite3Value::GetColumnName()==_T("*"))
                 {   // If nothing into count parameters, take (*)
-                    strOperatorAsString = _T("COUNT (*)");
+                    _rstrOperatorAsString = _T("COUNT (*)");
                 }
                 else
                 {
-                    strOperatorAsString.Printf(_T("COUNT (%s)"), strTmpString.c_str());
+                    _rstrOperatorAsString.Printf(_T("COUNT (%s)"), strTmpString.c_str());
                 }
             }
             break;
         }
         case eOperationMin:
         {
-            etkString strTmpString = ETKSQLite3Value::GetAsString();
+            etkString strTmpString = _pExpression->ETKSQLite3Value::GetAsString();
             if (strTmpString.length() == 0)
             {   // If nothing into min parameters, take (*)
-                strOperatorAsString = _T("MIN (*)");
+                _rstrOperatorAsString = _T("MIN (*)");
             }
             else
             {
-                strOperatorAsString.Printf(_T("MIN (%s)"), strTmpString.c_str());
+                _rstrOperatorAsString.Printf(_T("MIN (%s)"), strTmpString.c_str());
             }
             break;
         }
         case eOperationMax:
         {
-            etkString strTmpString = ETKSQLite3Value::GetAsString();
+            etkString strTmpString = _pExpression->ETKSQLite3Value::GetAsString();
             if (strTmpString.length() == 0)
             {   // If nothing into max parameters, take (*)
-                strOperatorAsString = _T("MAX (*)");
+                _rstrOperatorAsString = _T("MAX (*)");
             }
             else
             {
-                strOperatorAsString.Printf(_T("MAX (%s)"), strTmpString.c_str());
+                _rstrOperatorAsString.Printf(_T("MAX (%s)"), strTmpString.c_str());
             }
             break;
         }
         case eOperationSum:
         {
-            etkString strTmpString = ETKSQLite3Value::GetAsString();
+            etkString strTmpString = _pExpression->ETKSQLite3Value::GetAsString();
             if (strTmpString.length() == 0)
             {   // If nothing into sum parameters, take (*)
-                strOperatorAsString = _T("SUM (*)");
+                _rstrOperatorAsString = _T("SUM (*)");
             }
             else
             {
-                strOperatorAsString.Printf(_T("SUM (%s)"), strTmpString.c_str());
+                _rstrOperatorAsString.Printf(_T("SUM (%s)"), strTmpString.c_str());
             }
             break;
         }
         case eOperationCast :
         {
-            strOperatorAsString.Printf(_T("CAST(%s AS %s)"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("CAST(%s AS %s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationIsNull :
         {
-            strOperatorAsString.Printf(_T("(%s IS nullptr)"), m_pExpression1->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("(%s IS nullptr)"), _rstrExpression1.c_str());
             break;
         }
         case eOperationIsNotNull :
         {
-            strOperatorAsString.Printf(_T("(%s IS NOT nullptr)"), m_pExpression1->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("(%s IS NOT nullptr)"), _rstrExpression1.c_str());
             break;
         }
         case eOperationDistinct :
         {
-            strOperatorAsString.Printf(_T("DISTINCT %s"), m_pExpression1->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("DISTINCT %s"), _rstrExpression1.c_str());
             break;
         }
         case eExpressionColumnAttributes :
         case eExpressionValueBind :
         {
-            strOperatorAsString = ETKSQLite3Value::GetAsString();
+            _rstrOperatorAsString = _pExpression->ETKSQLite3Value::GetAsString();
             break;
         }
         case eOperationAssignmentInsert :
         {   // Must contains one expression of column name type + one value or binded data
-            wxASSERT(m_pExpression1 != nullptr);
-            wxASSERT(m_pExpression2 != nullptr);
-            strOperatorAsString.Printf(_T("(%s) VALUES (%s)"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            wxASSERT(!_rstrExpression1.IsEmpty());
+            wxASSERT(!_rstrExpression2.IsEmpty());
+            _rstrOperatorAsString.Printf(_T("(%s) VALUES (%s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationAssignmentUpdate :
         {   // Must contains one expression of column name type + one value or binded data
-            wxASSERT(m_pExpression1 != nullptr);
-            wxASSERT(m_pExpression2 != nullptr);
+            wxASSERT(!_rstrExpression1.IsEmpty());
+            wxASSERT(!_rstrExpression2.IsEmpty());
             // Cannot easily add the SET keyword, don't put it
-            strOperatorAsString.Printf(_T("%s=%s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s=%s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationAndJoin :
         {   // Must contains 2 expressions of JOIN type
-            wxASSERT(m_pExpression1 != nullptr && m_pExpression1->IsJoin());
-            wxASSERT(m_pExpression2 != nullptr && m_pExpression2->IsJoin());
+            wxASSERT(!_rstrExpression1.IsEmpty() && _pExpression1->IsJoin());
+            wxASSERT(!_rstrExpression2.IsEmpty() && _pExpression2->IsJoin());
             // Cannot easily add the SET keyword, don't put it
-            strOperatorAsString.Printf(_T("%s%s"), m_pExpression1->GetAsString().c_str(), m_pExpression2->GetAsString().c_str());
+            _rstrOperatorAsString.Printf(_T("%s%s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
     }
-    return strOperatorAsString;
+}
+
+etkString ETKSQLite3Expression::InternalGetAsStringForOperator(etkString _strOperator, const ETKSQLite3Expression *_pExpression1, const etkString & _rstrExpression1, const ETKSQLite3Expression *_pExpression2, const etkString & _rstrExpression2)
+{
+    etkString strReturn;
+
+    if (_pExpression1 == nullptr || _pExpression1->GetExpressionOrOperationType() == eExpressionTypeNothing)
+    {
+        if (_pExpression2 != nullptr && _pExpression2->GetExpressionOrOperationType() != eExpressionTypeNothing)
+        {   // Expression 1 is empty and expresssion 2 is empty
+            strReturn = _rstrExpression2;
+        }
+    }
+    else if (_pExpression2 == nullptr || _pExpression2->GetExpressionOrOperationType() == eExpressionTypeNothing)
+    {   // Expression is not empty ans 2 is empty
+        strReturn = _rstrExpression1;
+    }
+    else
+    {   // Both Expression 1 and 2 are not empty
+        strReturn.Printf(_T("(%s %s %s)"), _rstrExpression1.c_str(), _strOperator.c_str(), _rstrExpression2.c_str());
+    }
+
+    return strReturn;
 }
 
 void ETKSQLite3Expression::BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const

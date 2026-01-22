@@ -18,5 +18,8 @@ The methods ToUTF8 and FromUTF8 of the wxString class (available since <b>wxWidg
 **Author**
 Stéphane Château (Feneck91)
 
+# Compilation
+[ETKSQLite3 Compilation](README_Compilation.md)
+
 # Acknowledgements
 Kudos to Ulrich Telle (and all wxSQLite3 contributors) for developing the wxSQLite3 library used by ETKSQLite3.

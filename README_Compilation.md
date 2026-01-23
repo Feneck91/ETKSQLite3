@@ -1,15 +1,31 @@
 # Getting started: ETKSQLite3 installation and compilation
-The <b>ETKSQLite3</b> use CMake to compile the library.<br/><br/>
+The **ETKSQLite3** use *CMake* to compile the library.<br/>
 
-This page will explain how to compile ETKSQLite3 with CMake to compile it with any compiler you want.
+This will explain how to compile **ETKSQLite3** with *CMake* to compile it with any compiler you want.
+*CMake* and *CMakeUI* (optional) must be installed on target to allow to generate makefles. 
 
-1 Download libraries
-  - <b>ETKSQLite3</b>. You need to get <b>ETKSqlite3</b> library. Download using tag to get stable version.
-    - Download [ETKSqlite3](https://github.com/Feneck91/ETKSqlite3) library from Github and decompress all source code in a folder (example <b>ETKSQLite3</b>).
+## Download libraries
+  - **ETKSQLite3**. You need to get **ETKSqlite3** library. Download using tag to get stable version.
+    - Download [ETKSqlite3](https://github.com/Feneck91/ETKSqlite3) library from Github and decompress all source code in a folder (example **ETKSQLite3**).
     - You can also use git clone https://github.com/Feneck91/ETKSqlite3.git
-  - <b>wxsqlite3</b> is a C++ wrapper around the public domain <b>SQLite 3.x</b> database and is specifically designed for use in programs based on the <b>wxWidgets</b> library. This library is written by <b>Ulrich Telle</b>.
-    - Download [wxSQLite3](https://github.com/utelle/wxsqlite3) library from Github and decompress all source code in a folder (example <b>ETKSQLite3/wxSQLite3</b>).
+  - **wxsqlite3** is a C++ wrapper around the public domain **SQLite 3.x** database and is specifically designed for use in programs based on the **wxWidgets** library. This library is written by **Ulrich Telle**.
+    - Download [wxSQLite3](https://github.com/utelle/wxsqlite3) library from Github and decompress all source code in a folder (example **ETKSQLite3/wxSQLite3**).
     - You can also use git clone https://github.com/utelle/wxsqlite3.git
-  - <b>sqlite3</b> is the <b>sqlite3</b> database.
+  - **sqlite3** is the **sqlite3** database.
       - Download [SQLite3](https://github.com/sqlite/sqlite)
-2 Generate 
+
+## Run CMake
+Run the *CMakeGui*, it will ask:</u><br/>
+
+|               CMake               |             Fill (example)             |                                           Comment                                           |
+|-----------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------|
+| Where is the source code          | ETKSqlite3                             |  For example in <i>c:/dev/lib/ETKSqlite3</i>                                                |
+| Where to build the binaries       | ETKSqlite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
+
+
+
+## Generate 
+
+# CMake
+
+# Run CMake gui

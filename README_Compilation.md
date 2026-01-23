@@ -21,7 +21,7 @@ Run the *CMakeGui*, you will ask to fill fields to begin the configure step.<br/
 The *CMakeLists.txt* that contains the informations to generate the library makefile is into ETKSqlite3/build/CMakeLists.txt<br/>
 The *CMakeLists.txt* that contains the informations to generate the library sample makefile is into ETKSqlite3/build/CMakeLists.txt<br/>
 <br/>
-|               CMake               |             Fill (example)             |                                           Comment                                           |
+|               CMake               |             Fill (example)             |                                            Note                                             |
 |-----------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------|
 | Where is the source code          | ETKSqlite3                             |  For example in <i>c:/dev/lib/ETKSqlite3</i>                                                |
 | Where to build the binaries       | ETKSqlite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
@@ -35,10 +35,46 @@ Clic on Configure button, choose your compiler, then an error occurs:
 You must choose the target:
 - **wxETKSQLite3** for ETKSQLite3 based on wxWidgets
 - **qtETKSQLite3** for ETKSQLite3 based on Qt
+  If Qt is not detected, you will probably need to add CMAKE_INSTALL_PREFIX path.<br/>
+  <br/>
+  
+  |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
+  |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
+  | CMAKE_INSTALL_PREFIX              | PATH       | C:/Qt6/6.10.1/msvc2022_64             | Where QT is installed for wanted target  <i>C:/Qt6/6.10.1/msvc2022_64 or mingw_64</i>       |
+  | WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxSQLite3                  | For example but where you download wxSQLite3 library                                        |
+  
+  <br/>
 - **stlETKSQLite3** for ETKSQLite3 based on C++ STL
+<br/>
+Before Configure again, you should choice more options:<br/>
+<br/>
+
+|            CMake entry            | Entry type |                 Value                 |                                 Note                                |
+|-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------|
+| SQLITE_ENABLE_*                   | BOOL       | Checked or not                        | See SQLite documentation to compile it with needed options.         |
+| SQLITE_ENABLE_COLUMN_METADATA     | BOOL       | Checked                               | This options is mandatory for ETKSQLite3.                           |
+| BUILD_SHARED_LIBS                 | BOOL       | Checked                               | If checked, build dynamic library (so / dll) else build static lib. |
 
 ## Generate 
+Clic on ore **Generate** button. You should have something like:<br/>
 
-# CMake
+> Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.<br/>
+> Only Qt6 is installed. Using Qt6.<br/>
+> CONFIGURATION: DEBUG MODE DETECTED = DEBUG<br/>
+> CONFIGURATION: RELEASE MODE DETECTED = RELEASE<br/>
+> CONFIGURATION: RELEASE MODE DETECTED = RELWITHDEBINFO<br/>
+> CONFIGURATION: RELEASE MODE DETECTED = MINSIZEREL<br/>
+> CONFIGURATION: DEBUG MODE DETECTED = DEBUG<br/>
+> CONFIGURATION: RELEASE MODE DETECTED = RELEASE<br/>
+> CONFIGURATION: RELEASE MODE DETECTED = RELWITHDEBINFO<br/>
+> CONFIGURATION: RELEASE MODE DETECTED = MINSIZEREL<br/>
+> Using Qt6<br/>
+> Create static library qtETKSQLite3<br/>
+> Configuring done (0.4s)<br/>
+> Generating done (0.2s)<br/>
+
+# Open Project
+From here, the files needed to build ETKSQLite3 are correctly generated.
+Clic on ore **Open Project** button. Visual Studio opened (if you choose this target).<br/>
 
 # Run CMake gui

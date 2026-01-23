@@ -26,8 +26,16 @@ The *CMakeLists.txt* that contains the informations to generate the library samp
 | Where is the source code          | ETKSqlite3                             |  For example in <i>c:/dev/lib/ETKSqlite3</i>                                                |
 | Where to build the binaries       | ETKSqlite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
 <br/>
-Clic on Configure button.
+Clic on Configure button, choose your compiler, then an error occurs:
 
+> CMake Error at CMakeLists.txt:636 (message):<br/>
+> No target type for ETKSQLite3 is selected. You must activate at least<br/>
+> wxETKSQLite3, qtETKSQLite3 or stlETKSQLite3.
+
+You must choose the target:
+- **wxETKSQLite3** for ETKSQLite3 based on wxWidgets
+- **qtETKSQLite3** for ETKSQLite3 based on Qt
+- **stlETKSQLite3** for ETKSQLite3 based on C++ STL
 
 ## Generate 
 

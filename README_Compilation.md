@@ -15,13 +15,18 @@ This will explain how to compile **ETKSQLite3** with *CMake* to compile it with 
       - Download [SQLite3](https://github.com/sqlite/sqlite)
 
 ## Run CMake
-Run the *CMakeGui*, it will ask:</u><br/>
 
+### Configure
+Run the *CMakeGui*, you will ask to fill fields to begin the configure step.<br/>
+The *CMakeLists.txt* that contains the informations to generate the library makefile is into ETKSqlite3/build/CMakeLists.txt<br/>
+The *CMakeLists.txt* that contains the informations to generate the library sample makefile is into ETKSqlite3/build/CMakeLists.txt<br/>
+<br/>
 |               CMake               |             Fill (example)             |                                           Comment                                           |
 |-----------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------|
 | Where is the source code          | ETKSqlite3                             |  For example in <i>c:/dev/lib/ETKSqlite3</i>                                                |
 | Where to build the binaries       | ETKSqlite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
-
+<br/>
+Clic on Configure button.
 
 
 ## Generate 

@@ -1,6 +1,6 @@
 # What is ETKSQLite3?
 <b>ETKSQLite3</b> is a C++ wrapper around the public domain written in C++ that allow to access SQLite3 database using the wxSQLite3 wrapper library.
-This library is used to allow user to quickly make database binding and make easy request with C++ operators and is specifically designed for use in programs based on the wxWidgets library. A workaround has been made to make it works with QT Library.
+This library is used to allow user to quickly make database binding and make easy request with C++ operators and is specifically designed for use in programs based on the wxWidgets library. A workaround has been made to make it works with QT Library or C++ STL.
 
 Since <b>SQLite3</b> stores strings in UTF-8 encoding, the <b>wxSQLite3</b> methods provide automatic conversion between wxString and UTF-8 strings.
 The methods ToUTF8 and FromUTF8 of the wxString class (available since <b>wxWidgets</b> 2.8.4) are used for the conversion. Special care has to be taken if external administration tools are used to modify the database contents, since not all of these tools operate in Unicode or UTF-8 mode.

@@ -76,5 +76,4 @@ Clic on ore **Generate** button. You should have something like:<br/>
 # Open Project
 From here, the files needed to build ETKSQLite3 are correctly generated.
 Clic on ore **Open Project** button. Visual Studio opened (if you choose this target).<br/>
-
-# Run CMake gui
+You can compile in debug / realase.

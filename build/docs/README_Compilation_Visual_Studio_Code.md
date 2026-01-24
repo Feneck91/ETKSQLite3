@@ -31,14 +31,17 @@ This will explain how to compile **ETKSQLite3** with *Visual Studio Code* to com
 
 ### Fill configuration
 Here, the configure failed but the file ETKSQLite3/build/[build you choose]/CMakeCache.txt is generated. You can now edit it.<br/>
-Select and choose one target:<br/>
+  - Open CMake (Press **CTRL** + **SHIFT** + **P**).
+    - Clic on **CMake: Edit Cache (UI)**, all entries are liste here. You can modify it.<br/>
+      It indicate: **CMake Cache Editor**.
+      Select and choose one target:<br/>
 
-|                              CMakeCache.txt                                |           Fill (example)           |                                            Note                                             |
-|----------------------------------------------------------------------------|------------------------------------|---------------------------------------------------------------------------------------------|
-| WXSQLITE3_DIR:PATH=Path where wxsqlite3 is installed (mandatory)           | WXSQLITE3_DIR:PATH=../../wxSQLite3 | This is MANDATORY! For example but where you download wxSQLite3 library                     |
-| wxETKSQLite3:BOOL=OFF                                                      | wxETKSQLite3:BOOL=ON               |  Activate compilation for ETKSQLite3 for wxWidgets                                          |
-| qtETKSQLite3:BOOL=OFF                                                      | qtETKSQLite3:BOOL=ON               |  Activate compilation for ETKSQLite3 for Qt                                                 |
-| stlETKSQLite3:BOOL=OFF                                                     | stlETKSQLite3:BOOL=ON              |  Activate compilation for ETKSQLite3 for STL                                                |
+      |       Key       |           Value                               |              New Value              | Note                                                         |
+      |-----------------|-----------------------------------------------|-------------------------------------|--------------------------------------------------------------|
+      | WXSQLITE3_DIR   | Path where wxsqlite3 is installed (mandatory) | ../../wxSQLite3                     | This is MANDATORY! Where you download wxSQLite3 library      |
+      | wxETKSQLite3    | OFF                                           | ON                                  | Activate compilation for ETKSQLite3 for wxWidgets            |
+      | qtETKSQLite3    | OFF                                           | ON                                  | Activate compilation for ETKSQLite3 for Qt                   |
+      | stlETKSQLite3   | OFF                                           | ON                                  | Activate compilation for ETKSQLite3 for STL                  |
 
   - wxETKSQLite3 for ETKSQLite3 is choose
     > [cmake] CMake Error at CMakeLists.txt:361 (message):<br/>
@@ -48,10 +51,13 @@ Select and choose one target:<br/>
     > [cmake] CMake Error at CMakeLists.txt:92 (message):<br/>
     > [cmake]   Neither Qt5 nor Qt6 found.
     If Qt is not detected, you will probably need to add **CMAKE_INSTALL_PREFIX** path.<br/>
-
-|                              CMakeCache.txt                                |                   Fill (example)                    |                                            Note                                             |
-|----------------------------------------------------------------------------|-----------------------------------------------------|---------------------------------------------------------------------------------------------|
-| CMAKE_INSTALL_PREFIX:PATH=C:/Program Files/ETKSQLite3                      | CMAKE_INSTALL_PREFIX:PATH=C:/Qt6/6.10.1/msvc2022_64 |	                        | Where QT is installed for wanted target C:/Qt6/6.10.1/msvc2022_64 or mingw_64               |
+    - Open CMake (Press **CTRL** + **SHIFT** + **P**).
+      - Clic on **CMake: Edit Cache (UI)**, all entries are liste here. You can modify it.<br/>
+        It indicate: **CMake Cache Editor**.<br/>
+        
+        |          Key          |           Value               |           New Value           | Note                                                                            |
+        |-----------------------|-------------------------------|-------------------------------|---------------------------------------------------------------------------------|
+        | CMAKE_INSTALL_PREFIX  | C:/Program Files/ETKSQLite3   | C:/Qt6/6.10.1/msvc2022_64     | Where QT is installed for wanted target C:/Qt6/6.10.1/msvc2022_64 or mingw_64   |
 
 Open CMake (Press **CTRL** + **SHIFT** + **P**).
   - Clic on **CMake: Configure**, the vcxproj must be generated.<br/>

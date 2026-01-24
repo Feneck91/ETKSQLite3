@@ -521,5 +521,6 @@ ETKSQLite3Database::tdPtrDatabaseEvent ETKSQLite3Database::AllocNewDatabaseEvent
 
 void ETKSQLite3Database::OnUpdateCallback(tdPtrDatabaseEvent _pDatabaseEvent)
 {
+    wxUnusedVar(_pDatabaseEvent);
     // Does nothing
 }

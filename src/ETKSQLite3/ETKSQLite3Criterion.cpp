@@ -1808,7 +1808,7 @@ int ETKSQLite3Expression::ConstructContentDescription(etkString &_strDescription
             {   // Depth of right expression is lower than left
                 strTokenRight.Pad(iLenRightDescription, _T(' '));
             }
-            _strDescription += _T('\n') + strPadAllLeftLeft + strTokenLeft + strPadAllLeftRight +etkString(_T(' '), 3) + strPadAllRightLeft +strTokenRight + strPadAllRightRight;
+            _strDescription += etkString(_T('\n'), 1) + strPadAllLeftLeft + strTokenLeft + strPadAllLeftRight + etkString(_T(' '), 3) + strPadAllRightLeft + strTokenRight + strPadAllRightRight;
         }
         iLenThisDescription = iLenDescription;
     }

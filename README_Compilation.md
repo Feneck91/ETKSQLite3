@@ -11,8 +11,8 @@ This will explain how to compile **ETKSQLite3** with *CMake* to compile it with 
   - **wxsqlite3** is a C++ wrapper around the public domain **SQLite 3.x** database and is specifically designed for use in programs based on the **wxWidgets** library. This library is written by **Ulrich Telle**.
     - Download [wxSQLite3](https://github.com/utelle/wxsqlite3) library from Github and decompress all source code in a folder (example **ETKSQLite3/wxSQLite3**).
     - You can also use git clone https://github.com/utelle/wxsqlite3.git
-  - **sqlite3** is the **sqlite3** database.
-      - Download [SQLite3](https://github.com/sqlite/sqlite)
+  - **sqlite3** is the SQLite3 database. No need to download it, the sqlite3 amalgamation code is downloaded with **wxSQLite3** library.
+      - But, If you want to see this library, you can alsa download it from [SQLite3](https://github.com/sqlite/sqlite)
 
 ## Run CMake
 

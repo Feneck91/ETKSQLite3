@@ -19,7 +19,7 @@ The methods ToUTF8 and FromUTF8 of the wxString class (available since <b>wxWidg
 Stéphane Château (Feneck91)
 
 # Compilation
-[ETKSQLite3 Compilation with CMake GUI](build/docs/README_Compilation_CMake_GUI.md)
+[ETKSQLite3 Compilation with CMake GUI](build/docs/README_Compilation_CMake_GUI.md)<br/>
 [ETKSQLite3 Compilation withVisual Studio Code](build/docs/README_Compilation_Visual_Studio_code.md)
 
 # Acknowledgements

@@ -16,6 +16,7 @@
 // Internal include, simul wxWidgets
 //
 #include <wx/variant.h>
+#include <QTimeZone>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +157,23 @@ wxVariant::wxVariant(const QDateTime &datetime)
 }
 
 wxVariant::wxVariant(const struct tm &date)
-    : QVariant(QDateTime(QDate(date.tm_year, date.tm_mon, date.tm_mday), QTime(date.tm_hour, date.tm_min,date.tm_sec, 0),Qt::LocalTime))
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    : QVariant(
+        QDateTime(
+            QDate(date.tm_year + 1900, date.tm_mon + 1, date.tm_mday),
+            QTime(date.tm_hour, date.tm_min, date.tm_sec, 0),
+            Qt::LocalTime
+        )
+    )
+#else
+    : QVariant(
+        QDateTime(
+            QDate(date.tm_year + 1900, date.tm_mon + 1, date.tm_mday),
+            QTime(date.tm_hour, date.tm_min, date.tm_sec, 0),
+            QTimeZone::systemTimeZone()
+        )
+    )
+#endif
     , m_pData(nullptr)
 {
 }
@@ -269,7 +286,11 @@ bool wxVariant::Eq(wxVariantData& data) const
             }
             else if (GetData()== nullptr && pVariant->GetData() == nullptr)
             {   // If both h NOT type
-                return QVariant::operator ==(*pVariant);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                return QVariant::operator==(*pVariant);
+#else
+                return QVariant::compare(*this, *pVariant) == QPartialOrdering::Equivalent;
+#endif
             }
         }
     }

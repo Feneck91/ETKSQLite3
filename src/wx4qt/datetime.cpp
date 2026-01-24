@@ -261,7 +261,7 @@ wxLongLong wxQDateTime::GetJulianDayNumber() const
 
 time_t wxQDateTime::GetTicks() const
 {
-    return toTime_t();
+    return static_cast<time_t>(toSecsSinceEpoch());
 }
 
 

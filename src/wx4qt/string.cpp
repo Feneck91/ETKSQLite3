@@ -229,7 +229,20 @@ const wxChar *wxString::utf8_str() const
 
 wxString wxString::SubString(size_t nStart, size_t nLen) const
 {
-    return wxString(QString::midRef(static_cast<int>(nStart), static_cast<int>(nLen)).toString());
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    return wxString(
+        QString::midRef(static_cast<int>(nStart),
+            static_cast<int>(nLen))
+        .toString()
+    );
+#else
+    return wxString(
+        QStringView(*this)
+        .mid(static_cast<qsizetype>(nStart),
+            static_cast<qsizetype>(nLen))
+        .toString()
+    );
+#endif
 }
 
 void wxString::Replace(const wxChar *_pstrBefore,const wxChar *_pstrAfter)

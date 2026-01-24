@@ -33,17 +33,17 @@ Clic on Configure button, choose your compiler, then an error occurs:
 > wxETKSQLite3, qtETKSQLite3 or stlETKSQLite3.
 
 You must choose the target:
-- **wxETKSQLite3** for ETKSQLite3 based on wxWidgets
+- **wxETKSQLite3** for ETKSQLite3 based on wxWidgets<br/>
+  
+  |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
+  |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
+  | WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxSQLite3                  | For example but where you download wxSQLite3 library                                        |
 - **qtETKSQLite3** for ETKSQLite3 based on Qt
   If Qt is not detected, you will probably need to add CMAKE_INSTALL_PREFIX path.<br/>
-  <br/>
   
   |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
   |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
   | CMAKE_INSTALL_PREFIX              | PATH       | C:/Qt6/6.10.1/msvc2022_64             | Where QT is installed for wanted target  <i>C:/Qt6/6.10.1/msvc2022_64 or mingw_64</i>       |
-  | WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxSQLite3                  | For example but where you download wxSQLite3 library                                        |
-  
-  <br/>
 - **stlETKSQLite3** for ETKSQLite3 based on C++ STL
 <br/>
 Before Configure again, you should choice more options:<br/>

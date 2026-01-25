@@ -1,4 +1,4 @@
-# Getting started: ETKSQLite3 installation and compilation
+# Getting started: ETKSQLite3 installation and compilation with CMakeGUI
 The **ETKSQLite3** use *CMake* to compile the library.<br/>
 
 This will explain how to compile **ETKSQLite3** with *CMake* to compile it with any compiler you want.
@@ -13,6 +13,8 @@ This will explain how to compile **ETKSQLite3** with *CMake* to compile it with 
     - You can also use git clone https://github.com/utelle/wxsqlite3.git
   - **sqlite3** is the SQLite3 database. No need to download it, the sqlite3 amalgamation code is downloaded with **wxSQLite3** library.
       - But, If you want to see this library, you can alsa download it from [SQLite3](https://github.com/sqlite/sqlite)
+
+If you use git clone, you must switch the repository to correct branch / tag.
 
 ## Run CMake
 

@@ -16,6 +16,7 @@
 #include <wx/wxtype.h>
 #include <wx/datetime.h>
 #include <QLocale>
+#include <QTimeZone>
 
 wxQDateTime::wxQDateTime::wxQDateTime()
 {
@@ -55,17 +56,17 @@ wxQDateTime::wxQDateTime(const QDate & _rDate): QDateTime(_rDate)
 
 #endif
 
-wxQDateTime::wxQDateTime(const struct tm &date)
-    : QDateTime(QDate(date.tm_year, date.tm_mon, date.tm_mday),
-                QTime(date.tm_hour, date.tm_min,date.tm_sec, 0),
-                Qt::LocalTime)
+wxQDateTime::wxQDateTime(const struct tm& date)
+    : QDateTime(QDate(date.tm_year + 1900, date.tm_mon + 1, date.tm_mday),
+                QTime(date.tm_hour, date.tm_min, date.tm_sec, 0),
+                QTimeZone::systemTimeZone())
 {
 }
 
-wxQDateTime::wxQDateTime(const QTime & _rTime)
+wxQDateTime::wxQDateTime(const QTime& _rTime)
     : QDateTime(QDate::currentDate(),
                 _rTime,
-                Qt::LocalTime)
+                QTimeZone::systemTimeZone())
 {
 }
 

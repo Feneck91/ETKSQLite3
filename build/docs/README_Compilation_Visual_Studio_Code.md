@@ -16,10 +16,12 @@ This will explain how to compile **ETKSQLite3** with *Visual Studio Code* to com
   - **sqlite3** is the SQLite3 database. No need to download it, the sqlite3 amalgamation code is downloaded with **wxSQLite3** library.
       - But, If you want to see this library, you can alsa download it from [SQLite3](https://github.com/sqlite/sqlite)
 
+If you use git clone, you must switch the repository to correct branch / tag.
+
 ## Run Visual Studio Code
 
 ### Configure
-  - Open the Folder **ETKSQLite3/build**.<br/>
+  - In Visual Studio Code, open the Folder **ETKSQLite3/build**.<br/>
   - Open CMake (Press **CTRL** + **SHIFT** + **P**).
     - Clic on **Open Workspace Settings**
     - If you want to change the output folder, search **Cmake: Build Directory** and change *${workspaceFolder}/build* to *${workspaceFolder}/Build.vc17* (or other like *${workspaceFolder}/mingw*) and press **ENTER**.
@@ -34,7 +36,7 @@ Here, the configure failed but the file ETKSQLite3/build/[build you choose]/CMak
   - Open CMake (Press **CTRL** + **SHIFT** + **P**).
     - Clic on **CMake: Edit Cache (UI)**, all entries are liste here. You can modify it.<br/>
       It indicate: **CMake Cache Editor**.
-      Select and choose one target:<br/>
+      Select and choose **only one** target:<br/>
 
       |       Key       |           Value                               |              New Value              | Note                                                         |
       |-----------------|-----------------------------------------------|-------------------------------------|--------------------------------------------------------------|
@@ -58,6 +60,15 @@ Here, the configure failed but the file ETKSQLite3/build/[build you choose]/CMak
         |          Key          |           Value               |           New Value           | Note                                                                            |
         |-----------------------|-------------------------------|-------------------------------|---------------------------------------------------------------------------------|
         | CMAKE_INSTALL_PREFIX  | C:/Program Files/ETKSQLite3   | C:/Qt6/6.10.1/msvc2022_64     | Where QT is installed for wanted target C:/Qt6/6.10.1/msvc2022_64 or mingw_64   |
+
+Before Configure again, you should choice more options:<br/>
+<br/>
+
+|                Key                | Entry type |                 Value                 |                                 Note                                |
+|-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------|
+| SQLITE_ENABLE_*                   | BOOL       | Checked or not                        | See SQLite documentation to compile it with needed options.         |
+| SQLITE_ENABLE_COLUMN_METADATA     | BOOL       | Checked                               | This options is mandatory for ETKSQLite3.                           |
+| BUILD_SHARED_LIBS                 | BOOL       | Checked  or not                       | If checked, build dynamic library (so / dll) else build static lib. |
 
 Open CMake (Press **CTRL** + **SHIFT** + **P**).
   - Clic on **CMake: Configure**, the vcxproj must be generated.<br/>

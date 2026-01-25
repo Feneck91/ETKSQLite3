@@ -2,7 +2,7 @@
 # Name:        CMakeLists.txt
 # Library:     ETKSQLite3
 # Purpose:     CMake root file for ETKSqlite3
-# Author:      Stéphane Château (Feneck91@free.fr)
+# Author:      Stéphane Château
 # Modified by:
 # Created:     2025/08/27
 # Copyright:   © Stéphane Château
@@ -462,23 +462,16 @@ function(create_framework_library framework)
             # Detect the chosen version
             if(USE_QT6)
                 find_package(Qt6 REQUIRED COMPONENTS Widgets)
-                set(QT_VERSION 6 CACHE INTERNAL "Qt version in use")
+                set(QT_TARGET Qt6::Widgets)
+                set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_QT USE_QT6)
                 message(STATUS "Using Qt6")
-                set(QT_LIBRARIES Qt6::Widgets)
-                set(QT_INCLUDE_DIRS ${Qt6Widgets_INCLUDE_DIRS} PARENT_SCOPE)
-                # Set compile definitions
-                add_compile_definitions(USE_QT6)
             else()
                 find_package(Qt5 REQUIRED COMPONENTS Widgets)
-                set(QT_VERSION 5 CACHE INTERNAL "Qt version in use")
+                set(QT_TARGET Qt5::Widgets)
+                set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_QT USE_QT5)
                 message(STATUS "Using Qt5")
-                set(QT_LIBRARIES Qt5::Widgets)
-                set(QT_INCLUDE_DIRS ${Qt5Widgets_INCLUDE_DIRS} PARENT_SCOPE)
-                # Set compile definitions
-                add_compile_definitions(USE_QT5)
             endif()
-            set(FRAMEWORK_LIBS ${QT_LIBRARIES})
-            set(FRAMEWORK_DEFINITIONS ETK_SQLITE3_USE_QT)
+        
             set(INSTALL_ETKSQLITE3_HEADERS ../include/wx4qt)
         elseif(framework STREQUAL "stlETKSQLite3")
             set(ETKSQLITE3_SOURCES ${COMMON_SOURCE_FILES} ${STL_SOURCE_FILES})
@@ -523,6 +516,12 @@ function(create_framework_library framework)
 
         # Add library
         add_library(${LIB_NAME} ${BUILD_SHARED_LIBS_TYPE} ${ETKSQLITE3_SOURCES} ${ETKSQLITE3_HEADERS} ${MODULE_RC_FILE})
+        
+        # Qt Link
+        if(framework STREQUAL "qtETKSQLite3")
+            target_link_libraries(${LIB_NAME} PRIVATE ${QT_TARGET})
+        endif()
+        target_compile_definitions(${LIB_NAME} PRIVATE ${FRAMEWORK_DEFINITIONS})
 
         # Configure library properties
         # =============================================================================
@@ -633,7 +632,7 @@ create_framework_library(stlETKSQLite3 "stl")
 # Check options of ETKSQLite3 generation type
 # =============================================================================
 if(NOT wxETKSQLite3 AND NOT qtETKSQLite3 AND NOT stlETKSQLite3)
-    message(FATAL_ERROR "No target type for ETKSQLite3 is selected. You must activate at least wxETKSQLite3, qtETKSQLite3 or boostETKSQLite3 or stlETKSQLite3.")
+    message(FATAL_ERROR "No target type for ETKSQLite3 is selected. You must activate at least wxETKSQLite3, qtETKSQLite3 or stlETKSQLite3.")
 endif()
 
 # =============================================================================

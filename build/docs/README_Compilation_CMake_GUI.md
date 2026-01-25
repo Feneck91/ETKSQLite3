@@ -57,7 +57,7 @@ Before Configure again, you should choice more options:<br/>
 |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------|
 | SQLITE_ENABLE_*                   | BOOL       | Checked or not                        | See SQLite documentation to compile it with needed options.         |
 | SQLITE_ENABLE_COLUMN_METADATA     | BOOL       | Checked                               | This options is mandatory for ETKSQLite3.                           |
-| BUILD_SHARED_LIBS                 | BOOL       | Checked                               | If checked, build dynamic library (so / dll) else build static lib. |
+| BUILD_SHARED_LIBS                 | BOOL       | Checked or not                        | If checked, build dynamic library (so / dll) else build static lib. |
 
 ## Generate 
 Clic on ore **Generate** button. You should have something like:<br/>

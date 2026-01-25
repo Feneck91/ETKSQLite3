@@ -30,20 +30,22 @@ Clic on Configure button, choose your compiler, then an error occurs:
 
 > CMake Error at CMakeLists.txt:636 (message):<br/>
 > No target type for ETKSQLite3 is selected. You must activate at least<br/>
-> wxETKSQLite3, qtETKSQLite3 or stlETKSQLite3.
+> wxETKSQLite3, qtETKSQLite3 or stlETKSQLite3.<br/>
+
+Here, the WXSQLITE3_DIR is mandatory, it is the framework base code of ETKSQLite3.
+
+|            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
+|-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
+| WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxSQLite3                  | For example but where you download wxSQLite3 library                                        |
 
 You must choose the target:
-- **wxETKSQLite3** for ETKSQLite3 based on wxWidgets
+- **wxETKSQLite3** for ETKSQLite3 based on wxWidgets<br/>
 - **qtETKSQLite3** for ETKSQLite3 based on Qt
   If Qt is not detected, you will probably need to add CMAKE_INSTALL_PREFIX path.<br/>
-  <br/>
   
   |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
   |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
   | CMAKE_INSTALL_PREFIX              | PATH       | C:/Qt6/6.10.1/msvc2022_64             | Where QT is installed for wanted target  <i>C:/Qt6/6.10.1/msvc2022_64 or mingw_64</i>       |
-  | WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxSQLite3                  | For example but where you download wxSQLite3 library                                        |
-  
-  <br/>
 - **stlETKSQLite3** for ETKSQLite3 based on C++ STL
 <br/>
 Before Configure again, you should choice more options:<br/>

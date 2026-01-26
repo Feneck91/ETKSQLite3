@@ -71,10 +71,10 @@ protected:
 
     virtual ~IRefCountImpl()
     {
-        // Pas de DestroyRef(); <- On est déjà en train de se détruire puisque GetPtr est this !!
-        // Vérifie que l'on détruit un élément que lorsque son compteur est bien à 0
-        // Si pas égal à 0 => des shared pointeurs pointent encore sur moi !!
-        wxASSERT(m_iCounter == 0);
+        // No DestroyRef(); <- Is deleting (GetPtr is this) !!
+        // Check that if ewhen lement is deleted the reference counter is really at 0
+        // If not equal to 0 => Some shared pointer exists on me!
+        wxASSERT_MSG(m_iCounter == 0, wxT("Reference couter is not 0"));
     }
 
 protected:
@@ -101,8 +101,8 @@ protected:
     {
         if (GetPtr() != NULL)
         {
-            // Vérifie que l'on détruit un élément que lorsque son compteur est bien à 0
-            wxASSERT(m_iCounter == 0);
+            // Verify that if the element is deleted, the counter must be 0
+            wxASSERT_MSG(m_iCounter == 0, wxT("Reference couter is not 0"));
             DeletePtr();
         }
     }
@@ -286,14 +286,14 @@ public:
     // to access members of T
     T *                                 operator ->()
     {
-        wxASSERT(GetPtr()!=NULL);
+        wxASSERT_MSG(GetPtr() != nullptr, wxT("Null pointer"));
         return GetPtr();
     }
 
     // to access members of T
     const T *                           operator ->() const
     {
-        wxASSERT(GetPtr()!=NULL);
+        wxASSERT_MSG(GetPtr() != nullptr, wxT("Null pointer"));
         return GetPtr();
     }
 

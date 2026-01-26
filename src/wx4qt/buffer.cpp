@@ -121,7 +121,7 @@ void wxMemoryBuffer::SetBufSize(size_t size)
 
 void wxMemoryBuffer::SetDataLen(size_t len)
 {
-    wxASSERT(len <= m_bufdata->m_size);
+    wxASSERT_MSG(len <= m_bufdata->m_size, wxT("Invalid buffer length"));
     m_bufdata->m_len = len;
 }
 

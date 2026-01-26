@@ -79,6 +79,7 @@ public:
     int                 Length() const;
     char                operator[](int _iPosition) const;
     wxString &          operator<<(const wxString &_rstrString);
+    wxString&           operator=(const wxString &) = default;
     operator const char *() const;
     int                 Len() const;
     void                ToLong(long *_pLong) const;

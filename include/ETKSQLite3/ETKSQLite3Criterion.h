@@ -969,7 +969,7 @@ protected:
      * @param _riIndex Index of item to bind. If a bind is done, increment index.
      * @param _bForInsertRequest If true if it's bind for an insert request (for INSERT request, the primary key is computed and should be NULL).
      */
-    virtual void                        BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const;
+    virtual void                        BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bForInsertRequest) const override;
 
     /**
      * Test if this kind of operator could have an ORDER BY statement.
@@ -1509,7 +1509,7 @@ public:
      * @param _rstmt Statement to bind to.
      * @param _riIndex Index of item to bind. If a bind is done, increment index.
      */
-    void                                BindTo(wxSQLite3Statement &_rstmt, int &_riIndex) const;
+    void                                BindCriterionTo(wxSQLite3Statement &_rstmt, int &_riIndex) const;
 
 protected:
     /**

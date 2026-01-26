@@ -252,12 +252,12 @@ const wxChar * wxQDateTime::ParseDateTime(const QString &_rString)
 // get the internal representation
 wxLongLong wxQDateTime::GetValue() const
 {
-    return QDateTime::toMSecsSinceEpoch();
+    return wxLongLong(QDateTime::toMSecsSinceEpoch());
 }
 
 wxLongLong wxQDateTime::GetJulianDayNumber() const
 {
-    return (qint64) ((QDateTime::toMSecsSinceEpoch() - EPOCH_JDN) / MILLISECONDS_PER_DAY + EPOCH_JDN + 0.5);
+    return wxLongLong((QDateTime::toMSecsSinceEpoch() - EPOCH_JDN) / MILLISECONDS_PER_DAY + EPOCH_JDN + 0.5);
 }
 
 time_t wxQDateTime::GetTicks() const

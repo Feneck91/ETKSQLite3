@@ -68,6 +68,7 @@ public :
     wxLongLong GetJulianDayNumber() const;
 
     time_t GetTicks() const;
+    wxQDateTime & operator=(const wxQDateTime&) = default;
 };
 
 #endif // WX_DATETIME_HEADER

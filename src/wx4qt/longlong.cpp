@@ -18,11 +18,6 @@ wxQLongLong::wxQLongLong()
 {
 }
 
-wxQLongLong::wxQLongLong(int64_t _i64Value)
-    : m_i64Value(_i64Value)
-{
-}
-
 wxQLongLong::wxQLongLong(int _iValue)
     : m_i64Value(_iValue)
 {
@@ -30,6 +25,11 @@ wxQLongLong::wxQLongLong(int _iValue)
 
 wxQLongLong::wxQLongLong(long _lValue)
     : m_i64Value(_lValue)
+{
+}
+
+wxQLongLong::wxQLongLong(time_t _tValue)
+    : m_i64Value(_tValue)
 {
 }
 

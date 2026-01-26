@@ -221,7 +221,7 @@ template <class TYPE> const ETKSQLite3ResultSet<TYPE> & ETKSQLite3ResultSet<TYPE
 template <class TYPE> void ETKSQLite3ResultSet<TYPE>::AddBind(const ETKSQLite3Column &_rColumn)
 {
     // Create new column from these informations
-    wxASSERT_MSG(_rColumn.IsBindedValueExists(),wxT("No binded value for column into ETKSQLite3ResultSet<TYPE>::AddBind function.\nDo you forget to call operator [] on record and give only static column?"));
+    wxASSERT_MSG(_rColumn.IsBindedValueExists(), wxT("No binded value for column into ETKSQLite3ResultSet<TYPE>::AddBind function.\nDo you forget to call operator [] on record and give only static column?"));
     TYPE::AddColumn(_rColumn);
 }
 
@@ -305,7 +305,7 @@ template <class TYPE> bool ETKSQLite3ResultSet<TYPE>::InitBindFrom()
                             iIndexColumnFound = FindColumnIndex(TYPE::GetColumn(nIndex));
                             // Here, iIndexColumnFound is always found and valid else exception is raised
                             ++iColFound;
-                            wxASSERT_MSG(iIndexColumnFound >= 0 && iIndexColumnFound < wxSQLite3ResultSet::GetColumnCount(),wxT("Bad index returns by sqlite3!"));
+                            wxASSERT_MSG(iIndexColumnFound >= 0 && iIndexColumnFound < wxSQLite3ResultSet::GetColumnCount(), wxT("Bad index returns by sqlite3!"));
                             /*
                             wxASSERT_MSG(pIndexes[iIndexColumnFound] == -1,
                                          wxString::Format(wxT("Index (%d) returns by sqlite3 found twice (previous = %d) - Column[%d]=%s!"),

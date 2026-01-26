@@ -35,7 +35,7 @@ template<> void ETKSQLite3ValueBindOther<int64_t>::BindTo(wxSQLite3Statement &_r
 
 template<> void ETKSQLite3ValueBindOther<int64_t>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetInt64(_iIndex).GetValue();
 }
 
@@ -48,7 +48,7 @@ template<> void ETKSQLite3ValueBindOther<etkString>::BindTo(wxSQLite3Statement &
 
 template<> void ETKSQLite3ValueBindOther<etkString>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetAsString(_iIndex);
 }
 
@@ -61,7 +61,7 @@ template<> void ETKSQLite3ValueBindOther<wxDate>::BindTo(wxSQLite3Statement &_rs
 
 template<> void ETKSQLite3ValueBindOther<wxDate>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetDate(_iIndex).date();
 }
 
@@ -74,7 +74,7 @@ template<> void ETKSQLite3ValueBindOther<wxTime>::BindTo(wxSQLite3Statement &_rs
 
 template<> void ETKSQLite3ValueBindOther<wxTime>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetTime(_iIndex).time();
 }
 
@@ -87,6 +87,6 @@ template<> void ETKSQLite3ValueBindOther<wxDateTime>::BindTo(wxSQLite3Statement 
 
 template<> void ETKSQLite3ValueBindOther<wxDateTime>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetDateTime(_iIndex);
 }

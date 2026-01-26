@@ -55,4 +55,11 @@ using etkTime               = wxTime;
 
 #define etkInvalidDateTime  wxInvalidDateTime;
 
+// Macro to tell to __GNUC__ ignore the no break into a switch / case
+#if defined(__GNUC__)
+    #define ETK_FALLTHROUGH __attribute__((fallthrough));
+#else
+    #define ETK_FALLTHROUGH /* fallthrough */
+#endif
+
 #endif // INCLUDE_ETK_SQLITE3_TYPES_H

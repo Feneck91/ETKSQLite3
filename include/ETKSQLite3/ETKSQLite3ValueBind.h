@@ -51,6 +51,13 @@ public:
     ETKSQLite3ValueBindBase();
 
     /**
+     * Copy constructor.
+     * 
+     * @param _rValueBind Value to copy into this.
+     */
+    ETKSQLite3ValueBindBase(const ETKSQLite3ValueBindBase &_rValueBindBase);
+
+    /**
      * Destructor.
      */
     virtual ~ETKSQLite3ValueBindBase();
@@ -103,7 +110,7 @@ public:
      * @param _rValueBind Bind value to copy into this.
      * @return This.
      */
-    virtual const ETKSQLite3ValueBindBase &operator=(const ETKSQLite3ValueBindBase &_rValueBind);
+     const ETKSQLite3ValueBindBase &    operator=(const ETKSQLite3ValueBindBase &_rValueBind);
     //@}
 
     /**
@@ -299,7 +306,7 @@ public:
     /**
      * Copy constructor.
      *
-     * @param _rValueBind Column to copy into this.
+     * @param _rValueBind Value bind to copy into this.
      */
     ETKSQLite3ValueBind(const ETKSQLite3ValueBind &_rValueBind);
 
@@ -334,7 +341,7 @@ public:
      * @param _rValueBind Bind value to copy into this.
      * @return This.
      */
-    virtual const ETKSQLite3ValueBind &operator=(const ETKSQLite3ValueBind &_rValueBind);
+     const ETKSQLite3ValueBind &        operator=(const ETKSQLite3ValueBind &_rValueBind);
     //@}
 
 protected:
@@ -426,7 +433,7 @@ public:
      * @param _rValueBind Bind value to copy into this.
      * @return This.
      */
-    virtual const ETKSQLite3ValueBindOther<TYPE> &operator=(const ETKSQLite3ValueBindOther<TYPE> &_rValueBind);
+     const ETKSQLite3ValueBindOther<TYPE> &operator=(const ETKSQLite3ValueBindOther<TYPE> &_rValueBind);
     //@}
 
 protected:

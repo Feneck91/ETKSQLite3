@@ -93,7 +93,7 @@ size_t ETKSQLite3Record::GetColumnCount() const
 
 const ETKSQLite3Column & ETKSQLite3Record::GetColumn(size_t _nIndex) const
 {
-    wxASSERT_MSG(_nIndex>=0 && _nIndex<m_lstColumns.size(),wxT("Index out of bound"));
+    wxASSERT_MSG(_nIndex>=0 && _nIndex<m_lstColumns.size(), wxT("Index out of bound"));
     return *(m_lstColumns.begin() + _nIndex);
 }
 

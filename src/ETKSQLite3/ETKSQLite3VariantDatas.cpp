@@ -119,7 +119,7 @@ const ETKSQLite3VariantDataBlob & ETKSQLite3VariantDataBlob::operator=(const wxV
 
 unsigned char ETKSQLite3VariantDataBlob::operator[](size_t _iIndex) const
 {
-    wxASSERT(_iIndex<m_stLenBuff);
+    wxASSERT_MSG(_iIndex < m_stLenBuff, wxT("Index out of range"));
     return m_pBuff[_iIndex];
 }
 
@@ -230,6 +230,8 @@ ETKSQLite3VariantDataColumnAttributes::ETKSQLite3VariantDataColumnAttributes(con
 }
 
 ETKSQLite3VariantDataColumnAttributes::ETKSQLite3VariantDataColumnAttributes(const ETKSQLite3VariantDataColumnAttributes &_rOther)
+    : wxVariantData(_rOther)
+    , ETKSQLite3ColumnAttributes(_rOther)
 {
     if (this != &_rOther)
     {   // Only call operator= on this
@@ -297,6 +299,8 @@ ETKSQLite3VariantDataValueBind::ETKSQLite3VariantDataValueBind(const ETKSQLite3V
 }
 
 ETKSQLite3VariantDataValueBind::ETKSQLite3VariantDataValueBind(const ETKSQLite3VariantDataValueBind &_rOther)
+    : wxVariantData()
+    , ETKSQLite3ValueBind(_rOther)
 {
     if (this != &_rOther)
     {   // Only call operator= on this

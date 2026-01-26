@@ -48,8 +48,10 @@
         #endif
     #endif
 #else
-    #ifdef LINUX
-        #error Not implemented !
+    #ifdef __linux__
+        #define             WXMAKINGLIB_WXSQLITE3
+        #define             EXPORT_IMPORT
+        #define             SQLITE_API
     #else
         #error Not implemented !
     #endif

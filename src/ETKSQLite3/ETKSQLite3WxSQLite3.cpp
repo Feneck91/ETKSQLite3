@@ -34,9 +34,23 @@
     #define __WIN32__
 #endif
 
-#pragma warning(push) // Backup actual warning parameters
-#pragma warning(disable : 4267) // Conversion lost data
-#pragma warning(disable : 4189) // Local variable not used
-#pragma warning(disable : 4100) // Parameter not referenced
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable : 4267) // conversion, possible loss of data
+    #pragma warning(disable : 4189) // local variable initialized but not referenced
+    #pragma warning(disable : 4100) // unreferenced formal parameter
+#elif defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+    #pragma GCC diagnostic ignored "-Wattributes"
+#endif
+
 #include "wxsqlite3.cpp"
-#pragma warning(pop) // Restaure warning parameters
+
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#elif defined(__GNUC__)
+    #pragma GCC diagnostic pop
+#endif

@@ -63,7 +63,7 @@ const ETKSQLite3Criterion & ETKSQLite3Request::GetCriterionRequest() const
 
 void ETKSQLite3Request::Where(const ETKSQLite3Expression &_rExprWhere)
 {
-    wxASSERT(!_rExprWhere.IsJoin());
+    wxASSERT_MSG(!_rExprWhere.IsJoin(), wxT("Where expression must have not join"));
     GetCriterionRequest().SetWhere(_rExprWhere);
     DeleteStatement();
 }
@@ -154,7 +154,7 @@ void ETKSQLite3Request::DeleteStatement()
 
 wxSQLite3Statement & ETKSQLite3Request::GetStatement()
 {
-    wxASSERT_MSG(IsStatementInitialized(),wxT("To get statement, it must be initialized!"));
+    wxASSERT_MSG(IsStatementInitialized(), wxT("To get statement, it must be initialized!"));
     return *m_pStatement;
 }
 
@@ -166,7 +166,7 @@ bool ETKSQLite3Request::Bind(wxSQLite3Statement &_rStatement)
 
     try
     {   // Make the bind
-        GetCriterionRequest().BindTo(_rStatement,iIndex);
+        GetCriterionRequest().BindCriterionTo(_rStatement, iIndex);
         bRet = _rStatement.IsOk();
     }
     catch(wxSQLite3Exception &_ex)

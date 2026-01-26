@@ -44,13 +44,13 @@ wxString wxConfigBase::Read(const wxChar *_pszKey,const wxChar *_pszDefault)
         return strRet;
     }
 
-    wxASSERT_MSG(false,wxT("m_pQSettings is not initialized, CALL wxConfigBase::Set function!"));
+    wxASSERT_MSG(false, wxT("m_pQSettings is not initialized, CALL wxConfigBase::Set function!"));
     return wxString();
 }
 
 void wxConfigBase::Write(const wxChar *_pszKey,const wxChar *_pszValue)
 {
-    wxASSERT_MSG(m_pQSettings != NULL,wxT("m_pQSettings is not initialized, CALL wxConfigBase::Set function!"));
+    wxASSERT_MSG(m_pQSettings != NULL, wxT("m_pQSettings is not initialized, CALL wxConfigBase::Set function!"));
 
     if (m_pQSettings != NULL)
     {

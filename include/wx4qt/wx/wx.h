@@ -30,8 +30,7 @@
 #   ifdef __BORLANDC__
 #       define wxUnusedVar(identifier) identifier
 #   else
-        #define wxUnusedVar(identifier) identifier
-        //template <class T> inline void wxUnusedVar(const T& WXUNUSED(t)) { }
+        template <class T> inline void wxUnusedVar(const T& WXUNUSED(t)) { }
 #   endif
 #endif
 

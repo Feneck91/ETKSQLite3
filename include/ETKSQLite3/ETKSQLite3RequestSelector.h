@@ -174,13 +174,15 @@ private:
      * Nothing is done into this function, an exception is raised.
      *
      * @see ExecuteWithTransaction,ExecuteWithoutTransaction,
+     * @param _bLogError If true, log database error.
+     * @param _bDisplayMsgBox If true, display the error to the user.
      * @param _bWithTransaction true to execute with transaction, false to execute without transaction.
      * @return The number of modified rows, -1 is error occurs. In this case, you can call ETKSQLite3Database::GetLastErrorMessage()
      *         to have error description.
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      * must be protected by try / catch statement.
      */
-    virtual int                         Execute(bool _bWithTransaction);
+    virtual int                         Execute(bool _bLogError, bool _bDisplayMsgBox, bool _bWithTransaction) override;
 
     /**
      * Allow ETKSQLite3Database class to create ETKSQLite3RequestInserter instance.

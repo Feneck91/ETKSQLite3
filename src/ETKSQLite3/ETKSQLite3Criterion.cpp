@@ -214,7 +214,7 @@ void ETKSQLite3Value::BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bF
     if (GetExpressionOrOperationType() == eExpressionColumnAttributes)
     {
         ETKSQLite3VariantDataColumnAttributes *pColumnAttributes = dynamic_cast<ETKSQLite3VariantDataColumnAttributes *>(GetVariant().GetData());
-        wxASSERT(pColumnAttributes != nullptr); // Should never arrives
+        wxASSERT_MSG(pColumnAttributes != nullptr, wxT("Null pointer)")); // Should never arrives
         if (pColumnAttributes != nullptr)
         {
             pColumnAttributes->BindTo(_rstmt, _riIndex++, _bForInsertRequest);
@@ -223,7 +223,7 @@ void ETKSQLite3Value::BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bF
     else if (GetExpressionOrOperationType() == eExpressionValueBind)
     {
         ETKSQLite3VariantDataValueBind *pValueBind = dynamic_cast<ETKSQLite3VariantDataValueBind *>(GetVariant().GetData());
-        wxASSERT(pValueBind != nullptr); // Should never arrives
+        wxASSERT_MSG(pValueBind != nullptr, wxT("Null pointer")); // Should never arrives
         if (pValueBind != nullptr)
         {
             pValueBind->BindTo(_rstmt, _riIndex++, true, _bForInsertRequest);
@@ -232,10 +232,10 @@ void ETKSQLite3Value::BindTo(wxSQLite3Statement &_rstmt, int &_riIndex, bool _bF
     else if (GetExpressionOrOperationType() == eExpressionRequestSelector)
     {
         ETKSQLite3VariantDataRequestSelector *pRequestSelector = dynamic_cast<ETKSQLite3VariantDataRequestSelector *>(GetVariant().GetData());
-        wxASSERT(pRequestSelector != nullptr); // Should never arrives
+        wxASSERT_MSG(pRequestSelector != nullptr, wxT("null pointer")); // Should never arrives
         if (pRequestSelector != nullptr)
         {
-            pRequestSelector->GetCriterionRequest().BindTo(_rstmt, _riIndex);
+            pRequestSelector->GetCriterionRequest().BindCriterionTo(_rstmt, _riIndex);
         }
     }
 }
@@ -270,6 +270,8 @@ etkString ETKSQLite3Value::GetAsString() const
                 strCriterionAsString = m_Value.GetString();
             }
             // no break, continue! (overwrite in case of date)
+            // Comment used by GCC/Clang indicate it's OK else a warning is generated
+            ETK_FALLTHROUGH
         }
         case eExpressionTypeSQL :
         case eExpressionTypeValue :
@@ -346,7 +348,7 @@ etkString ETKSQLite3Value::GetAsString() const
         case eOperationAddComma :
         case eOperationDistinct :
         {
-            wxASSERT(false);
+            wxASSERT_MSG(false, wxT("Operation not allowed"));
             break;
         }
     }
@@ -474,7 +476,8 @@ ETKSQLite3Expression::ETKSQLite3Expression(eExpressionOrOperationType _expressio
 
 // Copy constructor
 ETKSQLite3Expression::ETKSQLite3Expression(const ETKSQLite3Expression &_rExpression)
-    : m_pExpression1(nullptr)
+    : ETKSQLite3Value(_rExpression)
+    , m_pExpression1(nullptr)
     , m_pExpression2(nullptr)
 #ifdef __WXDEBUG__
     , m_ulCurrentId(++s_ulCurrentCounterId)
@@ -822,9 +825,9 @@ ETKSQLite3Expression ETKSQLite3Expression::Like(const ETKSQLite3Expression &_rEx
 ETKSQLite3Expression ETKSQLite3Expression::In(const ETKSQLite3Expression &_rExpression) const
 {
     // Must be column type
-    wxASSERT(GetExpressionOrOperationType() == eExpressionColumnNameFull);
+    wxASSERT_MSG(GetExpressionOrOperationType() == eExpressionColumnNameFull, wxT("Bad expression type"));
     // Often formatted directly into SQL or selector, If not case, code should be analyzed and be upgraded, making new tests!
-    wxASSERT(_rExpression.GetExpressionOrOperationType() == eExpressionTypeSQL || _rExpression.GetExpressionOrOperationType() == eExpressionRequestSelector);
+    wxASSERT_MSG(_rExpression.GetExpressionOrOperationType() == eExpressionTypeSQL || _rExpression.GetExpressionOrOperationType() == eExpressionRequestSelector, wxT("Bad expression type"));
     if (!_rExpression.IsNull())
     {   // If In is not empty
         return ETKSQLite3Expression(ETKSQLite3Expression::eOperationIn, *this, _rExpression);
@@ -933,6 +936,7 @@ bool ETKSQLite3Expression::CanHaveOrderBy() const
         case eOperationLower :
         case eOperationLowerOrEqual :
         case eOperationEqual :
+        case eOperationExists :
         case eOperationLike :
         case eOperationAs :
         case eOperationAsSelect :
@@ -1013,17 +1017,17 @@ const ETKSQLite3Expression & ETKSQLite3Expression::Add(const ETKSQLite3Expressio
         case eOperationAssignmentInsert :
         {   // All columns name to Expression 1 tree (left tree)
             // All assign to expression 2 tree (right tree)
-            wxASSERT(m_pExpression1 != nullptr);
-            wxASSERT(m_pExpression2 != nullptr);
-            wxASSERT(_rExpression.m_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameOnly);
+            wxASSERT_MSG(m_pExpression1 != nullptr, wxT("Null pointer"));
+            wxASSERT_MSG(m_pExpression2 != nullptr, wxT("Null pointer"));
+            wxASSERT_MSG(_rExpression.m_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameOnly, wxT("Bad expression type"));
             m_pExpression1->Add(*_rExpression.m_pExpression1);
             m_pExpression2->Add(*_rExpression.m_pExpression2);
             break;
         }
         case eOperationAssignmentUpdate :
         {
-            wxASSERT(m_pExpression1 != nullptr);
-            wxASSERT(m_pExpression2 != nullptr);
+            wxASSERT_MSG(m_pExpression1 != nullptr, wxT("Null pointer"));
+            wxASSERT_MSG(m_pExpression2 != nullptr, wxT("Null pointer"));
             m_pExpression2->Add(_rExpression);
             break;
         }
@@ -1046,6 +1050,7 @@ const ETKSQLite3Expression & ETKSQLite3Expression::Add(const ETKSQLite3Expressio
         case eOperationLower :
         case eOperationLowerOrEqual :
         case eOperationEqual :
+        case eOperationExists :
         case eOperationLike :
         case eOperationDifferent :
         case eOperationCount :
@@ -1248,8 +1253,8 @@ void ETKSQLite3Expression::InternalAsStringForNode(etkString & _rstrOperatorAsSt
         }
         case eOperationExists :
         {
-            wxASSERT(!_rstrExpression1.IsEmpty());
-            wxASSERT(_rstrExpression2.IsEmpty());
+            wxASSERT_MSG(!_rstrExpression1.IsEmpty(), wxT("Expression 1 is empty"));
+            wxASSERT_MSG(_rstrExpression2.IsEmpty(), wxT("Expression 2 is not empty"));
             _rstrOperatorAsString.Printf(_T("EXISTS (%s)"), _rstrExpression1.c_str());
             break;
         }
@@ -1362,8 +1367,8 @@ void ETKSQLite3Expression::InternalAsStringForNode(etkString & _rstrOperatorAsSt
                     wxFAIL; // Not allowed
             }
 
-            wxASSERT(!_rstrExpression1.IsEmpty());
-            wxASSERT(!_rstrExpression2.IsEmpty());
+            wxASSERT_MSG(!_rstrExpression1.IsEmpty(), wxT("Expression 1 is not empty"));
+            wxASSERT_MSG(!_rstrExpression2.IsEmpty(), wxT("Expression 2 is not empty"));
             if (   _pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull
                 && _pExpression2->GetExpressionOrOperationType() == eExpressionColumnNameFull
                )
@@ -1378,10 +1383,10 @@ void ETKSQLite3Expression::InternalAsStringForNode(etkString & _rstrOperatorAsSt
         }
         case eOperationIn:
         {   // Must contains one expression of column name type + one SQL formatted expression
-            wxASSERT(!_rstrExpression1.IsEmpty());
-            wxASSERT(!_rstrExpression2.IsEmpty());
-            wxASSERT(_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull);
-            wxASSERT(_pExpression2->GetExpressionOrOperationType() == eExpressionTypeSQL);
+            wxASSERT_MSG(!_rstrExpression1.IsEmpty(), wxT("Expression 1 is empty"));
+            wxASSERT_MSG(!_rstrExpression2.IsEmpty(), wxT("Expression 2 is empty"));
+            wxASSERT_MSG(_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull, wxT("Bad expression 1 type"));
+            wxASSERT_MSG(_pExpression2->GetExpressionOrOperationType() == eExpressionTypeSQL, wxT("Bad expression 1 type"));
             _rstrOperatorAsString.Printf(_T(" %s IN (%s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
@@ -1479,23 +1484,23 @@ void ETKSQLite3Expression::InternalAsStringForNode(etkString & _rstrOperatorAsSt
         }
         case eOperationAssignmentInsert :
         {   // Must contains one expression of column name type + one value or binded data
-            wxASSERT(!_rstrExpression1.IsEmpty());
-            wxASSERT(!_rstrExpression2.IsEmpty());
+            wxASSERT_MSG(!_rstrExpression1.IsEmpty(), wxT("Expression 1 is empty"));
+            wxASSERT_MSG(!_rstrExpression2.IsEmpty(), wxT("Expression 2 is empty"));
             _rstrOperatorAsString.Printf(_T("(%s) VALUES (%s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationAssignmentUpdate :
         {   // Must contains one expression of column name type + one value or binded data
-            wxASSERT(!_rstrExpression1.IsEmpty());
-            wxASSERT(!_rstrExpression2.IsEmpty());
+            wxASSERT_MSG(!_rstrExpression1.IsEmpty(), wxT("Expression 1 is empty"));
+            wxASSERT_MSG(!_rstrExpression2.IsEmpty(), wxT("Expression 2 is empty"));
             // Cannot easily add the SET keyword, don't put it
             _rstrOperatorAsString.Printf(_T("%s=%s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
         case eOperationAndJoin :
         {   // Must contains 2 expressions of JOIN type
-            wxASSERT(!_rstrExpression1.IsEmpty() && _pExpression1->IsJoin());
-            wxASSERT(!_rstrExpression2.IsEmpty() && _pExpression2->IsJoin());
+            wxASSERT_MSG(!_rstrExpression1.IsEmpty() && _pExpression1->IsJoin(), wxT("Expression 1 is not join"));
+            wxASSERT_MSG(!_rstrExpression2.IsEmpty() && _pExpression2->IsJoin(), wxT("Expression 2 is not join"));
             // Cannot easily add the SET keyword, don't put it
             _rstrOperatorAsString.Printf(_T("%s%s"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
@@ -1625,6 +1630,7 @@ ETKSQLite3Expression::tdStringList & ETKSQLite3Expression::UpdateTablesList(tdSt
         case eOperationLower :
         case eOperationLowerOrEqual :
         case eOperationEqual :
+        case eOperationExists :
         case eOperationLike :
         case eOperationAsJoin :
         case eOperationDifferent :
@@ -1699,9 +1705,11 @@ bool ETKSQLite3Expression::IsJoin() const
         case eOperationLower :
         case eOperationLowerOrEqual :
         case eOperationEqual :
+        case eOperationExists :
         case eOperationLike :
         case eOperationAs :
         case eOperationAsSelect :
+        case eOperationAsSelectFrom :
         case eOperationAsJoin : // Not used to detect join sql expression
         case eOperationDifferent :
         case eOperationCount :
@@ -2148,6 +2156,7 @@ ETKSQLite3Criterion::ETKSQLite3Criterion(const ETKSQLite3Expression& _rExpressio
 }
 
 ETKSQLite3Criterion::ETKSQLite3Criterion(const ETKSQLite3Criterion& _rCriterion)
+    : ETKSQLite3Expression(_rCriterion)
 {
     operator=(_rCriterion);
 }
@@ -2512,7 +2521,7 @@ etkString ETKSQLite3Criterion::GetSQL() const
     return strSQLRequest;
 }
 
-void ETKSQLite3Criterion::BindTo(wxSQLite3Statement &_rstmt, int &_riIndex) const
+void ETKSQLite3Criterion::BindCriterionTo(wxSQLite3Statement &_rstmt, int &_riIndex) const
 {
     ETKSQLite3Expression::BindTo(_rstmt, _riIndex, m_eRequestType == eRequestTypeInsert);
     GetWhere().BindTo(_rstmt, _riIndex, m_eRequestType == eRequestTypeInsert);

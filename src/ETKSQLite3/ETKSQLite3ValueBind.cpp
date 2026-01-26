@@ -27,6 +27,13 @@ ETKSQLite3ValueBindBase::ETKSQLite3ValueBindBase()
 {
 }
 
+ETKSQLite3ValueBindBase::ETKSQLite3ValueBindBase(const ETKSQLite3ValueBindBase &_rValueBindBase)
+    : ETKSQLite3::IRefCountImpl<ETKSQLite3ValueBindBase>(_rValueBindBase)
+    , m_bIsNull(false)
+{
+    operator=(_rValueBindBase);
+}
+
 ETKSQLite3ValueBindBase::~ETKSQLite3ValueBindBase()
 {
 }
@@ -149,6 +156,7 @@ ETKSQLite3ValueBind::ETKSQLite3ValueBind(bool *_pBoolValue)
 }
 
 ETKSQLite3ValueBind::ETKSQLite3ValueBind(const ETKSQLite3ValueBind &_rValueBind)
+    : ETKSQLite3ValueBindBase(_rValueBind)
 {
     operator=(_rValueBind);
 }
@@ -261,7 +269,7 @@ void ETKSQLite3ValueBind::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) 
             }
             case eDataTypeInt64 :
             {
-                *m_eDataPtr.m_petkInt64Value = _rResultSet.GetInt64(_iIndex).GetValue();
+                *m_eDataPtr.m_petkInt64Value = etkInt64(_rResultSet.GetInt64(_iIndex).GetValue());
                 break;
             }
             case eDataTypeLong :
@@ -312,6 +320,16 @@ void ETKSQLite3ValueBind::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) 
             case eDataTypeBool :
             {
                 *m_eDataPtr.m_pBool = _rResultSet.GetBool(_iIndex);
+                break;
+            }
+            case eDataTypeDate:
+            {
+                *m_eDataPtr.m_petkDateValue = _rResultSet.GetDate(_iIndex);
+                break;
+            }
+            case eDataTypeTime:
+            {
+                *m_eDataPtr.m_petkTimeValue = _rResultSet.GetTime(_iIndex);
                 break;
             }
         }

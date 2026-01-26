@@ -23,9 +23,15 @@ private:
 
 public:
     wxQLongLong();
-    wxQLongLong(int64_t _i64Value);
+    // int64_t : remove if int64_t is same as long
+    template<typename T = int64_t, std::enable_if_t<!std::is_same_v<T, long>, int> = 0>
+    explicit wxQLongLong(T _i64Value)
+        : m_i64Value(_i64Value)
+    {
+    }
     wxQLongLong(int _iValue);
     wxQLongLong(long _lValue);
+    wxQLongLong(time_t _tValue);
     wxQLongLong(unsigned long _ulValue);
     wxQLongLong(const wxQLongLong &_rValue);
     int64_t GetValue() const;

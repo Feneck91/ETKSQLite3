@@ -21,7 +21,7 @@ wxString CETKSQlite3SampleDatabase::GetSQLDatabaseSchema() const
 
 void CETKSQlite3SampleDatabase::ExecuteConfigAfterOpenOrCreate()
 {
-    wxASSERT_MSG(IsOpened(),wxT("Database is not opened!"));
+    wxASSERT_MSG(IsOpened(), wxT("Database is not opened!"));
     if (IsOpened())
     {   // Activate synchronous = OFF or other configuration
         //GetDatabase()->ExecuteUpdate("PRAGMA cache_size=500000;");

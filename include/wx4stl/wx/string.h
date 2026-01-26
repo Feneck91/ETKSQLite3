@@ -66,6 +66,7 @@ public:
     EXPORT_IMPORT size_t              Length() const;
     EXPORT_IMPORT char                operator[](int _iPosition) const;
     EXPORT_IMPORT wxString &          operator<<(const wxString &_rstrString);
+    EXPORT_IMPORT wxString&           operator=(const wxString &) = default;
     EXPORT_IMPORT operator const char *() const;
     EXPORT_IMPORT int                 Len() const;
     EXPORT_IMPORT void                ToLong(long *_pLong) const;

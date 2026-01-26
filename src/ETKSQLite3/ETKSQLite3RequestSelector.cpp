@@ -100,8 +100,10 @@ wxSQLite3ResultSet ETKSQLite3RequestSelector::ExecuteQuery()
     return resultSet;
 }
 
-int ETKSQLite3RequestSelector::Execute(bool _bWithTransaction)
+int ETKSQLite3RequestSelector::Execute(bool _bLogError, bool _bDisplayMsgBox, bool _bWithTransaction)
 {
+    wxUnusedVar(_bLogError);
+    wxUnusedVar(_bDisplayMsgBox);
     wxUnusedVar(_bWithTransaction);
     wxString strErrorMessage(wxT("ETKSQLite3RequestSelector::Execute() must never call(have no sense)!"));
     wxFAIL_MSG(strErrorMessage);

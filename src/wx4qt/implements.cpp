@@ -37,7 +37,7 @@ template<> void ETKSQLite3ValueBindOther<qint64>::BindTo(wxSQLite3Statement &_rs
 
 template<> void ETKSQLite3ValueBindOther<qint64>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetInt64(_iIndex).GetValue();
 }
 
@@ -50,7 +50,7 @@ template<> void ETKSQLite3ValueBindOther<QString>::BindTo(wxSQLite3Statement &_r
 
 template<> void ETKSQLite3ValueBindOther<QString>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetAsString(_iIndex);
 }
 
@@ -76,7 +76,7 @@ template<> void ETKSQLite3ValueBindOther<QTime>::BindTo(wxSQLite3Statement &_rst
 
 template<> void ETKSQLite3ValueBindOther<QTime>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetTime(_iIndex).time();
 }
 
@@ -89,6 +89,6 @@ template<> void ETKSQLite3ValueBindOther<QDateTime>::BindTo(wxSQLite3Statement &
 
 template<> void ETKSQLite3ValueBindOther<QDateTime>::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) const
 {
-    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex),wxT("BindFrom must not be called on null column!"));
+    wxASSERT_MSG(!_rResultSet.IsNull(_iIndex), wxT("BindFrom must not be called on null column!"));
     *m_pDataPtr = _rResultSet.GetDateTime(_iIndex);
 }

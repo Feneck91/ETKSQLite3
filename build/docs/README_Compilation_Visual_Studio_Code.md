@@ -7,11 +7,11 @@ This will explain how to compile **ETKSQLite3** with *Visual Studio Code* to com
   - CMake Tools (Microsoft)
 
 ## Download libraries
-  - **ETKSQLite3**. You need to get **ETKSqlite3** library. Download using tag to get stable version.
-    - Download [ETKSqlite3](https://github.com/Feneck91/ETKSqlite3) library from Github and decompress all source code in a folder (example **ETKSQLite3**).
-    - You can also use git clone https://github.com/Feneck91/ETKSqlite3.git
+  - **ETKSQLite3**. You need to get **ETKSQLite3** library. Download using tag to get stable version.
+    - Download [ETKSqlite3](https://github.com/Feneck91/ETKSQLite3) library from Github and decompress all source code in a folder (example **ETKSQLite3**).
+    - You can also use git clone https://github.com/Feneck91/ETKSQLite3.git
   - **wxsqlite3** is a C++ wrapper around the public domain **SQLite 3.x** database and is specifically designed for use in programs based on the **wxWidgets** library. This library is written by **Ulrich Telle**.
-    - Download [wxSQLite3](https://github.com/utelle/wxsqlite3) library from Github and decompress all source code in a folder (example **ETKSQLite3/wxSQLite3**).
+    - Download [wxSQLite3](https://github.com/utelle/wxsqlite3) library from Github and decompress all source code in a folder (example **wxsqlite3**).
     - You can also use git clone https://github.com/utelle/wxsqlite3.git
   - **sqlite3** is the SQLite3 database. No need to download it, the sqlite3 amalgamation code is downloaded with **wxSQLite3** library.
       - But, If you want to see this library, you can alsa download it from [SQLite3](https://github.com/sqlite/sqlite)
@@ -38,18 +38,18 @@ Here, the configure failed but the file ETKSQLite3/build/[build you choose]/CMak
       It indicate: **CMake Cache Editor**.
       Select and choose **only one** target:<br/>
 
-      |       Key       |           Value                               |              New Value              | Note                                                         |
-      |-----------------|-----------------------------------------------|-------------------------------------|--------------------------------------------------------------|
-      | WXSQLITE3_DIR   | Path where wxsqlite3 is installed (mandatory) | ../../wxSQLite3                     | This is MANDATORY! Where you download wxSQLite3 library      |
-      | wxETKSQLite3    | OFF                                           | ON                                  | Activate compilation for ETKSQLite3 for wxWidgets            |
-      | qtETKSQLite3    | OFF                                           | ON                                  | Activate compilation for ETKSQLite3 for Qt                   |
-      | stlETKSQLite3   | OFF                                           | ON                                  | Activate compilation for ETKSQLite3 for STL                  |
+      |       Key       |           Value                               |        New Value        | Note                                                            |
+      |-----------------|-----------------------------------------------|-------------------------|-----------------------------------------------------------------|
+      | WXSQLITE3_DIR   | Path where wxsqlite3 is installed (mandatory) | ../../wxSQLite3         | This is MANDATORY! Where you download wxSQLite3 library         |
+      | ETK_ENABLE_WX   | OFF                                           | ON                      | Activate compilation for ETKSQLite3 for wxWidgets (wxETKSQLite3 |
+      | ETK_ENABLE_QT   | OFF                                           | ON                      | Activate compilation for ETKSQLite3 for Qt (qtETKSQLite3)       |
+      | ETK_ENABLE_STL  | OFF                                           | ON                      | Activate compilation for ETKSQLite3 for STL (stlETKSQLite3)     |
 
-  - wxETKSQLite3 for ETKSQLite3 is choose
+  - wxETKSQLite3 for ETKSQLite3 is choose (**ETK_ENABLE_WX** entry)
     > [cmake] CMake Error at CMakeLists.txt:361 (message):<br/>
     > [cmake]   find_wxwidgets_auto requires ROOT_DIR=<path to wxWidgets><br/>
     You must install wxWidgets
-  - qtETKSQLite3 for ETKSQLite3 is choose
+  - qtETKSQLite3 for ETKSQLite3 is choose (**ETK_ENABLE_QT** entry)
     > [cmake] CMake Error at CMakeLists.txt:92 (message):<br/>
     > [cmake]   Neither Qt5 nor Qt6 found.
     If Qt is not detected, you will probably need to add **CMAKE_INSTALL_PREFIX** path.<br/>
@@ -60,6 +60,8 @@ Here, the configure failed but the file ETKSQLite3/build/[build you choose]/CMak
         |          Key          |           Value               |           New Value           | Note                                                                            |
         |-----------------------|-------------------------------|-------------------------------|---------------------------------------------------------------------------------|
         | CMAKE_INSTALL_PREFIX  | C:/Program Files/ETKSQLite3   | C:/Qt6/6.10.1/msvc2022_64     | Where QT is installed for wanted target C:/Qt6/6.10.1/msvc2022_64 or mingw_64   |
+
+  - stlETKSQLite3 for ETKSQLite3 is choose (**ETK_ENABLE_STL** entry)
 
 Before Configure again, you should choice more options:<br/>
 <br/>

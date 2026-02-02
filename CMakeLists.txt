@@ -17,53 +17,30 @@ project(ETKSQLite3
 # ============================================================
 # Build options
 # ============================================================
-option(BUILD_SHARED_LIBS                "Build as shared library"                       ON)
-option(ETK_ENABLE_QT                    "Enable Qt backend"                             OFF)
-option(ETK_ENABLE_WX                    "Enable wxWidgets backend"                      OFF)
-option(ETK_ENABLE_STL                   "Enable STL backend"                            OFF)
-option(USE_QT6                          "Use Qt6 instead of Qt5"                        ON)
+option(BUILD_SHARED_LIBS                "Build as shared library"                       ON)     # Static / Dynamic library
+option(ETK_ENABLE_QT                    "Enable Qt backend"                             OFF)    # Enable STK build on Qt
+option(ETK_ENABLE_WX                    "Enable wxWidgets backend"                      OFF)    # Enable STK build on wxWidgets
+option(ETK_ENABLE_STL                   "Enable STL backend"                            OFF)    # Enable STK build on STL base
+option(BUILD_TESTS "Build the test suite"                                               OFF)    # Activate tests if needed
+if(ETK_ENABLE_QT)
+    option(USE_QT6                      "Use Qt6 instead of Qt5"                        ON)     # If QT5 / QT6 are detected, allow to use Qt6 instead of Qt5
+else()
+endif()
 
 # =============================================================================
 # SQLite Configuration Options
 # =============================================================================
-# Feature toggles (ON/OFF)
-option(SQLITE_ENABLE_COLUMN_METADATA    "Enable column metadata support"                ON)
-option(SQLITE_ENABLE_JSON1              "Enable JSON1 extension"                        OFF)
-option(SQLITE_ENABLE_FTS3               "Enable FTS3 (Full-Text Search) extension"      ON)
-option(SQLITE_ENABLE_FTS4               "Enable FTS4 extension"                         OFF)
-option(SQLITE_ENABLE_FTS5               "Enable FTS5 extension"                         OFF)
-option(SQLITE_ENABLE_RTREE              "Enable RTREE (R*-tree) extension"              OFF)
-option(SQLITE_ENABLE_GEOPOLY            "Enable GEOPOLY (geopolymer) extension"         OFF)
+# SQLite3 feature toggles (ON/OFF)
 option(SQLITE_ENABLE_SESSION            "Enable Session extension"                      ON)
 option(SQLITE_ENABLE_MATH_FUNCTIONS     "Enable math functions"                         OFF)
 option(SQLITE_ENABLE_MONOTONIC_CLOCK    "Enable Monotonic Clock extension"              OFF)
 option(SQLITE_ENABLE_DBSTAT_VTAB        "Enable dbstat virtual table"                   OFF)
-option(SQLITE_ENABLE_EXPLAIN_COMMENTS   "Enable EXPLAIN comments"                       OFF)
 option(SQLITE_ENABLE_STMTVTAB           "Enable stmt virtual tables"                    OFF)
 option(SQLITE_ENABLE_UNLOCK_NOTIFY      "Enable unlock notify"                          OFF)
 option(SQLITE_ENABLE_SERIALIZE          "Enable database serialization"                 OFF)
-option(SQLITE_ENABLE_DESERIALIZE        "Enable database deserialization"               OFF)
+# wxSQLite3 feature toggles (ON/OFF)
 option(wxUSE_REGEX                      "Use regex in wxSQLite3"                        OFF)
 option(wxUSE_THREADS                    "Use threads in wxSQLite3"                      OFF)
-option(SQLITE_THREADSAFE                ""                                              OFF)
-option(SQLITE_MAX_ATTACHED              ""                                              OFF)
-option(SQLITE_DQS                       ""                                              OFF)
-option(SQLITE_SOUNDEX                   ""                                              OFF)
-option(SQLITE_SECURE_DELETE             ""                                              OFF)
-option(SQLITE_ENABLE_FTS3_PARENTHESIS   ""                                              OFF)
-option(SQLITE_CORE                      ""                                              OFF)
-option(SQLITE_ENABLE_EXTFUNC            ""                                              OFF)
-option(SQLITE_ENABLE_CSV                ""                                              OFF)
-option(SQLITE_ENABLE_VSV                ""                                              OFF)
-option(SQLITE_ENABLE_SHA3               ""                                              OFF)
-option(SQLITE_ENABLE_CARRAY             ""                                              OFF)
-option(SQLITE_ENABLE_FILEIO             ""                                              OFF)
-option(SQLITE_ENABLE_SERIES             ""                                              OFF)
-option(SQLITE_ENABLE_UUID               ""                                              OFF)
-option(SQLITE_ENABLE_REGEXP             ""                                              OFF)
-option(SQLITE_TEMP_STORE                ""                                              OFF)
-option(SQLITE_USE_URI                   ""                                              OFF)
-option(SQLITE_USER_AUTHENTICATION       ""                                              OFF)
 
 # -----------------------------------------------------------------------------
 # C++ compilation settings
@@ -71,12 +48,11 @@ option(SQLITE_USER_AUTHENTICATION       ""                                      
 set(CMAKE_CXX_STANDARD                  11)
 set(CMAKE_CXX_STANDARD_REQUIRED         ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE     ON)
-	
+
 if(MSVC)
     add_compile_options(/W4 /permissive-)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     add_definitions(-D_WIN32_WINNT=0x0601)
-
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
     add_compile_options(-Wno-error=overloaded-virtual)
@@ -89,7 +65,7 @@ endif()
 set(WXSQLITE3_DIR "Path to wxSQLite3" CACHE PATH "Path to wxSQLite3 root")
 
 if(NOT EXISTS "${WXSQLITE3_DIR}")
-    message(FATAL_ERROR "wxSQLite3 path does not exist: ${WXSQLITE3_DIR}")
+    message(FATAL_ERROR "WXSQLITE3_DIR path does not exist: ${WXSQLITE3_DIR}")
 endif()
 
 # =============================================================================
@@ -102,20 +78,26 @@ else()
     set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Installation directory for ETKSQLite3 (Linux/macOS)")
 endif()
 
-# ============================================================
+# =============================================================================
 # Qt detection
-# ============================================================
-if(ETK_ENABLE_QT)
-    if(USE_QT6)
-        find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
-        set(QT_TARGET Qt6::Widgets)
-        set(QT_MAJOR_VERSION 6)
-        message(STATUS "Using Qt6")
+#
+# Check and display options for QT5 / QT6 - Function to detect and configure Qt
+# =============================================================================
+if (ETK_ENABLE_QT)
+    # Check if Qt6 is available
+    find_package(Qt6 QUIET COMPONENTS Core)
+
+    # Check if Qt5 is available
+    find_package(Qt5 QUIET COMPONENTS Widgets)
+
+    # If both versions are available, let the user choose
+    if(Qt6_FOUND AND Qt5_FOUND)
+        if(NOT DEFINED USE_QT6)
+            # Option to choose between Qt5 and Qt6
+            option(USE_QT6 "Use Qt6 instead of Qt5" OFF)
+        endif()
     else()
-        find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
-        set(QT_TARGET Qt5::Widgets)
-        set(QT_MAJOR_VERSION 5)
-        message(STATUS "Using Qt5")
+        unset(USE_QT6 CACHE)  # Remove option from CMake cache
     endif()
 endif()
 
@@ -273,19 +255,18 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_WX)
             list(APPEND INCLUDES ${wxWidgets_INCLUDE_DIRS})
         elseif(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_QT)
-            # Detect Qt version
-            if(USE_QT6)
-                find_package(Qt6 COMPONENTS Core QUIET)
-            endif()
             if(USE_QT6 AND Qt6_FOUND)
                 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
                 set(QT_MAJOR_VERSION 6)
                 set(QT_LIBS Qt6::Core Qt6::Widgets)
+                message(STATUS "Using Qt6")
             else()
                 find_package(Qt5 COMPONENTS Core REQUIRED)
                 set(QT_MAJOR_VERSION 5)
                 set(QT_LIBS Qt5::Core Qt5::Widgets)
+                message(STATUS "Using Qt5")
             endif()
+
             list(APPEND SOURCES ${QT_SOURCE_FILES})
             list(APPEND HEADERS ${QT_HEADER_FILES})
             list(APPEND INCLUDES include/wx4qt)
@@ -309,43 +290,43 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
 
         # Define multithreading
         target_compile_definitions(${LIB_NAME} PRIVATE ETKSQLite3_USE_THREADS=1
-                                                       $<$<BOOL:${SQLITE_ENABLE_COLUMN_METADATA}>:SQLITE_ENABLE_COLUMN_METADATA=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_JSON1}>:SQLITE_ENABLE_JSON1=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_FTS3}>:SQLITE_ENABLE_FTS3=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_FTS4}>:SQLITE_ENABLE_FTS4=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_FTS5}>:SQLITE_ENABLE_FTS5=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_RTREE}>:SQLITE_ENABLE_RTREE=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_GEOPOLY}>:SQLITE_ENABLE_GEOPOLY=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_SESSION}>:SQLITE_ENABLE_SESSION=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_MATH_FUNCTIONS}>:SQLITE_ENABLE_MATH_FUNCTIONS=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_MONOTONIC_CLOCK}>:SQLITE_ENABLE_MONOTONIC_CLOCK=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_DBSTAT_VTAB}>:SQLITE_ENABLE_DBSTAT_VTAB=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_EXPLAIN_COMMENTS}>:SQLITE_ENABLE_EXPLAIN_COMMENTS=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_STMTVTAB}>:SQLITE_ENABLE_STMTVTAB=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_UNLOCK_NOTIFY}>:SQLITE_ENABLE_UNLOCK_NOTIFY=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_SERIALIZE}>:SQLITE_ENABLE_SERIALIZE=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_DESERIALIZE}>:SQLITE_ENABLE_DESERIALIZE=1>
                                                        $<$<BOOL:${wxUSE_REGEX}>:wxUSE_REGEX=1>
                                                        $<$<BOOL:${wxUSE_THREADS}>:wxUSE_THREADS=1>
-                                                       $<$<BOOL:${SQLITE_THREADSAFE}>:SQLITE_THREADSAFE=1>
-                                                       $<$<BOOL:${SQLITE_MAX_ATTACHED}>:SQLITE_MAX_ATTACHED=10>
-                                                       $<$<BOOL:${SQLITE_DQS}>:SQLITE_DQS=1>
-                                                       $<$<BOOL:${SQLITE_SOUNDEX}>:SQLITE_SOUNDEX=1>
-                                                       $<$<BOOL:${SQLITE_SECURE_DELETE}>:SQLITE_SECURE_DELETE=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_FTS3_PARENTHESIS}>:SQLITE_ENABLE_FTS3_PARENTHESIS=1>
-                                                       $<$<BOOL:${SQLITE_CORE}>:SQLITE_CORE=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_EXTFUNC}>:SQLITE_ENABLE_EXTFUNC=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_CSV}>:SQLITE_ENABLE_CSV=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_VSV}>:SQLITE_ENABLE_VSV=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_SHA3}>:SQLITE_ENABLE_SHA3=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_CARRAY}>:SQLITE_ENABLE_CARRAY=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_FILEIO}>:SQLITE_ENABLE_FILEIO=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_SERIES}>:SQLITE_ENABLE_SERIES=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_UUID}>:SQLITE_ENABLE_UUID=1>
-                                                       $<$<BOOL:${SQLITE_ENABLE_REGEXP}>:SQLITE_ENABLE_REGEXP=1>
-                                                       $<$<BOOL:${SQLITE_TEMP_STORE}>:SQLITE_TEMP_STORE=2>
-                                                       $<$<BOOL:${SQLITE_USE_URI}>:SQLITE_USE_URI=1>
-                                                       $<$<BOOL:${SQLITE_USER_AUTHENTICATION}>:SQLITE_USER_AUTHENTICATION=1>
+                                                       SQLITE_THREADSAFE=1
+                                                       SQLITE_MAX_ATTACHED=10
+                                                       SQLITE_DQS=1
+                                                       SQLITE_ENABLE_EXPLAIN_COMMENTS=1
+                                                       SQLITE_SOUNDEX=1
+                                                       SQLITE_ENABLE_COLUMN_METADATA=1
+                                                       SQLITE_SECURE_DELETE=1
+                                                       SQLITE_ENABLE_DESERIALIZE=1
+                                                       SQLITE_ENABLE_FTS3=1
+                                                       SQLITE_ENABLE_FTS3_PARENTHESIS=1
+                                                       SQLITE_ENABLE_FTS4=1
+                                                       SQLITE_ENABLE_FTS5=1
+                                                       SQLITE_ENABLE_JSON1=1
+                                                       SQLITE_ENABLE_RTREE=1
+                                                       SQLITE_ENABLE_GEOPOLY=1
+                                                       SQLITE_CORE=1
+                                                       SQLITE_ENABLE_EXTFUNC=1
+                                                       SQLITE_ENABLE_CSV=1
+                                                       SQLITE_ENABLE_VSV=1
+                                                       SQLITE_ENABLE_SHA3=1
+                                                       SQLITE_ENABLE_CARRAY=1
+                                                       SQLITE_ENABLE_FILEIO=1
+                                                       SQLITE_ENABLE_SERIES=1
+                                                       SQLITE_ENABLE_UUID=1
+                                                       SQLITE_ENABLE_REGEXP=1
+                                                       SQLITE_TEMP_STORE=2
+                                                       SQLITE_USE_URI=1
+                                                       SQLITE_USER_AUTHENTICATION=1
         )
         if(FRAMEWORK_FLAG STREQUAL ETK_ENABLE_WX)
             target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_WXWIDGETS)
@@ -361,6 +342,7 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         else()
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif()
+        
         # =============================================================================
         # Copy result to bin / lib
         # =============================================================================
@@ -383,12 +365,12 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
                                "$<TARGET_FILE:${LIB_NAME}>"
                                "${DESTINATION_DIR_BIN}/$<CONFIG>/")
             set(BUILD_SHARED_LIBS_TYPE SHARED)
-            message("Create shared library ${framework}")
-            add_definitions(-DMAKING_ETK_SQLITE3_SHARED)
+            target_compile_definitions(${LIB_NAME} PRIVATE MAKING_ETK_SQLITE3_SHARED=1)
+            message(STATUS "Create shared library ${FRAMEWORK_NAME}")
         else()
             set(BUILD_SHARED_LIBS_TYPE STATIC)
-            message("Create static library ${framework}")
-            add_definitions(-DMAKING_ETK_SQLITE3_LIB)
+            target_compile_definitions(${LIB_NAME} PRIVATE MAKING_ETK_SQLITE3_LIB=1)
+            message(STATUS "Create static library ${FRAMEWORK_NAME}")
         endif()
     endif()
 endfunction()

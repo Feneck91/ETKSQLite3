@@ -27,9 +27,6 @@
     #error The wxSQLite3 must be compiled with SQLITE_ENABLE_COLUMN_METADATA flag to make ETKSQLite3 works
 #endif
 
-// Defines that can be used
-// #define WXMAKINGDLL_WXSQLITE3
-
 #if defined(_WIN32) && !defined(__WIN32__)
     #define __WIN32__
 #endif

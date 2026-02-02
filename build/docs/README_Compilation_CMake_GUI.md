@@ -5,16 +5,16 @@ This will explain how to compile **ETKSQLite3** with *CMake* to compile it with 
 *CMake* and *CMakeUI* (optional) must be installed on target to allow to generate makefles. 
 
 ## Download libraries
-  - **ETKSQLite3**. You need to get **ETKSqlite3** library. Download using tag to get stable version.
-    - Download [ETKSqlite3](https://github.com/Feneck91/ETKSqlite3) library from Github and decompress all source code in a folder (example **ETKSQLite3**).
-    - You can also use git clone https://github.com/Feneck91/ETKSqlite3.git
+  - **ETKSQLite3**. You need to get **ETKSQLite3** library. Download using tag to get stable version.
+    - Download [ETKSqlite3](https://github.com/Feneck91/ETKSQLite3) library from Github and decompress all source code in a folder (example **ETKSQLite3**).
+    - You can also use git clone https://github.com/Feneck91/ETKSQLite3.git
   - **wxsqlite3** is a C++ wrapper around the public domain **SQLite 3.x** database and is specifically designed for use in programs based on the **wxWidgets** library. This library is written by **Ulrich Telle**.
-    - Download [wxSQLite3](https://github.com/utelle/wxsqlite3) library from Github and decompress all source code in a folder (example **ETKSQLite3/wxSQLite3**).
+    - Download [wxSQLite3](https://github.com/utelle/wxsqlite3) library from Github and decompress all source code in a folder (example **wxsqlite3**).
     - You can also use git clone https://github.com/utelle/wxsqlite3.git
   - **sqlite3** is the SQLite3 database. No need to download it, the sqlite3 amalgamation code is downloaded with **wxSQLite3** library.
       - But, If you want to see this library, you can alsa download it from [SQLite3](https://github.com/sqlite/sqlite)
 
-If you use git clone, you must switch the repository to correct branch / tag.
+**If you use git clone, you must switch the repository to correct branch / tag.**
 
 ## Run CMake
 
@@ -25,33 +25,32 @@ The *CMakeLists.txt* that contains the informations to generate the library samp
 <br/>
 |               CMake               |             Fill (example)             |                                            Note                                             |
 |-----------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------|
-| Where is the source code          | ETKSqlite3                             |  For example in <i>c:/dev/lib/ETKSqlite3</i>                                                |
-| Where to build the binaries       | ETKSqlite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
+| Where is the source code          | ETKSQLite3                             |  For example in <i>c:/dev/lib/ETKSQLite3</i>                                                |
+| Where to build the binaries       | ETKSQLite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
 <br/>
 Clic on Configure button, choose your compiler, then an error occurs:
 
 > CMake Error at CMakeLists.txt:636 (message):<br/>
 > No target type for ETKSQLite3 is selected. You must activate at least<br/>
-> wxETKSQLite3, qtETKSQLite3 or stlETKSQLite3.<br/>
+> ETK_ENABLE_WX, ETK_ENABLE_QT or ETK_ENABLE_STL.<br/>
 
 Here, the WXSQLITE3_DIR is mandatory, it is the framework base code of ETKSQLite3.
 
 |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
 |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
-| WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxSQLite3                  | For example but where you download wxSQLite3 library                                        |
+| WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxsqlite3                  | For example but where you download wxSQLite3 library                                        |
 
 You must choose the target:
-- **wxETKSQLite3** for ETKSQLite3 based on wxWidgets<br/>
-- **qtETKSQLite3** for ETKSQLite3 based on Qt
+- **wxETKSQLite3** for ETKSQLite3 based on wxWidgets (**ETK_ENABLE_WX** entry)<br/>
+- **qtETKSQLite3** for ETKSQLite3 based on Qt (**ETK_ENABLE_QT** entry)
   If Qt is not detected, you will probably need to add CMAKE_INSTALL_PREFIX path.<br/>
   
   |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
   |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
   | CMAKE_INSTALL_PREFIX              | PATH       | C:/Qt6/6.10.1/msvc2022_64             | Where QT is installed for wanted target  <i>C:/Qt6/6.10.1/msvc2022_64 or mingw_64</i>       |
-- **stlETKSQLite3** for ETKSQLite3 based on C++ STL
-<br/>
+- **stlETKSQLite3** for ETKSQLite3 based on C++ STL (**ETK_ENABLE_STL** entry)<br/>
+
 Before Configure again, you should choice more options:<br/>
-<br/>
 
 |            CMake entry            | Entry type |                 Value                 |                                 Note                                |
 |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------|

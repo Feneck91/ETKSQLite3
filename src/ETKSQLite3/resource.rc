@@ -9,10 +9,10 @@
 /* ETKSQLITE3_STRINGIZE works as the preprocessor # operator but also works with macros */
 #define ETKSQLITE3_STRINGIZE_HELPER(x)  #x
 #define ETKSQLITE3_STRINGIZE(x)         ETKSQLITE3_STRINGIZE_HELPER(x)
- 
+
 #define ETKSQLITE3_MAKE_VERSION_DOT_STRING(x, y, z, w) \
   ETKSQLITE3_STRINGIZE(x) "." ETKSQLITE3_STRINGIZE(y) "." ETKSQLITE3_STRINGIZE(z) "." ETKSQLITE3_STRINGIZE(w)
- 
+
 #define ETKSQLITE3_VERSION_NUM_DOT_STRING \
   ETKSQLITE3_MAKE_VERSION_DOT_STRING(ETKSQLITE3_MAJOR_VERSION, ETKSQLITE3_MINOR_VERSION, ETKSQLITE3_RELEASE_NUMBER, ETKSQLITE3_SUBRELEASE_NUMBER)
 
@@ -45,12 +45,12 @@ BEGIN
   BEGIN
     BLOCK LANG_WITH_CHARSET
     BEGIN
-      VALUE "Comments", "ETKSQLite3 - SQLite3 database wrapper around wxSQLite3 for wxWidgets / Qt / Boost applications"
+      VALUE "Comments", "ETKSQLite3 - SQLite3 database wrapper around wxSQLite3 for wxWidgets / Qt / STL applications"
       VALUE "CompanyName", "ETKSQLite3 Development Team"
       VALUE "FileDescription", "ETKSQLite3"
       VALUE "FileVersion", ETKSQLITE3_VERSION_NUM_DOT_STRING
       VALUE "InternalName", ETKSQLITE3_DLLNAME
-      VALUE "LegalCopyright", "Copyright (C) 2025, Stéphane Château"
+      VALUE "LegalCopyright", "Copyright (C) 2026, Stéphane Château"
       VALUE "OriginalFilename", ETKSQLITE3_DLLNAME
       VALUE "ProductName", "ETKSQLite3"
       VALUE "ProductVersion", ETKSQLITE3_VERSION_NUM_DOT_STRING

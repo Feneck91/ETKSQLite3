@@ -22,12 +22,6 @@
     #else
         #define ETKSQLITE3_DLLNAME      "qtETKSQLite3.dll"
     #endif
-#elif ETK_SQLITE3_USE_BOOST
-    #ifdef __ETKSQLITE3_DEBUG__
-        #define ETKSQLITE3_DLLNAME      "boostETKSQLite3d.dll"
-    #else
-        #define ETKSQLITE3_DLLNAME      "boostETKSQLite3.dll"
-    #endif
 #elif ETK_SQLITE3_USE_STL
     #ifdef __ETKSQLITE3_DEBUG__
         #define ETKSQLITE3_DLLNAME      "stlETKSQLite3d.dll"

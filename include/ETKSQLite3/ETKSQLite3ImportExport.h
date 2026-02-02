@@ -35,14 +35,17 @@
             #ifdef USING_ETK_SQLITE3_LIB_SHARED
                 // Same as USING_ETK_SQLITE3_LIB, liked in static lib but all result is exported
                 #define     WXMAKINGDLL_WXSQLITE3
-                #define     EXPORT_IMPORT           __declspec(dllexport)
+                #define     EXPORT_IMPORT           WXEXPORT
+                #define     SQLITE_API              WXEXPORT
             #else
                 #ifdef MAKING_ETK_SQLITE3_SHARED
                     #define     WXMAKINGDLL_WXSQLITE3
-                    #define     EXPORT_IMPORT       __declspec(dllexport)
+                    #define     EXPORT_IMPORT       WXEXPORT
+                    #define     SQLITE_API          WXEXPORT
                 #else
                     #define     WXUSINGDLL_WXSQLITE3
-                    #define     EXPORT_IMPORT       __declspec(dllimport)
+                    #define     EXPORT_IMPORT       WXIMPORT
+                    #define     SQLITE_API          WXIMPORT
                 #endif
             #endif
         #endif

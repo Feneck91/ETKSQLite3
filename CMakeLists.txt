@@ -147,6 +147,13 @@ set(ETKSQLITE3_SOURCES
 )
 
 # =============================================================================
+# Define resource file
+# =============================================================================
+set(ETKSQLITE3_RC_FILES
+    src/ETKSQLite3/resource.rc
+)
+
+# =============================================================================
 # Define Qt specific header files (wrappers)
 # =============================================================================
 set(QT_HEADER_FILES
@@ -251,6 +258,11 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         set(SOURCES ${ETKSQLITE3_SOURCES})
         set(HEADERS ${ETKSQLITE3_HEADERS})
         set(INCLUDES include/ETKSQLite3 ${WXSQLITE3_DIR}/include ${WXSQLITE3_DIR}/src)
+        if(BUILD_SHARED_LIBS)
+            set(RC_FILES ${ETKSQLITE3_RC_FILES})
+        else()
+            set(RC_FILES "")
+        endif()
 
         if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_WX)
             list(APPEND INCLUDES ${wxWidgets_INCLUDE_DIRS})
@@ -266,7 +278,6 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
                 set(QT_LIBS Qt5::Core Qt5::Widgets)
                 message(STATUS "Using Qt5")
             endif()
-
             list(APPEND SOURCES ${QT_SOURCE_FILES})
             list(APPEND HEADERS ${QT_HEADER_FILES})
             list(APPEND INCLUDES include/wx4qt)
@@ -277,8 +288,28 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         else()
             message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${FRAMEWORK_FLAG} is selected but not supported. Error into CMake file!")
         endif()
+
+        # Create Hierarchy
+        source_group(
+            TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
+            PREFIX "Source Files"
+            FILES ${SOURCES}
+        )
+        source_group(
+            TREE ${CMAKE_CURRENT_SOURCE_DIR}/include
+            PREFIX "Header Files"
+            FILES ${HEADERS}
+        )
+        if(BUILD_SHARED_LIBS)
+            source_group(
+                TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
+                PREFIX "Resource Files"
+                FILES ${RC_FILES}
+            )
+        endif()
+
         # Create library
-        add_library(${LIB_NAME} ${SOURCES} ${HEADERS})
+        add_library(${LIB_NAME} ${SOURCES} ${RC_FILE} ${HEADERS} ${RC_FILES})
 
         # Include directories
         target_include_directories(${LIB_NAME} PUBLIC ${INCLUDES})
@@ -328,12 +359,14 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
                                                        SQLITE_USE_URI=1
                                                        SQLITE_USER_AUTHENTICATION=1
         )
-        if(FRAMEWORK_FLAG STREQUAL ETK_ENABLE_WX)
-            target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_WXWIDGETS)
-        elseif(FRAMEWORK_FLAG STREQUAL ETK_ENABLE_QT)
-            target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_QT)
-        elseif(FRAMEWORK_FLAG STREQUAL ETK_ENABLE_STL)
-            target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_STL)
+        # Set ETK_SQLITE3_USE_WXWIDGETS / ETK_SQLITE3_USE_QT / ETK_SQLITE3_USE_STL
+        # Used with rc file to compute dll name
+        if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_WX)
+            target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_WXWIDGETS=1)
+        elseif(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_QT)
+            target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_QT=1)
+        elseif(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_STL)
+            target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_STL=1)
         endif()
 
         # Define suffix depending of library type
@@ -372,6 +405,18 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             target_compile_definitions(${LIB_NAME} PRIVATE MAKING_ETK_SQLITE3_LIB=1)
             message(STATUS "Create static library ${FRAMEWORK_NAME}")
         endif()
+
+        # To use find_package(ETKSQLite3 REQUIRED)
+        # Export target
+        # install(TARGETS ${LIB_NAME}
+                # EXPORT ETKSQLite3Targets
+                # ARCHIVE DESTINATION lib
+                # LIBRARY DESTINATION lib
+                # RUNTIME DESTINATION bin
+                # INCLUDES DESTINATION include)
+        # install(DIRECTORY include
+                # DESTINATION include
+                # FILES_MATCHING PATTERN "*.h")
     endif()
 endfunction()
 

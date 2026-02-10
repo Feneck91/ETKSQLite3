@@ -2,11 +2,6 @@ cmake_minimum_required(VERSION 3.29...3.31)
 project(qtETKSQLite3Sample)
 
 # =============================================================================
-# Ask to user the path where wxsqlite3 is installed
-# =============================================================================
-set(WXSQLITE3_DIR           "../../wxsqlite3" CACHE PATH      "Installation path of wxsqlite3")
-
-# =============================================================================
 # Custom build step for <files>.ws3
 # =============================================================================
 function(generate_ws3 in_ws3)
@@ -105,13 +100,11 @@ source_group(
 # =============================================================================
 # Generate files .h from .ui
 # =============================================================================
-set(UI_FILES
-    qtetksqlite3sample.ui
-)
+
 qt5_wrap_ui(UI_HEADERS ${UI_FILES})
 
 source_group(
-    TREE ${CMAKE_CURRENT_SOURCE_DIR}
+    TREE ${CMAKE_CURRENT_BINARY_DIR}
     PREFIX "ui Generated Files"
     FILES ${UI_HEADERS}
 )

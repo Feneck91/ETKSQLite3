@@ -21,10 +21,52 @@ option(BUILD_SHARED_LIBS                "Build as shared library"               
 option(ETK_ENABLE_QT                    "Enable Qt backend"                             OFF)    # Enable STK build on Qt
 option(ETK_ENABLE_WX                    "Enable wxWidgets backend"                      OFF)    # Enable STK build on wxWidgets
 option(ETK_ENABLE_STL                   "Enable STL backend"                            OFF)    # Enable STK build on STL base
-option(BUILD_TESTS "Build the test suite"                                               OFF)    # Activate tests if needed
+option(BUILD_SAMPLES                    "Build the samples"                             OFF)    # Activate samples if needed
+option(BUILD_TESTS                      "Build the test suite"                          OFF)    # Activate tests if needed
 if(ETK_ENABLE_QT)
     option(USE_QT6                      "Use Qt6 instead of Qt5"                        ON)     # If QT5 / QT6 are detected, allow to use Qt6 instead of Qt5
-else()
+endif()
+
+# =============================================================================
+# Define installation folder
+# =============================================================================
+
+# Default CMake original value
+set(_default_prefix "${CMAKE_BINARY_DIR}/install")
+
+# Si CMake a initialisé la variable avec sa valeur par défaut
+# (ou si elle est vide)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR CMAKE_INSTALL_PREFIX STREQUAL "")
+    set(CMAKE_INSTALL_PREFIX "${_default_prefix}" CACHE PATH "Installation directory for ETKSQLite3" FORCE)
+endif()
+message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
+
+# -----------------------------------------------------------------------------
+# Auto-detect wxSQLite3 directory (sibling of ETKSQLite3)
+# -----------------------------------------------------------------------------
+set(WXSQLITE3_DIR "Path to wxSQLite3" CACHE PATH "Path to wxSQLite3 root")
+if(NOT EXISTS "${WXSQLITE3_DIR}")
+    get_filename_component(_ETK_PARENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" DIRECTORY)
+    set(_WXSQLITE3_CANDIDATE "${_ETK_PARENT_DIR}/wxsqlite3")
+    if(   EXISTS "${_WXSQLITE3_CANDIDATE}/src/sqlite3mc_amalgamation.c"
+       OR EXISTS "${_WXSQLITE3_CANDIDATE}/src/sqlite3mc_amalgamation.h"
+       OR EXISTS "${_WXSQLITE3_CANDIDATE}/src/wxsqlite3.cpp")
+        set(WXSQLITE3_DIR "${_WXSQLITE3_CANDIDATE}" CACHE PATH "Path to wxSQLite3 root directory" FORCE)
+
+        message(STATUS "WXSQLITE3_DIR auto-detected: ${WXSQLITE3_DIR}")
+    endif()
+endif()
+
+# Final validation
+if(NOT DEFINED WXSQLITE3_DIR OR NOT EXISTS "${WXSQLITE3_DIR}")
+    get_filename_component(_ETK_PARENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" DIRECTORY)
+    message(FATAL_ERROR
+        "WXSQLITE3_DIR not set and wxSQLite3 was not found next to ETKSQLite3.\n"
+        "Expected layout:\n"
+        "  ${_ETK_PARENT_DIR}/\n"
+        "    ├─ ETKSQLite3/\n"
+        "    └─ wxsqlite3/\n"
+        "Or define WXSQLITE3_DIR manually.")
 endif()
 
 # =============================================================================
@@ -57,25 +99,6 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
     add_compile_options(-Wno-error=overloaded-virtual)
     add_compile_options(-Wno-error=deprecated-copy)
-endif()
-
-# -----------------------------------------------------------------------------
-# wxSQLite3 path
-# -----------------------------------------------------------------------------
-set(WXSQLITE3_DIR "Path to wxSQLite3" CACHE PATH "Path to wxSQLite3 root")
-
-if(NOT EXISTS "${WXSQLITE3_DIR}")
-    message(FATAL_ERROR "WXSQLITE3_DIR path does not exist: ${WXSQLITE3_DIR}")
-endif()
-
-# =============================================================================
-# Define installation folder
-# =============================================================================
-if (MSVC)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Installation directory for ETKSQLite3 (Windows)")
-else()
-    # Linux/macOS, keep default
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Installation directory for ETKSQLite3 (Linux/macOS)")
 endif()
 
 # =============================================================================
@@ -309,7 +332,7 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         endif()
 
         # Create library
-        add_library(${LIB_NAME} ${SOURCES} ${RC_FILE} ${HEADERS} ${RC_FILES})
+        add_library(${LIB_NAME} ${SOURCES} ${RC_FILE} ${HEADERS})
 
         # Include directories
         target_include_directories(${LIB_NAME} PUBLIC ${INCLUDES})
@@ -363,10 +386,13 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         # Used with rc file to compute dll name
         if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_WX)
             target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_WXWIDGETS=1)
+            add_library(ETKSQLite3::Wx ALIAS wxETKSQLite3)
         elseif(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_QT)
             target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_QT=1)
+            add_library(ETKSQLite3::Qt ALIAS qtETKSQLite3)
         elseif(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_STL)
             target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_STL=1)
+            add_library(ETKSQLite3::Stl ALIAS stlETKSQLite3)
         endif()
 
         # Define suffix depending of library type
@@ -405,18 +431,6 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             target_compile_definitions(${LIB_NAME} PRIVATE MAKING_ETK_SQLITE3_LIB=1)
             message(STATUS "Create static library ${FRAMEWORK_NAME}")
         endif()
-
-        # To use find_package(ETKSQLite3 REQUIRED)
-        # Export target
-        # install(TARGETS ${LIB_NAME}
-                # EXPORT ETKSQLite3Targets
-                # ARCHIVE DESTINATION lib
-                # LIBRARY DESTINATION lib
-                # RUNTIME DESTINATION bin
-                # INCLUDES DESTINATION include)
-        # install(DIRECTORY include
-                # DESTINATION include
-                # FILES_MATCHING PATTERN "*.h")
     endif()
 endfunction()
 
@@ -432,6 +446,57 @@ add_framework_library(ETK_ENABLE_STL stlETKSQLite3)
 # -----------------------------------------------------------------------------
 if(NOT ETK_ENABLE_WX AND NOT ETK_ENABLE_QT AND NOT ETK_ENABLE_STL)
     message(FATAL_ERROR "You must enable at least one of ETK_ENABLE_WX, ETK_ENABLE_QT, ETK_ENABLE_STL!")
+endif()
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
+    INSTALL_DESTINATION lib/cmake/ETKSQLite3
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+set(ETKSQLITE3_INSTALL_TARGETS "")
+if(TARGET wxETKSQLite3)
+    list(APPEND ETKSQLITE3_INSTALL_TARGETS wxETKSQLite3)
+endif()
+
+if(TARGET qtETKSQLite3)
+    list(APPEND ETKSQLITE3_INSTALL_TARGETS qtETKSQLite3)
+endif()
+
+if(TARGET stlETKSQLite3)
+    list(APPEND ETKSQLITE3_INSTALL_TARGETS stlETKSQLite3)
+endif()
+
+install(
+    DIRECTORY include/ETKSQLite3
+    DESTINATION include
+)
+
+install(
+    TARGETS ${ETKSQLITE3_INSTALL_TARGETS}
+    EXPORT ETKSQLite3Targets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
+    DESTINATION lib/cmake/ETKSQLite3
+)
+
+if(BUILD_SAMPLES)
+    add_subdirectory(samples)
 endif()
 
 message(STATUS "ETKSQLite3 configured successfully")

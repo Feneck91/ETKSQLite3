@@ -459,9 +459,17 @@ function(make_install)
         )
     endif()
 
-    install(
-        DIRECTORY include/ETKSQLite3
-        DESTINATION include
+    #=======================================
+    # Install wxsqlite3
+    # sqlite3 amalgamation headers
+    install(FILES
+        "${WXSQLITE3_DIR}/src/sqlite3mc_amalgamation.h"
+        DESTINATION include/wxsqlite3
+    )
+    # wxsqlite3 headers
+    install(DIRECTORY "${WXSQLITE3_DIR}/include/wx"
+        DESTINATION include/wxsqlite3
+        FILES_MATCHING PATTERN "*.h"
     )
 
     #=======================================
@@ -477,21 +485,25 @@ function(make_install)
 
     #=======================================
     # Copy bin / lib
-    install(
-        TARGETS ${ETKSQLITE3_INSTALL_TARGETS}
-        EXPORT ETKSQLite3Targets
-        ARCHIVE DESTINATION lib/${PLATFORM_DIR}/$<CONFIG>
-        LIBRARY DESTINATION lib/${PLATFORM_DIR}/$<CONFIG>
-        RUNTIME DESTINATION bin/${PLATFORM_DIR}/$<CONFIG>
+    install(TARGETS ${ETKSQLITE3_INSTALL_TARGETS}
+            EXPORT ETKSQLite3Targets
+            ARCHIVE DESTINATION lib/${PLATFORM_DIR}/$<CONFIG>
+            LIBRARY DESTINATION lib/${PLATFORM_DIR}/$<CONFIG>
+            RUNTIME DESTINATION bin/${PLATFORM_DIR}/$<CONFIG>
     )
 
     #=======================================
     # Install cmake
-    install(
-        FILES
+    install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
-        DESTINATION lib/cmake/ETKSQLite3
+            DESTINATION lib/cmake/ETKSQLite3
+    )
+    
+    # Export targets for build tree
+    export(EXPORT ETKSQLite3Targets
+           FILE "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Targets.cmake"
+           NAMESPACE ETKSQLite3::
     )
 
 endfunction()

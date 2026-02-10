@@ -11,6 +11,8 @@ option(USE_QT6                      "Use Qt6 instead of Qt5"                    
 # =============================================================================
 # Cherche la config générée par l'installation d'ETKSQLite3
 # Tu peux ajouter un hint vers ton build/install si nécessaire
+#set(ETKSQLite3_DIR "C:/local/ETKSQLite3/build.vc17/install/lib/cmake/ETKSQLite3")
+set(ETKSQLite3_DIR "C:/local/ETKSQLite3/build.vc17/install")
 find_package(ETKSQLite3 REQUIRED CONFIG PATHS
     "${CMAKE_CURRENT_SOURCE_DIR}/../../build" # build tree
     "${CMAKE_CURRENT_SOURCE_DIR}/../../install" # install tree
@@ -55,55 +57,9 @@ endif()
 set(CMAKE_AUTOMOC ON)
 
 # =============================================================================
-# Custom build step for <files>.ws3
-# =============================================================================
-function(generate_ws3 in_ws3)
-    get_filename_component(base ${in_ws3} NAME_WE)
-    # Compute and create generated ws3 directory
-    set(GENERATED_WS3_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated_ws3")
-    file(MAKE_DIRECTORY ${GENERATED_WS3_DIR})
-    # Compute 2 generated files path
-    set(out_cpp "${GENERATED_WS3_DIR}/${base}.cpp")
-    set(out_h  "${GENERATED_WS3_DIR}/${base}.h")
-
-    add_custom_command(
-        OUTPUT  "${out_cpp}"
-                "${out_h}"
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../../build/Win32/Lua52.exe"
-                "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/compile_ws3.lua"
-                "${in_ws3}" qt "${out_h}" "${out_cpp}"
-        DEPENDS "${in_ws3}"
-                "${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/compile_ws3.lua"
-        COMMENT "Compiling ws3 database ${in_ws3} -> ${out_cpp}, ${out_h}"
-        VERBATIM
-    )
-    # Indicate the files are generated
-    set_source_files_properties("${out_cpp}" "${out_h}" PROPERTIES GENERATED TRUE)
-
-    # Expose generated files to parent scope (append to existing lists)
-    if(NOT DEFINED GENERATED_WS3_FILES)
-        set(GENERATED_WS3_FILES "")
-    endif()
-    if(NOT DEFINED GENERATED_WS3_SOURCES)
-        set(GENERATED_WS3_SOURCES "")
-    endif()
-    if(NOT DEFINED GENERATED_WS3_HEADERS)
-        set(GENERATED_WS3_HEADERS "")
-    endif()
-    list(APPEND GENERATED_WS3_FILES   "${in_ws3}")
-    list(APPEND GENERATED_WS3_SOURCES "${out_cpp}")
-    list(APPEND GENERATED_WS3_HEADERS "${out_h}")
-
-    set(GENERATED_WS3_FILES   ${GENERATED_WS3_FILES}   PARENT_SCOPE)
-    set(GENERATED_WS3_SOURCES ${GENERATED_WS3_SOURCES} PARENT_SCOPE)
-    set(GENERATED_WS3_HEADERS ${GENERATED_WS3_HEADERS} PARENT_SCOPE)
-    set(GENERATED_WS3_DIR     ${GENERATED_WS3_DIR}     PARENT_SCOPE)
-endfunction()
-
-# =============================================================================
 # Generate ws3 files
 # =============================================================================
-generate_ws3("${CMAKE_CURRENT_SOURCE_DIR}/Database.ws3")
+ETKSQLite3_generate_ws3("${CMAKE_CURRENT_SOURCE_DIR}/Database.ws3")
 
 # =============================================================================
 # Files
@@ -165,8 +121,8 @@ source_group(
 )
 
 source_group(
-    TREE ${CMAKE_CURRENT_BINARY_DIR}
-    PREFIX "Generated/ws3"
+    TREE ${GENERATED_WS3_DIR}
+    PREFIX "ws3 Generated Files"
     FILES
         ${GENERATED_WS3_SOURCES}
         ${GENERATED_WS3_HEADERS}

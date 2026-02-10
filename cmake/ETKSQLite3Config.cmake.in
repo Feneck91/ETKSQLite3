@@ -1,3 +1,10 @@
 @PACKAGE_INIT@
 
+# Include targets first
 include("${CMAKE_CURRENT_LIST_DIR}/ETKSQLite3Targets.cmake")
+
+# Include Tools functions
+include("${CMAKE_CURRENT_LIST_DIR}/tools.cmake")
+
+# Generate alias
+set(ETKSQLite3_generate_ws3 generate_ws3)

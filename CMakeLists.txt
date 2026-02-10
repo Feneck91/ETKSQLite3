@@ -403,27 +403,9 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         endif()
         
         # =============================================================================
-        # Copy result to bin / lib
+        # Set MAKING_ETK_SQLITE3_SHARED / MAKING_ETK_SQLITE3_LIB
         # =============================================================================
         if(BUILD_SHARED_LIBS)
-            # Copy dll / so files into bin/ directory
-            if (WIN32)
-                # Define ouput folder for windows
-                set(DESTINATION_DIR_BIN "${CMAKE_CURRENT_SOURCE_DIR}/build/bin/win32")
-            else()
-                # Define ouput folder for linux
-                set(DESTINATION_DIR_BIN "${CMAKE_CURRENT_SOURCE_DIR}/build/bin/linux")
-            endif()
-            # Create destination folder if it doesn't exits
-            file(MAKE_DIRECTORY "${DESTINATION_DIR_BIN}")
-            add_custom_command(TARGET ${LIB_NAME} POST_BUILD
-                               COMMAND ${CMAKE_COMMAND} -E make_directory
-                               "${DESTINATION_DIR_BIN}/$<CONFIG>/")
-            add_custom_command(TARGET ${LIB_NAME} POST_BUILD
-                               COMMAND ${CMAKE_COMMAND} -E copy
-                               "$<TARGET_FILE:${LIB_NAME}>"
-                               "${DESTINATION_DIR_BIN}/$<CONFIG>/")
-            set(BUILD_SHARED_LIBS_TYPE SHARED)
             target_compile_definitions(${LIB_NAME} PRIVATE MAKING_ETK_SQLITE3_SHARED=1)
             message(STATUS "Create shared library ${FRAMEWORK_NAME}")
         else()
@@ -432,6 +414,86 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             message(STATUS "Create static library ${FRAMEWORK_NAME}")
         endif()
     endif()
+endfunction()
+
+# -----------------------------------------------------------------------------
+# Function than make the installation
+# -----------------------------------------------------------------------------
+function(make_install)
+    include(CMakePackageConfigHelpers)
+
+    configure_package_config_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
+        INSTALL_DESTINATION lib/cmake/ETKSQLite3
+    )
+
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
+
+    set(ETKSQLITE3_INSTALL_TARGETS "")
+    if(TARGET wxETKSQLite3)
+        list(APPEND ETKSQLITE3_INSTALL_TARGETS wxETKSQLite3)
+    endif()
+
+    #=======================================
+    # Install includes
+    if(TARGET qtETKSQLite3)
+        list(APPEND ETKSQLITE3_INSTALL_TARGETS qtETKSQLite3)
+        #  Specific for Qt: copy wx4qt
+        install(DIRECTORY include/wx4qt
+                DESTINATION include
+                FILES_MATCHING PATTERN "*.h"
+        )
+    endif()
+
+    if(TARGET stlETKSQLite3)
+        list(APPEND ETKSQLITE3_INSTALL_TARGETS stlETKSQLite3)
+        # Specific for STL: copy wx4stl
+        install(DIRECTORY include/wx4stl
+                DESTINATION include
+                FILES_MATCHING PATTERN "*.h"
+        )
+    endif()
+
+    install(
+        DIRECTORY include/ETKSQLite3
+        DESTINATION include
+    )
+
+    #=======================================
+    # Compute bin / lib destinations
+    set(PLATFORM_DIR "")
+    if(WIN32)
+        set(PLATFORM_DIR "win32")
+    elseif(UNIX AND NOT APPLE)
+        set(PLATFORM_DIR "linux")
+    elseif(APPLE)
+        set(PLATFORM_DIR "macos")
+    endif()
+
+    #=======================================
+    # Copy bin / lib
+    install(
+        TARGETS ${ETKSQLITE3_INSTALL_TARGETS}
+        EXPORT ETKSQLite3Targets
+        ARCHIVE DESTINATION lib/${PLATFORM_DIR}/$<CONFIG>
+        LIBRARY DESTINATION lib/${PLATFORM_DIR}/$<CONFIG>
+        RUNTIME DESTINATION bin/${PLATFORM_DIR}/$<CONFIG>
+    )
+
+    #=======================================
+    # Install cmake
+    install(
+        FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
+        DESTINATION lib/cmake/ETKSQLite3
+    )
+
 endfunction()
 
 # -----------------------------------------------------------------------------
@@ -448,52 +510,10 @@ if(NOT ETK_ENABLE_WX AND NOT ETK_ENABLE_QT AND NOT ETK_ENABLE_STL)
     message(FATAL_ERROR "You must enable at least one of ETK_ENABLE_WX, ETK_ENABLE_QT, ETK_ENABLE_STL!")
 endif()
 
-include(CMakePackageConfigHelpers)
-
-configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
-    INSTALL_DESTINATION lib/cmake/ETKSQLite3
-)
-
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
-)
-
-set(ETKSQLITE3_INSTALL_TARGETS "")
-if(TARGET wxETKSQLite3)
-    list(APPEND ETKSQLITE3_INSTALL_TARGETS wxETKSQLite3)
-endif()
-
-if(TARGET qtETKSQLite3)
-    list(APPEND ETKSQLITE3_INSTALL_TARGETS qtETKSQLite3)
-endif()
-
-if(TARGET stlETKSQLite3)
-    list(APPEND ETKSQLITE3_INSTALL_TARGETS stlETKSQLite3)
-endif()
-
-install(
-    DIRECTORY include/ETKSQLite3
-    DESTINATION include
-)
-
-install(
-    TARGETS ${ETKSQLITE3_INSTALL_TARGETS}
-    EXPORT ETKSQLite3Targets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-)
-
-install(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
-    DESTINATION lib/cmake/ETKSQLite3
-)
+# -----------------------------------------------------------------------------
+# Make installation
+# -----------------------------------------------------------------------------
+make_install()
 
 if(BUILD_SAMPLES)
     add_subdirectory(samples)

@@ -150,7 +150,7 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         else()
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif()
-        
+
         # =============================================================================
         # Set MAKING_ETK_SQLITE3_SHARED / MAKING_ETK_SQLITE3_LIB
         # =============================================================================
@@ -182,19 +182,18 @@ function(lua_install)
 endfunction()
 
 # -----------------------------------------------------------------------------
-# Function for lua install
+# Function to setup Tools interface target for clients
 # -----------------------------------------------------------------------------
 function(tools_functions_install)
     # Target INTERFACE to expose CMake functions to customers
     add_library(ETKSQLite3Tools INTERFACE)
 
     # The folder that contains tools.cmake for Build and install
-    target_include_directories(ETKSQLite3Tools INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cmake> $<INSTALL_INTERFACE:lib/cmake/ETKSQLite3>)
-    #target_include_directories(ETKSQLite3Tools INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cmake> $<INSTALL_INTERFACE:cmake>)
+    target_include_directories(ETKSQLite3Tools INTERFACE $<INSTALL_INTERFACE:lib/cmake/ETKSQLite3>)
 
     # Alias public for the namespace ETKSQLite3::Tools
     add_library(ETKSQLite3::Tools ALIAS ETKSQLite3Tools)
-    
+
     # Export target for installation
     install(TARGETS ETKSQLite3Tools EXPORT ETKSQLite3ToolsTargets)
 
@@ -202,15 +201,15 @@ function(tools_functions_install)
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scripts" DESTINATION .)
 endfunction()
 
-
 # -----------------------------------------------------------------------------
-# Function than make the installation
+# Function to install ETKSQLite3 library, headers, targets and config files
+# This is the main "install" logic used after building ETKSQLite3
 # -----------------------------------------------------------------------------
 function(make_install)
     include(CMakePackageConfigHelpers)
 
     #=======================================
-    # Configure package config files
+    # Configure the package config files
     configure_package_config_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
@@ -224,47 +223,29 @@ function(make_install)
     )
 
     #=======================================
-    # Collect targets to install
+    # Collect library targets to install
     set(ETKSQLITE3_INSTALL_TARGETS "")
     if(TARGET wxETKSQLite3)
         list(APPEND ETKSQLITE3_INSTALL_TARGETS wxETKSQLite3)
     endif()
-
-    #=======================================
-    # Install includes
     if(TARGET qtETKSQLite3)
         list(APPEND ETKSQLITE3_INSTALL_TARGETS qtETKSQLite3)
-        #  Specific for Qt: copy wx4qt
-        install(DIRECTORY include/wx4qt
-                DESTINATION include
-                FILES_MATCHING PATTERN "*.h"
-        )
+        # Install Qt-specific headers (wx4qt)
+        install(DIRECTORY include/wx4qt DESTINATION include FILES_MATCHING PATTERN "*.h")
     endif()
-
     if(TARGET stlETKSQLite3)
         list(APPEND ETKSQLITE3_INSTALL_TARGETS stlETKSQLite3)
-        # Specific for STL: copy wx4stl
-        install(DIRECTORY include/wx4stl
-                DESTINATION include
-                FILES_MATCHING PATTERN "*.h"
-        )
+        # Install STL-specific headers (wx4stl)
+        install(DIRECTORY include/wx4stl DESTINATION include FILES_MATCHING PATTERN "*.h")
     endif()
 
-    #=======================================
-    # Install wxsqlite3
-    # sqlite3 amalgamation headers
-    install(FILES
-        "${WXSQLITE3_DIR}/src/sqlite3mc_amalgamation.h"
-        DESTINATION include/wxsqlite3
-    )
-    # wxsqlite3 headers
-    install(DIRECTORY "${WXSQLITE3_DIR}/include/wx"
-        DESTINATION include/wxsqlite3
-        FILES_MATCHING PATTERN "*.h"
-    )
+    #====================================================
+    # Install wxsqlite3 headers + SQLIte3 (amalgamation)
+    install(FILES "${WXSQLITE3_DIR}/src/sqlite3mc_amalgamation.h" DESTINATION include/wxsqlite3)
+    install(DIRECTORY "${WXSQLITE3_DIR}/include/wx" DESTINATION include/wxsqlite3 FILES_MATCHING PATTERN "*.h")
 
-    #=======================================
-    # Compute bin / lib destinations
+    #====================================================
+    # Compute platform-specific subfolders for lib/bin
     set(PLATFORM_DIR "")
     if(WIN32)
         set(PLATFORM_DIR "win32")
@@ -274,8 +255,8 @@ function(make_install)
         set(PLATFORM_DIR "macos")
     endif()
 
-    #===============================================
-    # Install main library targets (bin / lib)
+    #=======================================
+    # Install the main library targets (archive, shared, runtime)
     install(TARGETS ${ETKSQLITE3_INSTALL_TARGETS}
             EXPORT ETKSQLite3Targets
             ARCHIVE DESTINATION lib/${PLATFORM_DIR}/$<CONFIG>
@@ -284,7 +265,7 @@ function(make_install)
     )
 
     #=======================================
-    # Install cmake config files
+    # Install the CMake config files
     install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake
@@ -292,30 +273,30 @@ function(make_install)
     )
 
     #=======================================
-    # Install lua
+    # Install exported targets for clients (namespace ETKSQLite3::)
     install(EXPORT ETKSQLite3Targets
             NAMESPACE ETKSQLite3::
             DESTINATION lib/cmake/ETKSQLite3
     )
 
-    #=======================================
-    # Export targets for build tree
+    #====================================================================================
+    # Export targets for the build tree (optional, for developers building ETKSQLite3)
     export(EXPORT ETKSQLite3Targets
            FILE "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Targets.cmake"
            NAMESPACE ETKSQLite3::
     )
 
-    #=======================================
-    # Install Tools interface target for clients
+    #=====================================================
+    # Install the Tools interface target and its scripts
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools.cmake" DESTINATION lib/cmake/ETKSQLite3)
     install(EXPORT ETKSQLite3ToolsTargets NAMESPACE ETKSQLite3:: DESTINATION lib/cmake/ETKSQLite3)
-    
-    #==================================================
-    # Create a root "shortcut" ETKSQLite3Config.cmake
-    # The bad indentation is normal, for write
+
+    #=======================================
+    # Create a root config file for easier find_package
+    # This file just includes the "real" installed ETKSQLite3Config.cmake
     file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigRoot.cmake"
 "#
-# This is a root config file that just includes the real one
+# Root config file for ETKSQLite3
 #
 include(\"\${CMAKE_CURRENT_LIST_DIR}/lib/cmake/ETKSQLite3/ETKSQLite3Config.cmake\")"
     )

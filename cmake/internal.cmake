@@ -10,7 +10,7 @@
 # *****************************************************************************
 
 # -----------------------------------------------------------------------------
-# Helper to choose the backend
+# Helper to create ETKSQLite3 library depending on backend
 # -----------------------------------------------------------------------------
 function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
     if(${FRAMEWORK_FLAG})
@@ -49,7 +49,8 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${FRAMEWORK_FLAG} is selected but not supported. Error into CMake file!")
         endif()
 
-        # Create Hierarchy
+        # ------------------------------
+        # Create source groups for IDE
         source_group(
             TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
             PREFIX "Source Files"
@@ -68,30 +69,34 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             )
         endif()
 
-        # Create library
-        add_library(${LIB_NAME} ${SOURCES} ${RC_FILE} ${HEADERS})
+        # ------------------------------
+        # Create the library
+        add_library(${LIB_NAME} ${SOURCES} ${RC_FILES} ${HEADERS})
 
-        # Include directories - Transform INCLUDES for BUILD_INTERFACE / INSTALL_INTERFACE
+        # ---------------------------------------
+        # Include directories: build vs install
         set(BUILD_INCLUDES "")
         set(INSTALL_INCLUDES "")
         foreach(inc ${INCLUDES})
             if(IS_ABSOLUTE ${inc})
-                # If it is an absolute path (ex: WXSQLITE3_DIR), only use BUILD_INTERFACE
+                # Absolute paths (wxWidgets, wxsqlite3) only for build
                 list(APPEND BUILD_INCLUDES "$<BUILD_INTERFACE:${inc}>")
             else()
-                # Else it is a relative path from source dir -> BUILD and INSTALL interface
+                # Relative paths from source dir: build + install
                 list(APPEND BUILD_INCLUDES   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${inc}>")
                 list(APPEND INSTALL_INCLUDES "$<INSTALL_INTERFACE:${inc}>")
             endif()
         endforeach()
         target_include_directories(${LIB_NAME} PUBLIC ${BUILD_INCLUDES} ${INSTALL_INCLUDES})
 
+        # -------------------------------
         # Link Qt if needed
         if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_QT)
             target_link_libraries(${LIB_NAME} PRIVATE ${QT_LIBS})
         endif()
 
-        # Define multithreading
+        # ---------------------------------------------
+        # Compile definitions (threads, sqlite options)
         target_compile_definitions(${LIB_NAME} PRIVATE ETKSQLite3_USE_THREADS=1
                                                        $<$<BOOL:${SQLITE_ENABLE_SESSION}>:SQLITE_ENABLE_SESSION=1>
                                                        $<$<BOOL:${SQLITE_ENABLE_MATH_FUNCTIONS}>:SQLITE_ENABLE_MATH_FUNCTIONS=1>
@@ -131,6 +136,9 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
                                                        SQLITE_USE_URI=1
                                                        SQLITE_USER_AUTHENTICATION=1
         )
+
+        # ----------------------------------------
+        # Framework-specific compile defs + alias
         # Set ETK_SQLITE3_USE_WXWIDGETS / ETK_SQLITE3_USE_QT / ETK_SQLITE3_USE_STL
         # Used with rc file to compute dll name
         if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_WX)
@@ -144,16 +152,17 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             add_library(ETKSQLite3::Stl ALIAS stlETKSQLite3)
         endif()
 
-        # Define suffix depending of library type
+        # -------------------------------
+        # Define library suffix
         if(BUILD_SHARED_LIBS)
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
         else()
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif()
 
-        # =============================================================================
-        # Set MAKING_ETK_SQLITE3_SHARED / MAKING_ETK_SQLITE3_LIB
-        # =============================================================================
+        # -------------------------------
+        # Set MAKING_ETK_SQLITE3_* definitions
+        # -------------------------------
         if(BUILD_SHARED_LIBS)
             target_compile_definitions(${LIB_NAME} PRIVATE MAKING_ETK_SQLITE3_SHARED=1)
             message(STATUS "Create shared library ${FRAMEWORK_NAME}")
@@ -245,6 +254,10 @@ function(make_install)
     install(DIRECTORY "${WXSQLITE3_DIR}/include/wx" DESTINATION include/wxsqlite3 FILES_MATCHING PATTERN "*.h")
 
     #====================================================
+    # Install public headers of ETKSQLite3 itself
+    install(DIRECTORY include/ETKSQLite3 DESTINATION include FILES_MATCHING PATTERN "*.h")
+
+    #====================================================
     # Compute platform-specific subfolders for lib/bin
     set(PLATFORM_DIR "")
     if(WIN32)
@@ -288,8 +301,12 @@ function(make_install)
 
     #=====================================================
     # Install the Tools interface target and its scripts
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools.cmake" DESTINATION lib/cmake/ETKSQLite3)
-    install(EXPORT ETKSQLite3ToolsTargets NAMESPACE ETKSQLite3:: DESTINATION lib/cmake/ETKSQLite3)
+    install(FILES
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools.cmake"
+            DESTINATION lib/cmake/ETKSQLite3)
+    install(EXPORT ETKSQLite3ToolsTargets
+            NAMESPACE ETKSQLite3::
+            DESTINATION lib/cmake/ETKSQLite3)
 
     #=======================================
     # Create a root config file for easier find_package

@@ -197,6 +197,9 @@ function(tools_functions_install)
     
     # Export target for installation
     install(TARGETS ETKSQLite3Tools EXPORT ETKSQLite3ToolsTargets)
+
+    # Export lua script for installation
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scripts" DESTINATION .)
 endfunction()
 
 

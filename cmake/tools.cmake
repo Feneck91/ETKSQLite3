@@ -12,22 +12,34 @@
 # =============================================================================
 # Custom build step reusableAPI for <files>.ws3
 # =============================================================================
-function(ETKSQLite3_generate_ws3 in_ws3)
-    get_filename_component(base ${in_ws3} NAME_WE)
+function(ETKSQLite3_generate_ws3 ws3_file)
+    get_filename_component(base ${ws3_file} NAME_WE)
 
+    #==================================================
     # Compute and create generated ws3 directory
     set(GENERATED_WS3_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated_ws3")
     file(MAKE_DIRECTORY ${GENERATED_WS3_DIR})
 
+    #==================================================
     # Compute 2 generated files path
     set(out_cpp "${GENERATED_WS3_DIR}/${base}.cpp")
     set(out_h  "${GENERATED_WS3_DIR}/${base}.h")
 
+    #==================================================
     # Find Lua installed
     if(NOT TARGET ETKSQLite3::Lua)
         message(FATAL_ERROR "ETKSQLite3::Lua target not found. Make sure you called find_package(ETKSQLite3).")
     endif()
     get_target_property(LUA_EXE ETKSQLite3::Lua IMPORTED_LOCATION)
+
+    #==================================================
+    # Find Lua script
+    # Directory where this tools.cmake is installed
+    get_filename_component(_ETKSQLITE3_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
+
+    # Root install prefix (lib/cmake/ETKSQLite3 -> go up 3 levels)
+    get_filename_component(_ETKSQLITE3_PREFIX "${_ETKSQLITE3_CMAKE_DIR}/../.." ABSOLUTE)
+    set(ETKSQLite3_SCRIPTS_DIR "${_ETKSQLITE3_PREFIX}/scripts")
 
     # Custom command to generate files
     add_custom_command(OUTPUT  "${out_cpp}" "${out_h}"
@@ -53,7 +65,7 @@ function(ETKSQLite3_generate_ws3 in_ws3)
         set(GENERATED_WS3_HEADERS "")
     endif()
     
-    list(APPEND GENERATED_WS3_FILES   "${in_ws3}")
+    list(APPEND GENERATED_WS3_FILES   "${ws3_file}")
     list(APPEND GENERATED_WS3_SOURCES "${out_cpp}")
     list(APPEND GENERATED_WS3_HEADERS "${out_h}")
 

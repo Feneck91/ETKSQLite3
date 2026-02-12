@@ -47,6 +47,13 @@ int wxDate::GetYear() const
     return m_year;
 }
 
+void wxDate::operator=(const wxDateTime &_rDateTime)
+{
+    m_day   = _rDateTime.GetDay();
+    m_month = _rDateTime.GetMonth();
+    m_year  = _rDateTime.GetYear();
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                       //
@@ -72,6 +79,13 @@ int wxTime::GetMinute() const
 int wxTime::GetSecond() const
 {
     return m_second;
+}
+
+void wxTime::operator=(const wxDateTime &_rDateTime)
+{
+    m_hour   = _rDateTime.GetHour();
+    m_minute = _rDateTime.GetMinute();
+    m_second = _rDateTime.GetSecond();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////

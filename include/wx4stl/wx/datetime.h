@@ -39,6 +39,7 @@
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+class wxDateTime;
 class EXPORT_IMPORT wxDate
 {
 public:
@@ -47,6 +48,8 @@ public:
     int GetDay() const;
     int GetMonth() const;
     int GetYear() const;
+
+    void operator=(const wxDateTime &_rDateTime);
 
 private:
     int m_day;
@@ -69,6 +72,8 @@ public:
     int GetHour() const;
     int GetMinute() const;
     int GetSecond() const;
+
+    void operator=(const wxDateTime &_rDateTime);
 
 private:
     int m_hour;

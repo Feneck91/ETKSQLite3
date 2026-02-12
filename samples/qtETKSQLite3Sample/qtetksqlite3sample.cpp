@@ -224,6 +224,7 @@ void qtETKSQLite3Sample::OnCreateDatabase()
             recordItem.SetPrice(499.99);
             inserterItems.ExecuteWithoutTransaction();
             qint64 qi64RowIDComputer = inserterItems.GetLastRowId();
+            wxUnusedVar(qi64RowIDComputer);
 
             // Item : short
             recordItem.SetName("Short");

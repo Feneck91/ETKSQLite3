@@ -744,7 +744,7 @@ if (#arg ~= 4) then
     lReturn = -1
 else
     local strTemplateHeaderFile,strTemplateSourceFile,strWS3Content,bOk
-    local strWS3Hash,strHHash,strCPPHash -- for hash computation
+    local bGenerateHash, strWS3Hash,strHHash,strCPPHash = false -- for hash computation, disabled no more used with CMAKE and depends
     local strFileNameWS3,strFileNameH,strFileNameCPP = arg[1],arg[3],arg[4]
     local bGenerateH,bGenerateCPP = true,true
     local bFind,strContentType -- General variable, for all needed
@@ -819,7 +819,7 @@ else
 
     -------------------------------------------------------------------
     -- Check Hash of each file to know if they need to be re-generated
-    if (string.len(strError) == 0) then
+    if (bGenerateHash and string.len(strError) == 0) then
         local strtmpWS3Content = sha2.hash256(strWS3Content .. VERSION) -- If version is changed, re-build all
 
         strWS3Hash = GetFileContent(RemoveExtension(strFileNameWS3) .. ".hash")
@@ -1961,15 +1961,19 @@ else
             strCPPContent = string.gsub(strCPPContent,"$FILENAME_CPP%$",GetFileName(strFileNameCPP))
 
             -- Compute hash key
-            if (bGenerateH) then
-                strHHash = sha2.hash256(strHContent)
+            if (bGenerateHash) then
+                if (bGenerateH) then
+                    strHHash = sha2.hash256(strHContent)
+                end
+                if (bGenerateCPP) then
+                    strCPPHash = sha2.hash256(strCPPContent)
+                end
+                
+                -- Write new Hash keys
+                WriteFileContent(RemoveExtension(strFileNameWS3) .. ".hash",strWS3Hash .. "\n" .. strHHash .. "\n" .. strCPPHash)
             end
-            if (bGenerateCPP) then
-                strCPPHash = sha2.hash256(strCPPContent)
-            end
-            -- Write new Hash keys
-            WriteFileContent(RemoveExtension(strFileNameWS3) .. ".hash",strWS3Hash .. "\n" .. strHHash .. "\n" .. strCPPHash)
 
+            -- Write generated files
             if (bGenerateH) then
                 print(string.format("Generate %s from %s file...",GetFileName(strFileNameH),GetFileName(strFileNameWS3)))
 

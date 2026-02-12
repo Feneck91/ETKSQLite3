@@ -155,3 +155,6 @@ target_link_libraries(qtETKSQLite3Sample PRIVATE ETKSQLite3::qtETKSQLite3 ${QT_L
 
 # Compile definitions
 target_compile_definitions(qtETKSQLite3Sample PRIVATE ETK_SQLITE3_USE_QT)
+
+# Only copies DLLs if ETKSQLite3::qtETKSQLite3 is a shared library
+ETKSQLite3_Copy_Dynamic_Libraries(qtETKSQLite3Sample ETKSQLite3::qtETKSQLite3)

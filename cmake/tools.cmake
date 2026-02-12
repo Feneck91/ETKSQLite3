@@ -100,3 +100,22 @@ function(ETKSQLite3_generate_ws3 ws3_file)
     set(GENERATED_WS3_HEADERS ${GENERATED_WS3_HEADERS} PARENT_SCOPE)
     set(GENERATED_WS3_DIR     ${GENERATED_WS3_DIR}     PARENT_SCOPE)
 endfunction()
+
+# =============================================================================
+# Copy ETKSQLite3 dynamic libraray into 
+# =============================================================================
+function(ETKSQLite3_Copy_Dynamic_Libraries TARGET ETK_SQLITE3_TARGET)
+    #==================================================
+    # Iterate over all linked libraries
+    # Only copy ETKSQLite3 DLL if it's a shared library
+    get_target_property(_type ${ETK_SQLITE3_TARGET} TYPE)
+    if(_type STREQUAL "SHARED_LIBRARY")
+        # Add post-build copy command using generator expressions
+        add_custom_command(TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:${ETK_SQLITE3_TARGET}>"
+                    "$<TARGET_FILE_DIR:${TARGET}>"
+            COMMENT "Copying ETKSQLite3 DLL $<TARGET_FILE:${ETK_SQLITE3_TARGET}> to target folder"
+        )
+    endif()
+endfunction()

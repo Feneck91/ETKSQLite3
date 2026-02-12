@@ -79,7 +79,11 @@ bool wxIsspace(wxChar _cChar)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Static member
 const size_t wxString::npos     = (size_t) -1;
-const wxChar * wxEmptyString    = wxT("");
+const wxChar * wxGetEmptyStringPtr()
+{
+    static const wxChar * wxStaticEmptyString   = wxT("");
+    return wxStaticEmptyString;
+}
 
 wxString::wxString()
 {

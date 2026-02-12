@@ -25,9 +25,9 @@
     #endif // UNICODE
 #endif // _UNICODE
 
-#define wxChar                          char
-EXPORT_IMPORT inline const wxChar *     wxGetEmptyStringPtr();
-#define wxEmptyString                   wxGetEmptyStringPtr()
+#define wxChar                              char
+extern EXPORT_IMPORT inline const wxChar *  wxGetEmptyStringPtr();
+#define wxEmptyString                       wxGetEmptyStringPtr()
 #define wxNOT_FOUND (-1)
 
 #define _T(x)                                   x

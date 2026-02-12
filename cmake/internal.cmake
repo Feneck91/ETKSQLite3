@@ -207,6 +207,17 @@ function(lua_install)
     set(LUA_FOLDER ${ETKSQLITE3_LUA_FOLDER}     PARENT_SCOPE)
     set(LUA_EXE    ${ETKSQLITE3_LUA_EXECUTABLE} PARENT_SCOPE)
 
+    # Set the type of ETKSQLite3 generation: qt/wx/stl
+    if(TARGET qtETKSQLite3)
+        set(LUA_GENERATION_TYPE "qt" PARENT_SCOPE)
+    elseif(TARGET wxETKSQLite3)
+        set(LUA_GENERATION_TYPE "wx" PARENT_SCOPE)
+    elseif(TARGET stlETKSQLite3)
+        set(LUA_GENERATION_TYPE "stl" PARENT_SCOPE)
+    else()
+        message(FATAL_ERROR "No ETKSQLite3 backend target found (qt/wx/stl)")
+    endif()
+
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in"   # fichier template
         "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake"            # fichier généré

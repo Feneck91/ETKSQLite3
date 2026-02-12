@@ -13,6 +13,12 @@
 # Custom build step reusableAPI for <files>.ws3
 # =============================================================================
 function(ETKSQLite3_generate_ws3 ws3_file)
+    #=======================================================
+    # Get optional parameter: other dependencies using ARGN
+    set(other_dependencies ${ARGN})
+    
+    #==================================================
+    # Get file name of ws3_file
     get_filename_component(base ${ws3_file} NAME_WE)
 
     #==================================================
@@ -33,6 +39,24 @@ function(ETKSQLite3_generate_ws3 ws3_file)
     if(NOT EXISTS "${ETKSQLite3_LUA_EXECUTABLE}")
         message(FATAL_ERROR "Lua executable not found at ${ETKSQLite3_LUA_EXECUTABLE}")
     endif()
+    
+    #====================================================
+    # Use Lua executable provided by ETKSQLite3 package
+    if(NOT DEFINED ETKSQLite3_GENERATION_TYPE)
+        message(FATAL_ERROR "ETKSQLite3_GENERATION_TYPE is not defined. Make sure you called find_package(ETKSQLite3). qt / wx / stl indicate if the generated file must be generated for Qt, STL or for wxWidgets")
+    endif()
+
+    #====================================================
+    # Manage dependencies
+    set(_all_dependencies
+        "${ws3_file}"
+        "${ETKSQLite3_SCRIPTS_DIR}/compile_ws3.lua"
+        "${ETKSQLite3_SCRIPTS_DIR}/ETKSQLite3TableTemplate.h"
+        "${ETKSQLite3_SCRIPTS_DIR}/ETKSQLite3TableTemplate.cpp"
+    )
+    if(other_dependencies)
+        list(APPEND _all_dependencies ${other_dependencies})
+    endif()
 
     #==================================================
     # Use Lua script provided by ETKSQLite3 package
@@ -47,9 +71,9 @@ function(ETKSQLite3_generate_ws3 ws3_file)
     add_custom_command(OUTPUT  "${out_cpp}" "${out_h}"
                        COMMAND "${ETKSQLite3_LUA_EXECUTABLE}"
                                "${ETKSQLite3_SCRIPTS_DIR}/compile_ws3.lua"
-                               "${ws3_file}" qt "${out_h}" "${out_cpp}"
-                       DEPENDS "${ws3_file}" "${ETKSQLite3_SCRIPTS_DIR}/compile_ws3.lua"
-                       COMMENT "Compiling ws3 database ${ws3_file} -> ${out_cpp}, ${out_h}"
+                               "${ws3_file}" "${ETKSQLite3_GENERATION_TYPE}" "${out_h}" "${out_cpp}"
+                       DEPENDS ${_all_dependencies}
+                       COMMENT "Compiling ws3 database for ${ETKSQLite3_GENERATION_TYPE} => ${ws3_file} -> ${out_cpp}, ${out_h}"
                        VERBATIM
     )
 

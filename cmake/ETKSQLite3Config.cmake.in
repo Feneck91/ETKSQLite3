@@ -18,5 +18,8 @@ set(ETKSQLite3_LUA_EXECUTABLE "${_ETKSQLITE3_INSTALL_ROOT}/bin/lua/@LUA_FOLDER@/
 # Path to Lua scripts / templates
 set(ETKSQLite3_SCRIPTS_DIR "${_ETKSQLITE3_INSTALL_ROOT}/scripts")
 
+# Type of generation type made by lua script
+set(ETKSQLite3_GENERATION_TYPE "@LUA_GENERATION_TYPE@")
+
 # Generate alias for convenience
 set(ETKSQLite3_generate_ws3 generate_ws3)

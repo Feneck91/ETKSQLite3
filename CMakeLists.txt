@@ -116,7 +116,7 @@ if (ETK_ENABLE_QT)
     find_package(Qt6 QUIET COMPONENTS Core)
 
     # Check if Qt5 is available
-    find_package(Qt5 QUIET COMPONENTS Widgets)
+    find_package(Qt5 QUIET COMPONENTS Core)
 
     # If both versions are available, let the user choose
     if(Qt6_FOUND AND Qt5_FOUND)

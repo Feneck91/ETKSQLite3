@@ -33,7 +33,7 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
                 set(QT_LIBS Qt6::Core Qt6::Widgets)
                 message(STATUS "Using Qt6")
             else()
-                find_package(Qt5 COMPONENTS Core REQUIRED)
+                find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
                 set(QT_MAJOR_VERSION 5)
                 set(QT_LIBS Qt5::Core Qt5::Widgets)
                 message(STATUS "Using Qt5")
@@ -79,10 +79,20 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         set(INSTALL_INCLUDES "")
         foreach(inc ${INCLUDES})
             if(IS_ABSOLUTE ${inc})
-                # Absolute paths (wxWidgets, wxsqlite3) only for build
-                list(APPEND BUILD_INCLUDES "$<BUILD_INTERFACE:${inc}>")
+                if(inc STREQUAL "${WXSQLITE3_DIR}/include")
+                    # wxsqlite3 include directory: map to install/include/wxsqlite3
+                    list(APPEND BUILD_INCLUDES   "$<BUILD_INTERFACE:${inc}>")
+                    list(APPEND INSTALL_INCLUDES "$<INSTALL_INTERFACE:include/wxsqlite3>")
+                elseif(inc STREQUAL "${WXSQLITE3_DIR}/src")
+                    # wxsqlite3 src directory → build only (never install)
+                    list(APPEND BUILD_INCLUDES "$<BUILD_INTERFACE:${inc}>")
+                else()
+                    # Other absolute paths (wxWidgets etc.) → build only
+                    list(APPEND BUILD_INCLUDES "$<BUILD_INTERFACE:${inc}>")
+                endif()
+
             else()
-                # Relative paths from source dir: build + install
+                # Relative paths (include/ETKSQLite3, include/wx4qt, include/wx4stl)
                 list(APPEND BUILD_INCLUDES   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${inc}>")
                 list(APPEND INSTALL_INCLUDES "$<INSTALL_INTERFACE:${inc}>")
             endif()
@@ -178,16 +188,36 @@ endfunction()
 # Function for lua install
 # -----------------------------------------------------------------------------
 function(lua_install)
-    # Depending of target
+    # Install Lua executable and DLL depending of target
     if(WIN32)
-        set(ETKSQLITE3_LUA_EXECUTABLE "${CMAKE_SOURCE_DIR}/tools/lua/win32/lua52.exe")
+        set(ETKSQLITE3_LUA_EXECUTABLE "lua52.exe")
+        set(ETKSQLITE3_LUA_FOLDER "win32")
+        install(FILES "${CMAKE_SOURCE_DIR}/tools/lua/win32/lua52.exe"
+                      "${CMAKE_SOURCE_DIR}/tools/lua/win32/lua52.dll"
+                DESTINATION bin/lua/${ETKSQLITE3_LUA_FOLDER})
     elseif(UNIX AND NOT APPLE)
-        set(ETKSQLITE3_LUA_EXECUTABLE "${CMAKE_SOURCE_DIR}/tools/lua/linux/lua52")
+        set(ETKSQLITE3_LUA_EXECUTABLE "lua52")
+        set(ETKSQLITE3_LUA_FOLDER "linux")
+        install(FILES "${CMAKE_SOURCE_DIR}/tools/lua/linux/lua52"
+                DESTINATION bin/lua/${ETKSQLITE3_LUA_FOLDER})
     elseif(APPLE)
     endif()
 
-    add_executable(ETKSQLite3::Lua IMPORTED GLOBAL)
-    set_target_properties(ETKSQLite3::Lua PROPERTIES IMPORTED_LOCATION "${ETKSQLITE3_LUA_EXECUTABLE}")
+    # Configure the ETKSQLite3Config.cmake for installation
+    set(LUA_FOLDER ${ETKSQLITE3_LUA_FOLDER}     PARENT_SCOPE)
+    set(LUA_EXE    ${ETKSQLITE3_LUA_EXECUTABLE} PARENT_SCOPE)
+
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in"   # fichier template
+        "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake"            # fichier généré
+        @ONLY
+    )
+
+    install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3ConfigVersion.cmake"
+        DESTINATION lib/cmake/ETKSQLite3
+    )
 endfunction()
 
 # -----------------------------------------------------------------------------

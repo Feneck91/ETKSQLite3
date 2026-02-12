@@ -25,25 +25,27 @@ function(ETKSQLite3_generate_ws3 ws3_file)
     set(out_cpp "${GENERATED_WS3_DIR}/${base}.cpp")
     set(out_h  "${GENERATED_WS3_DIR}/${base}.h")
 
-    #==================================================
-    # Find Lua installed
-    if(NOT TARGET ETKSQLite3::Lua)
-        message(FATAL_ERROR "ETKSQLite3::Lua target not found. Make sure you called find_package(ETKSQLite3).")
+    #====================================================
+    # Use Lua executable provided by ETKSQLite3 package
+    if(NOT DEFINED ETKSQLite3_LUA_EXECUTABLE)
+        message(FATAL_ERROR "ETKSQLite3_LUA_EXECUTABLE not defined. Make sure you called find_package(ETKSQLite3).")
     endif()
-    get_target_property(LUA_EXE ETKSQLite3::Lua IMPORTED_LOCATION)
+    if(NOT EXISTS "${ETKSQLite3_LUA_EXECUTABLE}")
+        message(FATAL_ERROR "Lua executable not found at ${ETKSQLite3_LUA_EXECUTABLE}")
+    endif()
 
     #==================================================
-    # Find Lua script
-    # Directory where this tools.cmake is installed
-    get_filename_component(_ETKSQLITE3_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
-
-    # Root install prefix (lib/cmake/ETKSQLite3 -> go up 3 levels)
-    get_filename_component(_ETKSQLITE3_PREFIX "${_ETKSQLITE3_CMAKE_DIR}/../.." ABSOLUTE)
-    set(ETKSQLite3_SCRIPTS_DIR "${_ETKSQLITE3_PREFIX}/scripts")
+    # Use Lua script provided by ETKSQLite3 package
+    if(NOT DEFINED ETKSQLite3_SCRIPTS_DIR)
+        message(FATAL_ERROR "ETKSQLite3_SCRIPTS_DIR not defined. Make sure you called find_package(ETKSQLite3).")
+    endif()
+    if(NOT EXISTS "${ETKSQLite3_SCRIPTS_DIR}")
+        message(FATAL_ERROR "Lua scripts folder not found at ${ETKSQLite3_SCRIPTS_DIR}")
+    endif()
 
     # Custom command to generate files
     add_custom_command(OUTPUT  "${out_cpp}" "${out_h}"
-                       COMMAND "${LUA_EXE}"
+                       COMMAND "${ETKSQLite3_LUA_EXECUTABLE}"
                                "${ETKSQLite3_SCRIPTS_DIR}/compile_ws3.lua"
                                "${ws3_file}" qt "${out_h}" "${out_cpp}"
                        DEPENDS "${ws3_file}" "${ETKSQLite3_SCRIPTS_DIR}/compile_ws3.lua"

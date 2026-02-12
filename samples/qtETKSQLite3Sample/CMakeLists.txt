@@ -7,54 +7,51 @@ project(qtETKSQLite3Sample)
 option(USE_QT6                      "Use Qt6 instead of Qt5"                        ON)     # If QT5 / QT6 are detected, allow to use Qt6 instead of Qt5
 
 # =============================================================================
+# Force ETKSQLite3 in QT mode
+# =============================================================================
+set(ETK_ENABLE_QT ON)
+
+# =============================================================================
 # Find ETKSQLite3 package
 # =============================================================================
-# Cherche la config générée par l'installation d'ETKSQLite3
-# Tu peux ajouter un hint vers ton build/install si nécessaire
-#set(ETKSQLite3_DIR "C:/local/ETKSQLite3/build.vc17/install/lib/cmake/ETKSQLite3")
-set(ETKSQLite3_DIR "C:/local/ETKSQLite3/build.vc17/install")
-find_package(ETKSQLite3 REQUIRED CONFIG PATHS
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../build" # build tree
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../install" # install tree
-    NO_DEFAULT_PATH
-)
+find_package(ETKSQLite3 REQUIRED CONFIG)
 
 # =============================================================================
 # Qt detection
 #
 # Check and display options for QT5 / QT6 - Function to detect and configure Qt
 # =============================================================================
-if (ETK_ENABLE_QT)
-    # Check if Qt6 is available
-    find_package(Qt6 QUIET COMPONENTS Core)
 
-    # Check if Qt5 is available
-    find_package(Qt5 QUIET COMPONENTS Widgets)
+# Check if Qt6 is available
+find_package(Qt6 QUIET COMPONENTS Core)
 
-    # If both versions are available, let the user choose
-    if(Qt6_FOUND AND Qt5_FOUND)
-        if(NOT DEFINED USE_QT6)
-            # Option to choose between Qt5 and Qt6
-            option(USE_QT6 "Use Qt6 instead of Qt5" OFF)
-        endif()
-    else()
-        unset(USE_QT6 CACHE)  # Remove option from CMake cache
+# Check if Qt5 is available
+find_package(Qt5 QUIET COMPONENTS Core)
+
+# If both versions are available, let the user choose
+if(Qt6_FOUND AND Qt5_FOUND)
+    if(NOT DEFINED USE_QT6)
+        # Option to choose between Qt5 and Qt6
+        option(USE_QT6 "Use Qt6 instead of Qt5" OFF)
     endif()
 endif()
+
 if(USE_QT6 AND Qt6_FOUND)
     find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
     set(QT_MAJOR_VERSION 6)
     set(QT_LIBS Qt6::Core Qt6::Widgets)
     message(STATUS "Using Qt6")
 else()
-    find_package(Qt5 COMPONENTS Core REQUIRED)
+    find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
     set(QT_MAJOR_VERSION 5)
     set(QT_LIBS Qt5::Core Qt5::Widgets)
     message(STATUS "Using Qt5")
 endif()
 
-# AutoMoc on
+# AutoMoc on / ui generation
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 # =============================================================================
 # Generate ws3 files
@@ -131,9 +128,6 @@ source_group(
 # =============================================================================
 # Generate files .h from .ui
 # =============================================================================
-
-qt5_wrap_ui(UI_HEADERS ${UI_FILES})
-
 source_group(
     TREE ${CMAKE_CURRENT_BINARY_DIR}
     PREFIX "ui Generated Files"
@@ -152,13 +146,12 @@ target_sources(qtETKSQLite3Sample PRIVATE "${GENERATED_WS3_FILES}")
 # =============================================================================
 # Include directories
 # =============================================================================
-# ETKSQLite3::Qt is an IMPORTED target, use it to retrieve includes automatically
-target_include_directories(qtETKSQLite3Sample PRIVATE $<TARGET_PROPERTY:ETKSQLite3::Qt,INTERFACE_INCLUDE_DIRECTORIES> "${CMAKE_CURRENT_BINARY_DIR}" "${GENERATED_WS3_DIR}")
+target_include_directories(qtETKSQLite3Sample PRIVATE "${CMAKE_CURRENT_BINARY_DIR}" "${GENERATED_WS3_DIR}")
 
 # =============================================================================
 # Link libraries
 # =============================================================================
-target_link_libraries(qtETKSQLite3Sample PRIVATE ETKSQLite3::Qt ${QT_LIBS})
+target_link_libraries(qtETKSQLite3Sample PRIVATE ETKSQLite3::qtETKSQLite3 ${QT_LIBS})
 
 # Compile definitions
 target_compile_definitions(qtETKSQLite3Sample PRIVATE ETK_SQLITE3_USE_QT)

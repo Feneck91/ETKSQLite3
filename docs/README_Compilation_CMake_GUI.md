@@ -20,28 +20,57 @@ This will explain how to compile **ETKSQLite3** with *CMake* to compile it with 
 
 ### Configure
 Run the *CMakeGui*, you will ask to fill fields to begin the configure step.<br/>
-The *CMakeLists.txt* that contains the informations to generate the library makefile is into ETKSqlite3/build/CMakeLists.txt<br/>
-The *CMakeLists.txt* that contains the informations to generate the library sample makefile is into ETKSqlite3/build/CMakeLists.txt<br/>
+The *CMakeLists.txt* that contains the informations to generate the library makefile and samples is into ETKSqlite3/CMakeLists.txt<br/>
 <br/>
 |               CMake               |             Fill (example)             |                                            Note                                             |
 |-----------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------|
 | Where is the source code          | ETKSQLite3                             |  For example in <i>c:/dev/lib/ETKSQLite3</i>                                                |
 | Where to build the binaries       | ETKSQLite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
 <br/>
-Clic on Configure button, choose your compiler, then an error occurs:
+Clic on Configure button, choose your compiler.<br/>
+<br/>
+The first step is to define the **WXSQLITE3_DIR** variable. This variable is mandatory; it contains the source code path of wxsqlite3, base od the ETKSQLite3 framework.<br/>
+If the wxsqlite3/ directory is located in the same directory as ETKSQLite3, it will be automatically detected. Otherwise, you will get the following error like:<br/>
 
-> CMake Error at CMakeLists.txt:636 (message):<br/>
-> No target type for ETKSQLite3 is selected. You must activate at least<br/>
-> ETK_ENABLE_WX, ETK_ENABLE_QT or ETK_ENABLE_STL.<br/>
+>  WXSQLITE3_DIR not set and wxSQLite3 was not found next to ETKSQLite3.<br/>
+><br/>
+>&nbsp;&nbsp;Expected layout:<br/>
+>&nbsp;&nbsp;&nbsp;&nbsp;C:/dev/<br/>
+>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ ETKSQLite3/<br/>
+>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ wxsqlite3/<br/>
+><br/>
+>  Or define WXSQLITE3_DIR manually.<br/>
 
-Here, the WXSQLITE3_DIR is mandatory, it is the framework base code of ETKSQLite3.
+Set **WXSQLITE3_DIR** if needed (not automatically detected).
 
 |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
 |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
 | WXSQLITE3_DIR                     | PATH       | ETKSQLite3/wxsqlite3                  | For example but where you download wxSQLite3 library                                        |
 
+Clic on Configure button.<br/>
+<br/>
+> CMake Error at CMakeLists.txt (message):<br/>
+> No target type for ETKSQLite3 is selected. You must activate at least<br/>
+> ETK_ENABLE_WX, ETK_ENABLE_QT or ETK_ENABLE_STL.<br/>
+
 You must choose the target:
 - **wxETKSQLite3** for ETKSQLite3 based on wxWidgets (**ETK_ENABLE_WX** entry)<br/>
+  If wxWidgets is not detected, you will probably need to add wxWidgets_ROOT_DIR path.<br/>
+  
+  |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
+  |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
+  | wxWidgets_ROOT_DIR                | PATH       | C:/dev/wxWidgets-3.1.1                | Where wxWidgets is installed (/install folder)                                              |
+  
+  > wxWidgets_ROOT_DIR not set and wxWidgets install was not found next to ETKSQLite3.<br/>
+  > Expected layout for automatic detection:<br/>
+  > &nbsp;&nbsp;C:/local/<br/>
+  > &nbsp;&nbsp;&nbsp;&nbsp;├─ ETKSQLite3/<br/>
+  > &nbsp;&nbsp;&nbsp;&nbsp;└─ wxWidgets-x.y.z/<br/>
+  > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <build_folder>/<br/>
+  > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ install/<br/>
+  > <br/>
+  > Or define wxWidgets_ROOT_DIR manually to install wxWidgets folder.<br/>
+  
 - **qtETKSQLite3** for ETKSQLite3 based on Qt (**ETK_ENABLE_QT** entry)
   If Qt is not detected, you will probably need to add CMAKE_INSTALL_PREFIX path.<br/>
   

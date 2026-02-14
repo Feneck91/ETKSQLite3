@@ -32,10 +32,52 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         # ============================================================
         # WX_ETKSQLite3
         if(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_WX")
+            # -----------------------------------------------------------------------------
+            # Auto-detect wxWidgets directory (sibling of ETKSQLite3)
+            # -----------------------------------------------------------------------------
+            set(wxWidgets_ROOT_DIR "Path to wxWidgets install" CACHE PATH "Path to wxWidgets install")
+            if(NOT EXISTS "${wxWidgets_ROOT_DIR}")
+                get_filename_component(_ETK_PARENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" DIRECTORY)
+                
+                # Search for wxWidgets* directory next to ETKSQLite3
+                file(GLOB _WX_ROOT_CANDIDATES
+                    "${_ETK_PARENT_DIR}/wxWidgets*"
+                )
+                foreach(_wx_root ${_WX_ROOT_CANDIDATES})
+                    if(IS_DIRECTORY "${_wx_root}")
+                        # Search recursively for "install" folder inside it
+                        file(GLOB_RECURSE _INSTALL_CANDIDATES
+                            LIST_DIRECTORIES true
+                            "${_wx_root}/*/install"
+                        )
+                        foreach(_install_dir ${_INSTALL_CANDIDATES})
+                            get_filename_component(_name "${_install_dir}" NAME)
+                            if((IS_DIRECTORY "${_install_dir}") AND (_name STREQUAL "install") AND (EXISTS "${_install_dir}/include/wx/wx.h"))
+                                set(wxWidgets_ROOT_DIR "${_install_dir}" CACHE PATH "Path to wxWidgets install" FORCE)
+                                break()
+                            endif()
+                        endforeach()
+                        if(EXISTS "${wxWidgets_ROOT_DIR}")
+                            break()
+                        else()
+                            message(STATUS "wxWidgets path auto-detect candidate: missing /install folder: ${_wx_root}")
+                        endif()
+                    endif()
+                endforeach()                
+                if(EXISTS "${wxWidgets_ROOT_DIR}")
+                    message(STATUS "wxWidgets auto-detected: ${wxWidgets_ROOT_DIR}")
+                else()
+                    message(STATUS "wxWidgets not auto-detected")
+                endif()
+            endif()
+
             # Set wxWidgets_ROOT_DIR
+            option(wxWidgets_WX_FORCE_DLL "Force wxWdigets as dynamic library"  OFF)
+            option(wxWidgets_WX_FORCE_LIB "Force wxWdigets as static library"   OFF)
             ETKSQLite3_find_wxwidgets_auto(ROOT_DIR ${wxWidgets_ROOT_DIR}
                                            LIB_DIR  ${wxWidgets_LIB_DIR}
-                                           WX_FORCE_DLL ON
+                                           WX_FORCE_DLL ${wxWidgets_WX_FORCE_DLL}
+                                           WX_FORCE_LIB ${wxWidgets_WX_FORCE_LIB}
             )
             add_definitions(-DwxUSE_UNICODE=1)
             add_definitions(-DwxUSE_DATETIME=1)

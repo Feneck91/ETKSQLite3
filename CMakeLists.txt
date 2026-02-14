@@ -67,7 +67,7 @@ if(NOT DEFINED WXSQLITE3_DIR OR NOT EXISTS "${WXSQLITE3_DIR}")
     get_filename_component(_ETK_PARENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" DIRECTORY)
     message(FATAL_ERROR
         "WXSQLITE3_DIR not set and wxSQLite3 was not found next to ETKSQLite3.\n"
-        "Expected layout:\n"
+        "Expected layout for automatic detection:\n"
         "  ${_ETK_PARENT_DIR}/\n"
         "    ├─ ETKSQLite3/\n"
         "    └─ wxsqlite3/\n"

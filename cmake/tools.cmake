@@ -13,28 +13,45 @@
 # Helper to find wxWidgets library
 # ============================================================
 function(ETKSQLite3_find_wxwidgets_auto)
-    set(options WX_FORCE_DLL)
-    set(oneValueArgs ROOT_DIR LIB_DIR)
+    set(oneValueArgs ROOT_DIR LIB_DIR WX_FORCE_DLL WX_FORCE_LIB)
     set(multiValueArgs)
     cmake_parse_arguments(FWX "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if(NOT FWX_ROOT_DIR)
-        set(wxWidgets_ROOT_DIR "${FWX_ROOT_DIR}" CACHE PATH "Path to wxWidgets install" FORCE)
-        message(FATAL_ERROR "find_wxwidgets_auto requires wxWidgets_ROOT_DIR=<path to wxWidgets install>")
+    if(NOT FWX_ROOT_DIR OR NOT EXISTS "${FWX_ROOT_DIR}")
+        if(NOT FWX_ROOT_DIR)
+            set(wxWidgets_ROOT_DIR "${FWX_ROOT_DIR}" CACHE PATH "Path to wxWidgets install" FORCE)
+        endif()
+        message(FATAL_ERROR
+            "wxWidgets_ROOT_DIR not set and wxWidgets install was not found next to ETKSQLite3.\n"
+            "Expected layout for automatic detection:\n"
+            "  ${_ETK_PARENT_DIR}/\n"
+            "    ├─ ETKSQLite3/\n"
+            "    └─ wxWidgets-x.y.z/\n"
+            "        └─ <build_folder>/\n"
+            "             └─ install/\n"
+            "Or define wxWidgets_ROOT_DIR manually to install wxWidgets folder.")
     endif()
 
     # ============================================================
     # Decide STATIC or DLL based on BUILD_SHARED_LIBS
-    if(BUILD_SHARED_LIBS OR FWX_WX_FORCE_DLL)
-        if(BUILD_SHARED_LIBS)
-            message(STATUS "Library is SHARED: → allowing wxWidgets DLL build")
+    if(FWX_WX_FORCE_DLL AND FWX_WX_FORCE_LIB)
+        message(FATAL_ERROR "You cannot set wxWidgets_WX_FORCE_DLL and wxWidgets_WX_FORCE_LIB at the same time!")
+    endif()
+
+    if((BUILD_SHARED_LIBS OR FWX_WX_FORCE_DLL) AND NOT FWX_WX_FORCE_LIB)
+        if(FWX_WX_FORCE_DLL)
+            message(STATUS "Forcing wxWidgets DLL build")
         else()
-            message(STATUS "forcing wxWidgets DLL build detection")
+            message(STATUS "Library is SHARED: allowing wxWidgets DLL build")
         endif()
         set(WX_FORCE_DLL TRUE)
         set(DEFAULT_LIB_SUBDIR "vc_x64_dll")
     else()
-        message(STATUS "Library is STATIC → allowing wxWidgets static")
+        if(FWX_WX_FORCE_LIB)
+            message(STATUS "Forcing wxWidgets in static build")
+        else()
+            message(STATUS "Library is STATIC: allowing wxWidgets static")
+        endif()
         set(WX_FORCE_DLL FALSE)
         set(DEFAULT_LIB_SUBDIR "vc_x64_lib")
     endif()
@@ -164,7 +181,7 @@ function(ETKSQLite3_find_wxwidgets_auto)
         set(wxWidgets_LIB_DIR  "${FWX_LIB_DIR}" CACHE PATH  "Path to wxWidgets libs"    FORCE)
     else()
         # === Mode MODULES ===
-        message(STATUS "wxWidgets monolithic libs not found → falling back to MODULE mode")
+        message(STATUS "wxWidgets monolithic libs not found: falling back to MODULE mode")
 
         set(wxWidgets_ROOT_DIR "${FWX_ROOT_DIR}" CACHE PATH "Path to wxWidgets install" FORCE)
         set(wxWidgets_LIB_DIR  "${FWX_LIB_DIR}" CACHE PATH  "Path to wxWidgets libs"    FORCE)

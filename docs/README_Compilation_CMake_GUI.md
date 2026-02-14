@@ -90,28 +90,28 @@ Before Configure again, you should choice more options:<br/>
 |            CMake entry            | Entry type |                 Value                 |                                 Note                                |
 |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------|
 | SQLITE_ENABLE_*                   | BOOL       | Checked or not                        | See SQLite documentation to compile it with needed options.         |
-| SQLITE_ENABLE_COLUMN_METADATA     | BOOL       | Checked                               | This options is mandatory for ETKSQLite3.                           |
 | BUILD_SHARED_LIBS                 | BOOL       | Checked or not                        | If checked, build dynamic library (so / dll) else build static lib. |
 
 ## Generate 
 Clic on ore **Generate** button. You should have something like:<br/>
 
-> Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.<br/>
-> Only Qt6 is installed. Using Qt6.<br/>
-> CONFIGURATION: DEBUG MODE DETECTED = DEBUG<br/>
-> CONFIGURATION: RELEASE MODE DETECTED = RELEASE<br/>
-> CONFIGURATION: RELEASE MODE DETECTED = RELWITHDEBINFO<br/>
-> CONFIGURATION: RELEASE MODE DETECTED = MINSIZEREL<br/>
-> CONFIGURATION: DEBUG MODE DETECTED = DEBUG<br/>
-> CONFIGURATION: RELEASE MODE DETECTED = RELEASE<br/>
-> CONFIGURATION: RELEASE MODE DETECTED = RELWITHDEBINFO<br/>
-> CONFIGURATION: RELEASE MODE DETECTED = MINSIZEREL<br/>
-> Using Qt6<br/>
-> Create static library qtETKSQLite3<br/>
-> Configuring done (0.4s)<br/>
-> Generating done (0.2s)<br/>
+> Selecting Windows SDK version 10.0.22621.0 to target Windows 10.0.26100.
+> CMAKE_INSTALL_PREFIX = C:/local/ETKSQLite3/build.vc17/install
+> Library is SHARED: allowing wxWidgets DLL build
+> Detected wxWidgets Release lib: C:/local/wxWidgets-3.3.1/build.vc17/install/lib/vc_x64_dll/wxmsw33u.lib
+> Detected wxWidgets Debug lib: C:/local/wxWidgets-3.3.1/build.vc17/install/lib/vc_x64_dll/wxmsw33ud.lib
+> wxWidgets detected in MONOLITHIC mode
+> Detected wxWidgets Release dynamic library: C:/local/wxWidgets-3.3.1/build.vc17/install/bin/vc_x64_dll/wxmsw331u_vc_x64_custom.dll
+> Detected wxWidgets Debug dynamic library: C:/local/wxWidgets-3.3.1/build.vc17/install/bin/vc_x64_dll/wxmsw331ud_vc_x64_custom.dll
+> Create shared library wxETKSQLite3
+> Using Qt5
+> Create shared library qtETKSQLite3
+> Create shared library stlETKSQLite3
+> ETKSQLite3 configured successfully
+> Configuring done (0.2s)
 
 # Open Project
 From here, the files needed to build ETKSQLite3 are correctly generated.
 Clic on ore **Open Project** button. Visual Studio opened (if you choose this target).<br/>
 You can compile in debug / realase.
+You **MUST** compile **INSTALL** projet to be able to compile client that will need to use **find_package** for ETKSQLite3

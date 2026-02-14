@@ -281,6 +281,11 @@ public:
     static const etkString              STR_DATABASE_KEY_NAME_PATH;
 
     /**
+     * Value returns by ExecuteSQL if error occurs.
+     */
+    static constexpr int                EXECUTE_SQL_ERROR = -1;
+
+    /**
      * Structure that contains informations about database events.
      *
      * Allocated each time an element is inserted, deleted or modified into database.
@@ -528,7 +533,7 @@ protected:
      * @param _rstmRequest Statement used to execute SQL request (update / delete / insert).
      * @param _bLogError If true, log database error.
      * @param _bDisplayMsgBox If true, display the error to the user.
-     * @return The number of database rows that were changed (or inserted or deleted), 0 if error.
+     * @return The number of database rows that were changed (or inserted or deleted), ETKSQLite3Database::EXECUTE_SQL_ERROR if error occurs.
      */
     int                                 ExecuteStatementWithTransaction(wxSQLite3Statement &_rstmRequest, bool _bLogError, bool _bDisplayMsgBox);
 
@@ -560,7 +565,7 @@ protected:
      * @param _rstmRequest Statement used to execute SQL request (update / delete / insert).
      * @param _bLogError If true, log database error.
      * @param _bDisplayMsgBox If true, display the error to the user.
-     * @return The number of database rows that were changed (or inserted or deleted), 0 if error.
+     * @return The number of database rows that were changed (or inserted or deleted), ETKSQLite3Database::EXECUTE_SQL_ERROR if error occurs.
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
@@ -574,7 +579,7 @@ protected:
      * @param _strSQL SQL Update request.
      * @param _bLogError If true, log database error.
      * @param _bDisplayMsgBox If true, display the error to the user.
-     * @return The number of database rows that were changed (or inserted or deleted).
+     * @return The number of database rows that were changed (or inserted or deleted), ETKSQLite3Database::EXECUTE_SQL_ERROR if error occurs.
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
@@ -588,7 +593,7 @@ protected:
      * @param _strSQL SQL Update request.
      * @param _bLogError If true, log database error.
      * @param _bDisplayMsgBox If true, display the error to the user.
-     * @return The number of database rows that were changed (or inserted or deleted).
+     * @return The number of database rows that were changed (or inserted or deleted), ETKSQLite3Database::EXECUTE_SQL_ERROR if error occurs.
      * @throw wxSQLite3Exception If the function failed, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
@@ -617,7 +622,7 @@ private:
      * @param _bLogError If true, log database error.
      * @param _bDisplayMsgBox If true, display the error to the user.
      * @param _bUseTransaction If true, use transaction, else in case of error the exception is throw to parent.
-     * @return The number of database rows that were changed (or inserted or deleted).
+     * @return The number of database rows that were changed (or inserted or deleted), ETKSQLite3Database::EXECUTE_SQL_ERROR if error occurs.
      * @throw wxSQLite3Exception If the function failed and don't use transaction, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */
@@ -633,7 +638,7 @@ private:
      * @param _bLogError If true, log database error.
      * @param _bDisplayMsgBox If true, display the error to the user.
      * @param _bUseTransaction If true, use transaction, else in case of error the exception is throw to parent.
-     * @return The number of database rows that were changed (or inserted or deleted).
+     * @return The number of database rows that were changed (or inserted or deleted), ETKSQLite3Database::EXECUTE_SQL_ERROR if error occurs.
      * @throw wxSQLite3Exception If the function failed and don't use transaction, a wxSQLite3Exception is raided so calling this function
      *                           must be protected by try / catch statement.
      */

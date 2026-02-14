@@ -97,7 +97,7 @@ bool ETKSQLite3Database::Create(etkString _strDatabaseFilePath, bool _bThrowExce
         m_pDatabase->Open(_strDatabaseFilePath, GetEncryptKey(), WXSQLITE_OPEN_READWRITE | WXSQLITE_OPEN_CREATE);
         ExecuteConfigAfterOpenOrCreate();
         // Database structure creation
-        bRet = (0 != ExecuteSQLWithTransaction(m_strSQLSchema.IsEmpty() ? GetSQLDatabaseSchema().wx_str() : m_strSQLSchema.wx_str(), true, true));
+        bRet = (ETKSQLite3Database::EXECUTE_SQL_ERROR != ExecuteSQLWithTransaction(m_strSQLSchema.IsEmpty() ? GetSQLDatabaseSchema().wx_str() : m_strSQLSchema.wx_str(), true, true));
         if (bRet)
         {
             // Update ini file to automatically load this database file as startup
@@ -375,6 +375,7 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest, bool 
             }
             else
             {
+                iNbRowAffected = ETKSQLite3Database::EXECUTE_SQL_ERROR;
                 etkString strError(etkString::Format(wxT("Invalid request (%s)!"), _rstmRequest.GetSQL().wx_str()));
                 wxLogError(strError);
                 wxFAIL_MSG(strError);
@@ -382,6 +383,7 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest, bool 
         }
         else
         {
+            iNbRowAffected = ETKSQLite3Database::EXECUTE_SQL_ERROR;
             etkString strError(wxT("Cannot execute request on closed database!"));
             wxLogError(strError);
             wxFAIL_MSG(strError);
@@ -394,6 +396,7 @@ int ETKSQLite3Database::ExecuteStatement(wxSQLite3Statement &_rstmRequest, bool 
         {   // Throw exception to calling function
             throw;
         }
+        iNbRowAffected = ETKSQLite3Database::EXECUTE_SQL_ERROR;
     }
 
     return iNbRowAffected;
@@ -420,6 +423,7 @@ int ETKSQLite3Database::ExecuteSQL(etkString _strSQL, bool _bLogError, bool _bDi
         }
         else
         {
+            iNbRowAffected = ETKSQLite3Database::EXECUTE_SQL_ERROR;
             etkString strError(wxT("Cannot execute request on closed database!"));
             wxLogError(strError);
             wxFAIL_MSG(strError);
@@ -432,6 +436,7 @@ int ETKSQLite3Database::ExecuteSQL(etkString _strSQL, bool _bLogError, bool _bDi
         {   // Throw exception to calling function
             throw;
         }
+        iNbRowAffected = ETKSQLite3Database::EXECUTE_SQL_ERROR;
     }
 
     return iNbRowAffected;

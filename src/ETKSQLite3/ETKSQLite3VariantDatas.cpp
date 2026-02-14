@@ -230,7 +230,7 @@ ETKSQLite3VariantDataColumnAttributes::ETKSQLite3VariantDataColumnAttributes(con
 }
 
 ETKSQLite3VariantDataColumnAttributes::ETKSQLite3VariantDataColumnAttributes(const ETKSQLite3VariantDataColumnAttributes &_rOther)
-    : wxVariantData(_rOther)
+    : wxVariantData()
     , ETKSQLite3ColumnAttributes(_rOther)
 {
     if (this != &_rOther)

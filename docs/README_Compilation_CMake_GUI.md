@@ -95,23 +95,23 @@ Before Configure again, you should choice more options:<br/>
 ## Generate 
 Clic on ore **Generate** button. You should have something like:<br/>
 
-> Selecting Windows SDK version 10.0.22621.0 to target Windows 10.0.26100.
-> CMAKE_INSTALL_PREFIX = C:/local/ETKSQLite3/build.vc17/install
-> Library is SHARED: allowing wxWidgets DLL build
-> Detected wxWidgets Release lib: C:/local/wxWidgets-3.3.1/build.vc17/install/lib/vc_x64_dll/wxmsw33u.lib
-> Detected wxWidgets Debug lib: C:/local/wxWidgets-3.3.1/build.vc17/install/lib/vc_x64_dll/wxmsw33ud.lib
-> wxWidgets detected in MONOLITHIC mode
-> Detected wxWidgets Release dynamic library: C:/local/wxWidgets-3.3.1/build.vc17/install/bin/vc_x64_dll/wxmsw331u_vc_x64_custom.dll
-> Detected wxWidgets Debug dynamic library: C:/local/wxWidgets-3.3.1/build.vc17/install/bin/vc_x64_dll/wxmsw331ud_vc_x64_custom.dll
-> Create shared library wxETKSQLite3
-> Using Qt5
-> Create shared library qtETKSQLite3
-> Create shared library stlETKSQLite3
-> ETKSQLite3 configured successfully
-> Configuring done (0.2s)
+> Selecting Windows SDK version 10.0.22621.0 to target Windows 10.0.26100.<br/>
+> CMAKE_INSTALL_PREFIX = C:/local/ETKSQLite3/build.vc17/install<br/>
+> Library is SHARED: allowing wxWidgets DLL build<br/>
+> Detected wxWidgets Release lib: C:/dev/wxWidgets-3.3.1/build.vc17/install/lib/vc_x64_dll/wxmsw33u.lib<br/>
+> Detected wxWidgets Debug lib: C:/dev/wxWidgets-3.3.1/build.vc17/install/lib/vc_x64_dll/wxmsw33ud.lib<br/>
+> wxWidgets detected in MONOLITHIC mode<br/>
+> Detected wxWidgets Release dynamic library: C:/dev/wxWidgets-3.3.1/build.vc17/install/bin/vc_x64_dll/wxmsw331u_vc_x64_custom.dll<br/>
+> Detected wxWidgets Debug dynamic library: C:/dev/wxWidgets-3.3.1/build.vc17/install/bin/vc_x64_dll/wxmsw331ud_vc_x64_custom.dll<br/>
+> Create shared library wxETKSQLite3<br/>
+> Using Qt5<br/>
+> Create shared library qtETKSQLite3<br/>
+> Create shared library stlETKSQLite3<br/>
+> ETKSQLite3 configured successfully<br/>
+> Configuring done (0.2s)<br/>
 
 # Open Project
-From here, the files needed to build ETKSQLite3 are correctly generated.
+From here, the files needed to build ETKSQLite3 are correctly generated.<br/>
 Clic on ore **Open Project** button. Visual Studio opened (if you choose this target).<br/>
 You can compile in debug / realase.
-You **MUST** compile **INSTALL** projet to be able to compile client that will need to use **find_package** for ETKSQLite3
+You **MUST** compile **INSTALL** projet to be able to compile client that will need to use *find_package* for **ETKSQLite3**.

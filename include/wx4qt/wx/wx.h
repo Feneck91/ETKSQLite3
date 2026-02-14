@@ -11,8 +11,8 @@
 #ifndef WX_HEADER
 #define WX_HEADER
 
+#define QT_ETKSQLITE3                           // For QT version
 #define wxCHECK_VERSION(major,minor,build)      0
-
 #define wxLongLong                              wxQLongLong
 #define wxT(x)                                  x
 #define _(x)                                    x

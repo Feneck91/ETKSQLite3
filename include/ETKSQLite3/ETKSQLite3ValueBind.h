@@ -52,7 +52,7 @@ public:
 
     /**
      * Copy constructor.
-     * 
+     *
      * @param _rValueBind Value to copy into this.
      */
     ETKSQLite3ValueBindBase(const ETKSQLite3ValueBindBase &_rValueBindBase);
@@ -198,8 +198,10 @@ private:
         double *                m_pDoubleValue;
         etkString *             m_petkStringValue;
         etkDateTime *           m_petkDateTimeValue;
+#if defined(QT_ETKSQLITE3) || defined(STL_ETKSQLITE3)
         etkDate *               m_petkDateValue;
         etkTime *               m_petkTimeValue;
+#endif
         bool *                  m_pBool;
     }                                   m_eDataPtr;
 public:
@@ -282,6 +284,7 @@ public:
      */
     ETKSQLite3ValueBind(etkDateTime *_petkDateTimeValue);
 
+#if defined(QT_ETKSQLITE3) || defined(STL_ETKSQLITE3)
     /**
      * Constructor.
      *
@@ -295,6 +298,7 @@ public:
      * @param _petkTimeValue Value's pointer of type etkTime to bind.
      */
     ETKSQLite3ValueBind(etkTime *_petkTimeValue);
+#endif
 
     /**
      * Constructor.

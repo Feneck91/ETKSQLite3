@@ -137,6 +137,8 @@ ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkDateTime *_petkDateTimeValue)
     m_eDataPtr.m_petkDateTimeValue = _petkDateTimeValue;
 }
 
+#if defined(QT_ETKSQLITE3) || defined(STL_ETKSQLITE3)
+
 ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkDate *_petkDateValue)
     : m_eDataType(eDataTypeDate)
 {
@@ -148,6 +150,8 @@ ETKSQLite3ValueBind::ETKSQLite3ValueBind(etkTime *_petkTimeValue)
 {
     m_eDataPtr.m_petkTimeValue = _petkTimeValue;
 }
+
+#endif
 
 ETKSQLite3ValueBind::ETKSQLite3ValueBind(bool *_pBoolValue)
     : m_eDataType(eDataTypeBool)
@@ -232,6 +236,7 @@ void ETKSQLite3ValueBind::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bA
                 _rstmt.BindDateTime(_iIndex,*m_eDataPtr.m_petkDateTimeValue);
                 break;
             }
+#if defined(QT_ETKSQLITE3) || defined(STL_ETKSQLITE3)
             case eDataTypeDate:
             {
                 _rstmt.BindDate(_iIndex,*m_eDataPtr.m_petkDateValue);
@@ -242,6 +247,7 @@ void ETKSQLite3ValueBind::BindTo(wxSQLite3Statement &_rstmt,int _iIndex,bool _bA
                 _rstmt.BindTime(_iIndex,*m_eDataPtr.m_petkTimeValue);
                 break;
             }
+#endif
             case eDataTypeBool :
             {
                 _rstmt.BindBool(_iIndex,*m_eDataPtr.m_pBool);
@@ -322,6 +328,7 @@ void ETKSQLite3ValueBind::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) 
                 *m_eDataPtr.m_pBool = _rResultSet.GetBool(_iIndex);
                 break;
             }
+#if defined(QT_ETKSQLITE3) || defined(STL_ETKSQLITE3)
             case eDataTypeDate:
             {
                 *m_eDataPtr.m_petkDateValue = _rResultSet.GetDate(_iIndex);
@@ -332,6 +339,7 @@ void ETKSQLite3ValueBind::BindFrom(wxSQLite3ResultSet &_rResultSet,int _iIndex) 
                 *m_eDataPtr.m_petkTimeValue = _rResultSet.GetTime(_iIndex);
                 break;
             }
+#endif
         }
     }
 }

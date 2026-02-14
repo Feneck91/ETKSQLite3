@@ -12,8 +12,8 @@
 #define WX_HEADER
 
 #include <iostream>
+#define STL_ETKSQLITE3                          // For QTL version
 #define wxCHECK_VERSION(major,minor,build)      0
-
 #define wxT(x)                                  x
 #define _(x)                                    x
 #define wxTRANSLATE(x)                          x

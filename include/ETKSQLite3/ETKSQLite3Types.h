@@ -39,7 +39,7 @@
     // see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43601. Because of this
     // we rely on binutils auto export/import support which seems to work
     // quite well for 4.5+.
-    #undef WXEXPORT
+    #undef      WXEXPORT
     #define     WXEXPORT        EXPORT_IMPORT
 #endif
 
@@ -50,8 +50,10 @@ using etkVariant            = wxVariant;
 using etkArrayInt           = wxArrayInt;
 using etkInt64              = wxLongLong;
 using etkDateTime           = wxDateTime;
+#if defined(QT_ETKSQLITE3) || defined(STL_ETKSQLITE3)
 using etkDate               = wxDate;
 using etkTime               = wxTime;
+#endif
 
 #define etkInvalidDateTime  wxInvalidDateTime;
 

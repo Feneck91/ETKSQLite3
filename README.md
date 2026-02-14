@@ -20,7 +20,7 @@ Stéphane Château (Feneck91)
 
 # Compilation
 [ETKSQLite3 Compilation with CMake GUI](docs/README_Compilation_CMake_GUI.md)<br/>
-[ETKSQLite3 Compilation withVisual Studio Code](docs/README_Compilation_Visual_Studio_Code.md)
+[ETKSQLite3 Compilation with Visual Studio Code](docs/README_Compilation_Visual_Studio_Code.md)
 
 # Acknowledgements
 Kudos to Ulrich Telle (and all wxSQLite3 contributors) for developing the wxSQLite3 library used by ETKSQLite3.

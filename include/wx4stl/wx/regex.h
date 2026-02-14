@@ -45,27 +45,27 @@ enum
     wxRE_DEFAULT  = wxRE_EXTENDED
 };
 
-class EXPORT_IMPORT wxRegEx
+class wxRegEx
 {
 public:
     // Constructeur par défaut
-    wxRegEx() = default;
+    EXPORT_IMPORT wxRegEx() = default;
 
     // Constructeur avec une expression régulière et des options
-    wxRegEx(const std::string &pattern, int flags = wxRE_ADVANCED);
+    EXPORT_IMPORT wxRegEx(const std::string &pattern, int flags = wxRE_ADVANCED);
 
     // Compile l'expression régulière
-    bool Compile(const std::string &pattern, int flags = wxRE_ADVANCED);
+    EXPORT_IMPORT bool Compile(const std::string &pattern, int flags = wxRE_ADVANCED);
 
     // Vérifie si l'expression régulière est valide
-    bool IsValid() const;
+    EXPORT_IMPORT bool IsValid() const;
 
     // Vérifie si la chaîne correspond entièrement à l'expression régulière
-    bool Matches(const std::string &text) const;
+    EXPORT_IMPORT bool Matches(const std::string &text) const;
 
 private:
     std::regex m_regex;
-    bool m_isValid{false};
+    bool m_isValid {false};
 };
 
 #endif // WX_REGEX_HEADER

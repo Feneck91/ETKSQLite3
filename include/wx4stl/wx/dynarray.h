@@ -18,11 +18,11 @@
 #include <wx/wx.h>
 #include <vector>
 
-class EXPORT_IMPORT wxArrayPtrVoid : public std::vector<void*>
+class wxArrayPtrVoid : public std::vector<void*>
 {
 public:
-    size_t GetCount() const;
-    size_t Add(void *pItem);
+    EXPORT_IMPORT size_t GetCount() const;
+    EXPORT_IMPORT size_t Add(void *pItem);
 };
 
 #endif // WX_DYNARRAY_HEADER

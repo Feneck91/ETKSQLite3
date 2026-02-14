@@ -88,7 +88,7 @@ private:
 //                                                                                                       //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-class EXPORT_IMPORT wxDateTime
+class wxDateTime
 {
 public:
     // Types for duration and time points
@@ -128,79 +128,79 @@ public:
 
 protected:
     // Constructor from time_point
-    wxDateTime(const TimePoint& timePoint);
+    EXPORT_IMPORT wxDateTime(const TimePoint& timePoint);
 
 public:
     // Constructors
-    wxDateTime();
-    wxDateTime(time_t timeT);
-    wxDateTime(int year, wxDateTimeMonth month, int day, int hour = 0, int minute = 0, int second = 0);
-    wxDateTime(const struct tm &_rtmValue);
-    wxDateTime(const wxDate &date);
-    wxDateTime(const wxTime &date);
-    wxDateTime(double _dValue); // Constructs the object from timet value holding the number of seconds since Jan 1, 1970 UTC. (wxWidgets documentation)
+    EXPORT_IMPORT wxDateTime();
+    EXPORT_IMPORT wxDateTime(time_t timeT);
+    EXPORT_IMPORT wxDateTime(int year, wxDateTimeMonth month, int day, int hour = 0, int minute = 0, int second = 0);
+    EXPORT_IMPORT wxDateTime(const struct tm &_rtmValue);
+    EXPORT_IMPORT wxDateTime(const wxDate &date);
+    EXPORT_IMPORT wxDateTime(const wxTime &date);
+    EXPORT_IMPORT wxDateTime(double _dValue); // Constructs the object from timet value holding the number of seconds since Jan 1, 1970 UTC. (wxWidgets documentation)
 
     // Getters
-    time_t GetTicks() const;
-    int GetYear() const;
-    wxDateTimeMonth GetMonth() const;
-    int GetDay() const;
-    wxDateTimeWeekDay GetWeekDay() const;
-    int GetHour() const;
-    int GetMinute() const;
-    int GetSecond() const;
-    void SetMillisecond(int) {} // Not needed
+    EXPORT_IMPORT time_t GetTicks() const;
+    EXPORT_IMPORT int GetYear() const;
+    EXPORT_IMPORT wxDateTimeMonth GetMonth() const;
+    EXPORT_IMPORT int GetDay() const;
+    EXPORT_IMPORT wxDateTimeWeekDay GetWeekDay() const;
+    EXPORT_IMPORT int GetHour() const;
+    EXPORT_IMPORT int GetMinute() const;
+    EXPORT_IMPORT int GetSecond() const;
+    EXPORT_IMPORT void SetMillisecond(int) {} // Not needed
 
     // Check
-    bool IsValid() const;
+    EXPORT_IMPORT bool IsValid() const;
     // Get current date/time
-    static wxDateTime Now();
+    EXPORT_IMPORT static wxDateTime Now();
 
     // Get actual date / time in UTC
-    static wxDateTime UTCNow();
+    EXPORT_IMPORT static wxDateTime UTCNow();
 
     // Get internal date en UTC
-    wxDateTime toUTC() const;
-    wxDateTime MakeUTC() const;
-    wxDateTime ToLocalTime() const; // To local time (not UTC)
+    EXPORT_IMPORT wxDateTime toUTC() const;
+    EXPORT_IMPORT wxDateTime MakeUTC() const;
+    EXPORT_IMPORT wxDateTime ToLocalTime() const; // To local time (not UTC)
 
     // Format date
-    wxString Format(const std::string& format = "%Y-%m-%d %H:%M:%S") const;
-    wxString toString(const std::string& format, bool _bUTC = false) const;
+    EXPORT_IMPORT wxString Format(const std::string& format = "%Y-%m-%d %H:%M:%S") const;
+    EXPORT_IMPORT wxString toString(const std::string& format, bool _bUTC = false) const;
 
     // Parse string to create a wxDateTime
-    static wxDateTime ParseFormat(const std::string& dateTimeStr, const std::string& format = "%Y-%m-%d %H:%M:%S");
-    const wxChar * ParseDate(const std::string &dateStr);
-    const wxChar * ParseTime(const std::string &timeStr);
-    const wxChar * ParseDateTime(const std::string &dateTimeStr);
+    EXPORT_IMPORT static wxDateTime ParseFormat(const std::string& dateTimeStr, const std::string& format = "%Y-%m-%d %H:%M:%S");
+    EXPORT_IMPORT const wxChar * ParseDate(const std::string &dateStr);
+    EXPORT_IMPORT const wxChar * ParseTime(const std::string &timeStr);
+    EXPORT_IMPORT const wxChar * ParseDateTime(const std::string &dateTimeStr);
 
     // This function returns the date representation in the ISO 8601 format (YYYY-MM-DD).
-    wxString FormatISODate() const;
+    EXPORT_IMPORT wxString FormatISODate() const;
     // This function returns the time representation in the ISO 8601 format (HH:MM:SS).
-    wxString FormatISOTime() const;
+    EXPORT_IMPORT wxString FormatISOTime() const;
 
     // Add / Substract / Diff
-    wxDateTime Add(const Duration& duration) const;
-    wxDateTime Subtract(const Duration& duration) const;
-    Duration Subtract(const wxDateTime& other) const;
+    EXPORT_IMPORT wxDateTime Add(const Duration& duration) const;
+    EXPORT_IMPORT wxDateTime Subtract(const Duration& duration) const;
+    EXPORT_IMPORT Duration Subtract(const wxDateTime& other) const;
 
     // Operators
-    bool operator==(const wxDateTime& other) const;
-    bool operator!=(const wxDateTime& other) const;
-    bool operator<(const wxDateTime& other) const;
-    bool operator<=(const wxDateTime& other) const;
-    bool operator>(const wxDateTime& other) const;
-    bool operator>=(const wxDateTime& other) const;
+    EXPORT_IMPORT bool operator==(const wxDateTime& other) const;
+    EXPORT_IMPORT bool operator!=(const wxDateTime& other) const;
+    EXPORT_IMPORT bool operator<(const wxDateTime& other) const;
+    EXPORT_IMPORT bool operator<=(const wxDateTime& other) const;
+    EXPORT_IMPORT bool operator>(const wxDateTime& other) const;
+    EXPORT_IMPORT bool operator>=(const wxDateTime& other) const;
     // Check if bissextil year
-    static bool IsLeapYear(int year);
+    EXPORT_IMPORT static bool IsLeapYear(int year);
 
     // Function not implemented by base class
-    wxDate date() const;
-    wxTime time() const;
+    EXPORT_IMPORT wxDate date() const;
+    EXPORT_IMPORT wxTime time() const;
 
     // get the internal representation
-    wxLongLong GetValue() const;
-    wxLongLong GetJulianDayNumber() const;
+    EXPORT_IMPORT wxLongLong GetValue() const;
+    EXPORT_IMPORT wxLongLong GetJulianDayNumber() const;
 
 private:
     TimePoint m_timePoint; // Internal stockage in UTC

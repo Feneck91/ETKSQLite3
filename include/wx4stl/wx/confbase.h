@@ -25,7 +25,7 @@
 /**
  * Class that simulate the wxConfigBase class.
  */
-class EXPORT_IMPORT wxConfigBase
+class wxConfigBase
 {
 private:
     static wxConfigBase m_sSettings;
@@ -36,33 +36,33 @@ private:
 
 public:
     // Constructeur privé pour le singleton
-    wxConfigBase();
+    EXPORT_IMPORT wxConfigBase();
 
     // Charge les paramètres depuis le fichier
-    void Load();
+    EXPORT_IMPORT void Load();
 
     // Sauvegarde les paramètres dans le fichier
-    void Save();
+    EXPORT_IMPORT void Save();
 
     // Génère la clé complète (groupe + clé)
-    std::string GetFullKey(const wxString& key) const;
+    EXPORT_IMPORT std::string GetFullKey(const wxString& key) const;
 
 public:
     // Empêcher la copie et l'affectation
-    wxConfigBase(const wxConfigBase&) = delete;
-    wxConfigBase& operator=(const wxConfigBase&) = delete;
+    EXPORT_IMPORT wxConfigBase(const wxConfigBase&) = delete;
+    EXPORT_IMPORT wxConfigBase& operator=(const wxConfigBase&) = delete;
 
-    // Méthodes statiques
-    static wxConfigBase* Get();
-    static void Set(const wxChar* _pszFilePath); // Définit le chemin du fichier de configuration
+    // Destructor
+    EXPORT_IMPORT ~wxConfigBase();
 
-    // Méthodes publiques
-    void SetPath(const wxChar* _pszPath);
-    wxString Read(const wxChar* _pszKey, const wxChar* _pszDefault);
-    void Write(const wxChar* _pszKey, const wxChar* _pszValue);
+    // Static public
+    EXPORT_IMPORT void SetPath(const wxChar* _pszPath);
+    EXPORT_IMPORT wxString Read(const wxChar* _pszKey, const wxChar* _pszDefault);
+    EXPORT_IMPORT void Write(const wxChar* _pszKey, const wxChar* _pszValue);
 
-    // Destructeur
-    ~wxConfigBase();
+    // Static methods
+    EXPORT_IMPORT static wxConfigBase* Get();
+    EXPORT_IMPORT static void Set(const wxChar* _pszFilePath); // Définit le chemin du fichier de configuration
 };
 
 #endif // WX_CONFIG_BASE_HEADER

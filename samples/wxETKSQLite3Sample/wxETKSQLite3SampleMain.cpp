@@ -122,27 +122,30 @@ wxETKSQLite3SampleFrame::~wxETKSQLite3SampleFrame()
 
 void wxETKSQLite3SampleFrame::OnQuit(wxCommandEvent& event)
 {
+    wxUnusedVar(event);
     Close();
 }
 
 void wxETKSQLite3SampleFrame::OnAbout(wxCommandEvent& event)
 {
+    wxUnusedVar(event);
     wxString msg = wxbuildinfo(long_f);
     wxMessageBox(msg, _("Welcome to..."));
 }
 
 void wxETKSQLite3SampleFrame::OnMenuItemViewTableName(wxCommandEvent& event)
 {
+    wxUnusedVar(event);
     m_pRichTextCtrl->Clear();
 
 
     //---------------------------------------
     // Count number of row in the table
-    wxETKSQLite3RequestSelector selectorCount = wxGetApp().m_database.GetSelector();
+    ETKSQLite3RequestSelector selectorCount = wxGetApp().m_database.GetSelector();
     // On this column
     //selectorCount.GetCriterionRequest() = dbCount(wxETKSQLite3SampleDataTName::COLUMN_FIELD_ClubID);
     // Or on all columns
-    selectorCount.GetCriterionRequest() = dbCount(wxETKSQLite3Record::GetAllColumn(wxETKSQLite3SampleDataTName::TABLE_NAME));
+    selectorCount.GetCriterionRequest() = dbCount(ETKSQLite3Record::GetAllColumn(wxETKSQLite3SampleDataTName::TABLE_NAME));
     m_pRichTextCtrl->AppendText(wxString::Format(wxT("SQL count = %s\r\n"),selectorCount.GetCriterionRequest().GetSQL().wx_str()));
 
     wxSQLite3ResultSet resultSetCount = selectorCount.ExecuteQuery();
@@ -154,19 +157,19 @@ void wxETKSQLite3SampleFrame::OnMenuItemViewTableName(wxCommandEvent& event)
         m_pRichTextCtrl->AppendText(message);
         for (int iIndexColumn=0;iIndexColumn<resultSetCount.GetColumnCount();++iIndexColumn)
         {
-            wxString message;
-            message.Printf(wxT("%s.%s = %s"),
-                           resultSetCount.GetTableName(iIndexColumn).wx_str(),
-                           resultSetCount.GetColumnName(iIndexColumn).wx_str(),
-                           resultSetCount.GetAsString(iIndexColumn).wx_str()
-                          );
-            m_pRichTextCtrl->AppendText(message);
+            wxString appended_message;
+            appended_message.Printf(wxT("%s.%s = %s"),
+                                    resultSetCount.GetTableName(iIndexColumn).wx_str(),
+                                    resultSetCount.GetColumnName(iIndexColumn).wx_str(),
+                                    resultSetCount.GetAsString(iIndexColumn).wx_str()
+                                   );
+            m_pRichTextCtrl->AppendText(appended_message);
         }
         m_pRichTextCtrl->AppendText(_T("\r\n"));
     }
 
     // View content of the table
-    wxETKSQLite3RequestSelector selector = wxGetApp().m_database.GetSelector();
+    ETKSQLite3RequestSelector selector = wxGetApp().m_database.GetSelector();
     selector<<wxETKSQLite3SampleDataTName();   // <-- Add all columns of this table
     selector<<wxETKSQLite3SampleDataTClub::COLUMN_FIELD_ClubName;
     //--------------------------------------------------------------------------------
@@ -181,12 +184,14 @@ void wxETKSQLite3SampleFrame::OnMenuItemViewTableName(wxCommandEvent& event)
 
     //--------------------------------------------------------------------------------
     // All lines, even TName.idTClub is null with Left Join SQL instruction
-    selector.Join(wxETKSQLite3SampleDataTName::COLUMN_FIELD_ClubID.LeftJoin(wxETKSQLite3SampleDataTClub::COLUMN_FIELD_ID));
+    selector.Join(wxETKSQLite3SampleDataTName::COLUMN_FIELD_ClubID.InnerJoin(wxETKSQLite3SampleDataTClub::COLUMN_FIELD_ID));
+
+    auto string = selector.GetCriterionRequest().GetSQL();
 
     m_pRichTextCtrl->AppendText(wxString::Format(wxT("SQL= %s\r\n"),selector.GetCriterionRequest().GetSQL().wx_str()));
     // The binding is into resultSet for reading
     wxString strClubName;
-    wxETKSQLite3ResultSet<wxETKSQLite3SampleDataTName> resultSet = selector.ExecuteQuery();
+    ETKSQLite3ResultSet<wxETKSQLite3SampleDataTName> resultSet = selector.ExecuteQuery();
 
     // First way to bind data, directly with a wxString
     // The result set contains only
@@ -236,11 +241,12 @@ void wxETKSQLite3SampleFrame::OnMenuItemViewTableName(wxCommandEvent& event)
 
 void wxETKSQLite3SampleFrame::OnMenuItemAddName(wxCommandEvent& event)
 {
+    wxUnusedVar(event);
     m_pRichTextCtrl->Clear();
     // Create one instance for binding
     wxETKSQLite3SampleDataTName myNameInstance;
 
-    wxETKSQLite3RequestInserter inserter = wxGetApp().m_database.GetInserter();
+    ETKSQLite3RequestInserter inserter = wxGetApp().m_database.GetInserter();
     inserter<<myNameInstance;   // <-- Add all columns
 
     wxString strText;
@@ -259,7 +265,7 @@ void wxETKSQLite3SampleFrame::OnMenuItemAddName(wxCommandEvent& event)
         myNameInstance.SetBirthday(dtBirthday);
 
         wxString strClubName;
-        wxETKSQLite3RequestSelector selector = wxGetApp().m_database.GetSelector();
+        ETKSQLite3RequestSelector selector = wxGetApp().m_database.GetSelector();
         selector << wxETKSQLite3SampleDataTClub::COLUMN_FIELD_ID; // Find ID
         // Can do : selector << tClubInstance; to add all column of TClub table
 
@@ -288,7 +294,7 @@ void wxETKSQLite3SampleFrame::OnMenuItemAddName(wxCommandEvent& event)
         }
         if ((i % 5) != 4)
         {
-            wxETKSQLite3ResultSet<wxETKSQLite3SampleDataTClub> resultset= selector.ExecuteQuery();
+            ETKSQLite3ResultSet<wxETKSQLite3SampleDataTClub> resultset= selector.ExecuteQuery();
             if (resultset.NextRow())
             {   // The only one element bind is m_lID
                 myNameInstance[wxETKSQLite3SampleDataTName::COLUMN_FIELD_ClubID]->SetNull(false);
@@ -327,8 +333,9 @@ void wxETKSQLite3SampleFrame::OnMenuItemAddName(wxCommandEvent& event)
 
 void wxETKSQLite3SampleFrame::OnMenuItemClearTableName(wxCommandEvent& event)
 {
+    wxUnusedVar(event);
     m_pRichTextCtrl->Clear();
-    wxETKSQLite3RequestDeleter deleter = wxGetApp().m_database.GetDeleter();
+    ETKSQLite3RequestDeleter deleter = wxGetApp().m_database.GetDeleter();
     deleter<<wxETKSQLite3SampleDataTName::TABLE_NAME;   // <-- Add with table name
     // Could also do (it does same as previosu line):
     // deleter<<wxETKSQLite3SampleDataTName();                 <-- With the record

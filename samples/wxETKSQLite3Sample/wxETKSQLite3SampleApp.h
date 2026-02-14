@@ -16,7 +16,7 @@ class wxETKSQLite3SampleApp : public wxApp
 {
 public:
     // Instance of the SQLite3 database
-    wxETKSQLite3Database                m_database;
+    ETKSQLite3Database                  m_database;
 public:
     virtual bool                        OnInit();
     wxString                            GetAppNameWithoutDebugTag() const;

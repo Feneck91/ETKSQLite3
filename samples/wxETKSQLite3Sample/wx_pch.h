@@ -24,7 +24,7 @@
 #ifdef WX_PRECOMP
     // put here all your rarely-changing header files
     // Include wxETKSQLITE3 : database managment library
-    #include "wx/wxETKSQLite3Include.h"
+    #include "ETKSQLite3Include.h"
 
     #include <wx/fileconf.h>
     #include <wx/filename.h>

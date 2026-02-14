@@ -16,7 +16,7 @@
 #include <wx/image.h>
 //*)
 
-IMPLEMENT_APP(wxETKSQLite3SampleApp);
+IMPLEMENT_APP(wxETKSQLite3SampleApp); // May be later it is better to use wxIMPLEMENT_APP
 
 bool wxETKSQLite3SampleApp::OnInit()
 {
@@ -82,7 +82,7 @@ bool wxETKSQLite3SampleApp::OnInit()
                     {   //
                         // Create clubs.
                         wxETKSQLite3SampleDataTClub club;
-                        wxETKSQLite3RequestInserter inserter = m_database.GetInserter();
+                        ETKSQLite3RequestInserter inserter = m_database.GetInserter();
                         inserter<<club;   // <-- Add all columns
                         club.SetClubName(wxT("The New York club"));
                         club.SetClubCity(wxT("New York"));
@@ -113,7 +113,7 @@ bool wxETKSQLite3SampleApp::OnInit()
                             {
                                 club.SetClubName(wxString::Format(wxT("Club%03d"),i));
                                 club.SetClubCity(wxString::Format(wxT("Club City%03d"),i));
-                                inserter.ExecuteWithTransaction(); // Add this one
+                                inserter.ExecuteWithoutTransaction(); // Add this one
                             }
                             transaction.Commit();
                             bRet = true;

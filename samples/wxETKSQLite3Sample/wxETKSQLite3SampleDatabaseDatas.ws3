@@ -31,12 +31,12 @@ $ONLY_HEADER_FILE$
  *          Revision : <b>1.0</b>
  */
 }
+
 $ONLY_SOURCE_FILE$
 {
 #include "$FILENAME_H$"
 }
-
-WX_ETK_SQLITE3_DECLARE_TABLE(TName)
+ETK_SQLITE3_DECLARE_TABLE(TName)
 {
     DECLARE_COLUMN                ID            INTEGER      PRIMARY_KEY            [ = 0]
     DECLARE_FOREIGN_KEY(TClub.ID) ClubID        INTEGER      ON_DELETE_CASCADE      [ = 0]
@@ -52,7 +52,7 @@ WX_ETK_SQLITE3_DECLARE_TABLE(TName)
  * @version Name : wxETKSQlite3Sample<br>
  *          Revision : <b>1.0</b>
  */
-WX_ETK_SQLITE3_DECLARE_TABLE(TClub)
+ETK_SQLITE3_DECLARE_TABLE(TClub)
 {
     DECLARE_COLUMN                ID            INTEGER      PRIMARY_KEY            [ = 0]
     DECLARE_COLUMN                ClubName      VARCHAR

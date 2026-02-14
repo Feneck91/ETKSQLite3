@@ -19,7 +19,32 @@ set(ETKSQLite3_LUA_EXECUTABLE "${_ETKSQLITE3_INSTALL_ROOT}/bin/lua/@LUA_FOLDER@/
 set(ETKSQLite3_SCRIPTS_DIR "${_ETKSQLITE3_INSTALL_ROOT}/scripts")
 
 # Type of generation type made by lua script
-set(ETKSQLite3_GENERATION_TYPE "@LUA_GENERATION_TYPE@")
+if(NOT ETKSQLite3_FIND_COMPONENTS)
+    message(FATAL_ERROR "You must specify a backend component: WX, QT or STL")
+endif()
+
+list(LENGTH ETKSQLite3_FIND_COMPONENTS _count)
+if(NOT _count EQUAL 1)
+    message(FATAL_ERROR "Exactly one ETKSQLite3 (=${_backend_count}) backend must be enabled (WX, QT or STL)")
+endif()
+list(GET ETKSQLite3_FIND_COMPONENTS 0 ETKSQLite3_GENERATION_TYPE)
+
+if(ETKSQLite3_GENERATION_TYPE STREQUAL "QT")
+    set(ETKSQLite3_GENERATION_TYPE qt)
+    unset(ETK_ENABLE_WX)
+    set(ETK_ENABLE_QT ON)
+    unset(ETK_ENABLE_STL)
+elseif(ETKSQLite3_GENERATION_TYPE STREQUAL "WX")
+    set(ETKSQLite3_GENERATION_TYPE wx)
+    set(ETK_ENABLE_WX ON)
+    unset(ETK_ENABLE_QT)
+    unset(ETK_ENABLE_STL)
+elseif(ETKSQLite3_GENERATION_TYPE STREQUAL "STL")
+    set(ETKSQLite3_GENERATION_TYPE stl)
+    unset(ETK_ENABLE_WX)
+    unset(ETK_ENABLE_QT)
+    set(ETK_ENABLE_STL ON)
+endif()
 
 # Generate alias for convenience
 set(ETKSQLite3_generate_ws3 generate_ws3)

@@ -9,9 +9,14 @@
 # Licence:     wxWindows licence
 # *****************************************************************************
 
-# -----------------------------------------------------------------------------
+# ============================================================
+# Load functions
+# ============================================================
+include(cmake/tools.cmake)
+
+# ============================================================
 # Helper to create ETKSQLite3 library depending on backend
-# -----------------------------------------------------------------------------
+# ============================================================
 function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
     if(${FRAMEWORK_FLAG})
         set(LIB_NAME ${FRAMEWORK_NAME})
@@ -24,8 +29,19 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             set(RC_FILES "")
         endif()
 
+        # ============================================================
+        # WX_ETKSQLite3
         if(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_WX")
-            list(APPEND INCLUDES ${wxWidgets_INCLUDE_DIRS})
+            # Set wxWidgets_ROOT_DIR
+            ETKSQLite3_find_wxwidgets_auto(ROOT_DIR ${wxWidgets_ROOT_DIR}
+                                           LIB_DIR  ${wxWidgets_LIB_DIR}
+                                           WX_FORCE_DLL ON
+            )
+            add_definitions(-DwxUSE_UNICODE=1)
+            add_definitions(-DwxUSE_DATETIME=1)
+            add_definitions(-DwxUSE_STL=1)
+        # ============================================================
+        # QT_ETKSQLite3
         elseif(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_QT")
             if(USE_QT6 AND Qt6_FOUND)
                 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
@@ -41,6 +57,8 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             list(APPEND SOURCES ${QT_SOURCE_FILES})
             list(APPEND HEADERS ${QT_HEADER_FILES})
             list(APPEND INCLUDES include/wx4qt)
+        # ============================================================
+        # STL_ETKSQLite3
         elseif(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_STL")
             list(APPEND SOURCES ${STL_SOURCE_FILES})
             list(APPEND HEADERS ${STL_HEADER_FILES})
@@ -49,7 +67,7 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             message(FATAL_ERROR "No target type for ETKSQLite3 is found, ${FRAMEWORK_FLAG} is selected but not supported. Error into CMake file!")
         endif()
 
-        # ------------------------------
+        # ==============================
         # Create source groups for IDE
         source_group(
             TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -69,11 +87,11 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             )
         endif()
 
-        # ------------------------------
+        # ==============================
         # Create the library
         add_library(${LIB_NAME} ${SOURCES} ${RC_FILES} ${HEADERS})
 
-        # ---------------------------------------
+        # =======================================
         # Include directories: build vs install
         set(BUILD_INCLUDES "")
         set(INSTALL_INCLUDES "")
@@ -99,13 +117,19 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
         endforeach()
         target_include_directories(${LIB_NAME} PUBLIC ${BUILD_INCLUDES} ${INSTALL_INCLUDES})
 
-        # -------------------------------
+        # ===============================
         # Link Qt if needed
-        if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_QT)
+        if(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_QT")
             target_link_libraries(${LIB_NAME} PRIVATE ${QT_LIBS})
         endif()
 
-        # ---------------------------------------------
+        # ===============================
+        # Link Qt if needed
+        if(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_WX")
+            target_link_libraries(${LIB_NAME} PRIVATE wxWidgets::wxWidgets)
+        endif()
+
+        # =============================================
         # Compile definitions (threads, sqlite options)
         target_compile_definitions(${LIB_NAME} PRIVATE ETKSQLite3_USE_THREADS=1
                                                        $<$<BOOL:${SQLITE_ENABLE_SESSION}>:SQLITE_ENABLE_SESSION=1>
@@ -147,22 +171,22 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
                                                        SQLITE_USER_AUTHENTICATION=1
         )
 
-        # ----------------------------------------
+        # ==========================================================================
         # Framework-specific compile defs + alias
         # Set ETK_SQLITE3_USE_WXWIDGETS / ETK_SQLITE3_USE_QT / ETK_SQLITE3_USE_STL
         # Used with rc file to compute dll name
-        if(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_WX)
+        if(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_WX")
             target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_WXWIDGETS=1)
             add_library(ETKSQLite3::Wx ALIAS wxETKSQLite3)
-        elseif(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_QT)
+        elseif(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_QT")
             target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_QT=1)
             add_library(ETKSQLite3::Qt ALIAS qtETKSQLite3)
-        elseif(${FRAMEWORK_FLAG} STREQUAL ETK_ENABLE_STL)
+        elseif(FRAMEWORK_FLAG STREQUAL "ETK_ENABLE_STL")
             target_compile_definitions(${LIB_NAME} PUBLIC ETK_SQLITE3_USE_STL=1)
             add_library(ETKSQLite3::Stl ALIAS stlETKSQLite3)
         endif()
 
-        # -------------------------------
+        # =======================
         # Define library suffix
         if(BUILD_SHARED_LIBS)
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
@@ -170,9 +194,8 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
             set_target_properties(${LIB_NAME} PROPERTIES SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif()
 
-        # -------------------------------
+        # ======================================
         # Set MAKING_ETK_SQLITE3_* definitions
-        # -------------------------------
         if(BUILD_SHARED_LIBS)
             target_compile_definitions(${LIB_NAME} PRIVATE MAKING_ETK_SQLITE3_SHARED=1)
             message(STATUS "Create shared library ${FRAMEWORK_NAME}")
@@ -184,9 +207,9 @@ function(add_framework_library FRAMEWORK_FLAG FRAMEWORK_NAME)
     endif()
 endfunction()
 
-# -----------------------------------------------------------------------------
+# =============================================================================
 # Function for lua install
-# -----------------------------------------------------------------------------
+# =============================================================================
 function(lua_install)
     # Install Lua executable and DLL depending of target
     if(WIN32)
@@ -207,17 +230,6 @@ function(lua_install)
     set(LUA_FOLDER ${ETKSQLITE3_LUA_FOLDER}     PARENT_SCOPE)
     set(LUA_EXE    ${ETKSQLITE3_LUA_EXECUTABLE} PARENT_SCOPE)
 
-    # Set the type of ETKSQLite3 generation: qt/wx/stl
-    if(TARGET qtETKSQLite3)
-        set(LUA_GENERATION_TYPE "qt" PARENT_SCOPE)
-    elseif(TARGET wxETKSQLite3)
-        set(LUA_GENERATION_TYPE "wx" PARENT_SCOPE)
-    elseif(TARGET stlETKSQLite3)
-        set(LUA_GENERATION_TYPE "stl" PARENT_SCOPE)
-    else()
-        message(FATAL_ERROR "No ETKSQLite3 backend target found (qt/wx/stl)")
-    endif()
-
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in"   # fichier template
         "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake"            # fichier généré
@@ -231,9 +243,9 @@ function(lua_install)
     )
 endfunction()
 
-# -----------------------------------------------------------------------------
+# =============================================================================
 # Function to setup Tools interface target for clients
-# -----------------------------------------------------------------------------
+# =============================================================================
 function(tools_functions_install)
     # Target INTERFACE to expose CMake functions to customers
     add_library(ETKSQLite3Tools INTERFACE)
@@ -251,10 +263,10 @@ function(tools_functions_install)
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scripts" DESTINATION .)
 endfunction()
 
-# -----------------------------------------------------------------------------
+# =============================================================================
 # Function to install ETKSQLite3 library, headers, targets and config files
 # This is the main "install" logic used after building ETKSQLite3
-# -----------------------------------------------------------------------------
+# =============================================================================
 function(make_install)
     include(CMakePackageConfigHelpers)
 

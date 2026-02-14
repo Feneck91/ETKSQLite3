@@ -28,18 +28,18 @@ The *CMakeLists.txt* that contains the informations to generate the library make
 | Where to build the binaries       | ETKSQLite3/build/Build.vc17            |  For example for Visual Studio 2022                                                         |
 <br/>
 Clic on Configure button, choose your compiler.<br/>
-<br/>
+
 The first step is to define the **WXSQLITE3_DIR** variable. This variable is mandatory; it contains the source code path of wxsqlite3, base od the ETKSQLite3 framework.<br/>
 If the wxsqlite3/ directory is located in the same directory as ETKSQLite3, it will be automatically detected. Otherwise, you will get the following error like:<br/>
-
->  WXSQLITE3_DIR not set and wxSQLite3 was not found next to ETKSQLite3.<br/>
-><br/>
->&nbsp;&nbsp;Expected layout:<br/>
->&nbsp;&nbsp;&nbsp;&nbsp;C:/dev/<br/>
->&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ ETKSQLite3/<br/>
->&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ wxsqlite3/<br/>
-><br/>
->  Or define WXSQLITE3_DIR manually.<br/>
+<br/>
+> WXSQLITE3_DIR not set and wxSQLite3 was not found next to ETKSQLite3.<br/>
+> <br/>
+> &nbsp;&nbsp;Expected layout:<br/>
+> &nbsp;&nbsp;&nbsp;&nbsp;C:/dev/<br/>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ ETKSQLite3/<br/>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ wxsqlite3/<br/>
+> <br/>
+>  Or define WXSQLITE3_DIR manually.
 
 Set **WXSQLITE3_DIR** if needed (not automatically detected).
 
@@ -55,12 +55,8 @@ Clic on Configure button.<br/>
 
 You must choose the target:
 - **wxETKSQLite3** for ETKSQLite3 based on wxWidgets (**ETK_ENABLE_WX** entry)<br/>
-  If wxWidgets is not detected, you will probably need to add wxWidgets_ROOT_DIR path.<br/>
-  
-  |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
-  |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
-  | wxWidgets_ROOT_DIR                | PATH       | C:/dev/wxWidgets-3.1.1                | Where wxWidgets is installed (/install folder)                                              |
-  
+  If wxWidgets is not detected, you will probably need to add wxWidgets_ROOT_DIR path; you will have this error:<br/>
+
   > wxWidgets_ROOT_DIR not set and wxWidgets install was not found next to ETKSQLite3.<br/>
   > Expected layout for automatic detection:<br/>
   > &nbsp;&nbsp;C:/local/<br/>
@@ -70,6 +66,16 @@ You must choose the target:
   > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ install/<br/>
   > <br/>
   > Or define wxWidgets_ROOT_DIR manually to install wxWidgets folder.<br/>
+
+  By default, **ETKSQLite3** will be statically linked to wxWidgets if it has been statically compiled.<br/>
+  By default, **ETKSQLite3** will be dynamically linked to wxWidgets if it has been dynamic compiled.<br/>
+  You can change this with **wxWidgets_WX_FORCE_DLL** and **wxWidgets_WX_FORCE_LIB**.<br/>
+  
+  |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
+  |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
+  | wxWidgets_ROOT_DIR                | PATH       | C:/dev/wxWidgets-3.1.1/build/install  | Where wxWidgets is installed (/install folder)                                              |
+  | wxWidgets_WX_FORCE_DLL            | PATH       | ON / OFF                              | Force **ETKSQLite3** to be linked as dynamic library mode to wxWidgets                      |
+  | wxWidgets_WX_FORCE_LIB            | PATH       | ON / OFF                              | Force **ETKSQLite3** to be linked as static library mode to wxWidgets                       |
   
 - **qtETKSQLite3** for ETKSQLite3 based on Qt (**ETK_ENABLE_QT** entry)
   If Qt is not detected, you will probably need to add CMAKE_INSTALL_PREFIX path.<br/>

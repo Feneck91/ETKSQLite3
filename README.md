@@ -6,13 +6,13 @@ Since <b>SQLite3</b> stores strings in UTF-8 encoding, the <b>wxSQLite3</b> meth
 The methods ToUTF8 and FromUTF8 of the wxString class (available since <b>wxWidgets</b> 2.8.4) are used for the conversion. Special care has to be taken if external administration tools are used to modify the database contents, since not all of these tools operate in Unicode or UTF-8 mode.
 
 ## Version history
-- **1.2** - September 2025.
+- **0.3** - September 2025.
   - Add <b>STL</b> Integration. <b>ETKSQLite3</b> allowed to be used with C++ <b>STL</b> library.
     All needed wxWidgets classes are re-written around Standard Template Libraries. A careful must be done with UTF-8 that are not fully supported like with <b>QT</b> and <b>wxWidgets</b> (UNICODE).
-- **1.1** - July 2012.
+- **0.2** - July 2012.
   - Add <b>QT</b> Integration. <b>ETKSQLite3</b> allowed to be used with <b>QT</b> library.
     All needed wxWidgets classes are re-written around QT library classes (based on macros or directly by implementing these wxWidgets classes by deriving QT ones).
-- **1.0** - December 2011
+- **0.1** - December 2011
   - First release - Not published.
 
 **Author**

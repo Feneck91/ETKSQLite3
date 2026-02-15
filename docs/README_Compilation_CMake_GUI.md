@@ -77,12 +77,17 @@ You must choose the target:
   | wxWidgets_WX_FORCE_DLL            | PATH       | ON / OFF                              | Force **ETKSQLite3** to be linked as dynamic library mode to wxWidgets                      |
   | wxWidgets_WX_FORCE_LIB            | PATH       | ON / OFF                              | Force **ETKSQLite3** to be linked as static library mode to wxWidgets                       |
   
-- **qtETKSQLite3** for ETKSQLite3 based on Qt (**ETK_ENABLE_QT** entry)
-  If Qt is not detected, you will probably need to add CMAKE_INSTALL_PREFIX path.<br/>
+- **qtETKSQLite3** for ETKSQLite3 based on Qt (**ETK_ENABLE_QT** entry)<br/>
+  If Qt is not detected, you will probably need to add Qt5_DIR / Qt6_DIR path.<br/>
+  By default, these variable are set by find_package (if not found) with default value Qt5_DIR-NOTFOUND / Qt6_DIR-NOTFOUND <br/>
   
-  |            CMake entry            | Entry type |                 Value                 |                                            Note                                             |
-  |-----------------------------------|------------|---------------------------------------|---------------------------------------------------------------------------------------------|
-  | CMAKE_INSTALL_PREFIX              | PATH       | C:/Qt6/6.10.1/msvc2022_64             | Where QT is installed for wanted target  <i>C:/Qt6/6.10.1/msvc2022_64 or mingw_64</i>       |
+  | CMake entry | Entry type |                   Value (example)                   |                                           Note                                           |
+  |-------------|------------|-----------------------------------------------------|------------------------------------------------------------------------------------------|
+  | Qt5_DIR     | PATH       | C:\Qt5\5.15.2\msvc2019_64\lib\cmake\Qt5             | Where QT5 is installed for wanted target (MSVC) <i>where Qt5Config.cmake is present</i>  |
+  | Qt5_DIR     | PATH       | C:\Qt5\5.15.2\mingw_64\lib\cmake\Qt5                | Where QT5 is installed for wanted target (mingw) <i>where Qt5Config.cmake is present</i> |
+  | Qt6_DIR     | PATH       | C:\Qt6\6.10.1\msvc2022_64\lib\cmake\Qt6             | Where QT6 is installed for wanted target (MSVC) <i>where Qt6Config.cmake is present</i>  |
+  | Qt6_DIR     | PATH       | C:\Qt6\6.10.1\mingw_64\lib\cmake\Qt6                | Where QT6 is installed for wanted target (mingw) <i>where Qt6Config.cmake is present</i> |
+  
 - **stlETKSQLite3** for ETKSQLite3 based on C++ STL (**ETK_ENABLE_STL** entry)<br/>
 
 Before Configure again, you should choice more options:<br/>

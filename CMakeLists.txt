@@ -39,12 +39,11 @@ endif()
 # Default CMake original value
 set(_default_prefix "${CMAKE_BINARY_DIR}/install")
 
-# Si CMake a initialisé la variable avec sa valeur par défaut
-# (ou si elle est vide)
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR CMAKE_INSTALL_PREFIX STREQUAL "")
+# If CMake or user have initialized the variable CMAKE_INSTALL_PREFIX don't change it
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR NOT DEFINED CMAKE_INSTALL_PREFIX OR CMAKE_INSTALL_PREFIX STREQUAL "")
     set(CMAKE_INSTALL_PREFIX "${_default_prefix}" CACHE PATH "Installation directory for ETKSQLite3" FORCE)
+    message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 endif()
-message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 
 # -----------------------------------------------------------------------------
 # Auto-detect wxSQLite3 directory (sibling of ETKSQLite3)

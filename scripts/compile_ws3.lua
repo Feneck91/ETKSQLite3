@@ -109,10 +109,6 @@
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
--- Load the sha2.lua, relativly to the script: same path
--- include crypto lib (md5)
-local sha2 = dofile((debug.getinfo(1, "S").source:match[[^@?(.*[\/])[^\/]-$]] or "") .. "sha2.lua")
-
 local VERSION = "1"
 
 --[[--------------------------------------------------------------------------
@@ -744,9 +740,7 @@ if (#arg ~= 4) then
     lReturn = -1
 else
     local strTemplateHeaderFile,strTemplateSourceFile,strWS3Content,bOk
-    local bGenerateHash, strWS3Hash,strHHash,strCPPHash = false -- for hash computation, disabled no more used with CMAKE and depends
     local strFileNameWS3,strFileNameH,strFileNameCPP = arg[1],arg[3],arg[4]
-    local bGenerateH,bGenerateCPP = true,true
     local bFind,strContentType -- General variable, for all needed
     local strExportImport
     local strwxOrQToRSTL = arg[2]
@@ -817,43 +811,7 @@ else
     -- Manage Include files tags
     --------------------------------------------
 
-    -------------------------------------------------------------------
-    -- Check Hash of each file to know if they need to be re-generated
-    if (bGenerateHash and string.len(strError) == 0) then
-        local strtmpWS3Content = sha2.hash256(strWS3Content .. VERSION) -- If version is changed, re-build all
-
-        strWS3Hash = GetFileContent(RemoveExtension(strFileNameWS3) .. ".hash")
-        if (string.len(strWS3Hash) == 194) then
-            -- 3 Hash key with \n returns
-            -- Get Hash keys
-            strHHash    = string.sub(strWS3Hash,66,129)
-            strCPPHash  = string.sub(strWS3Hash,131,194)
-            strWS3Hash  = string.sub(strWS3Hash,1,64)
-            -- Check hash values
-            if (strtmpWS3Content ~= strWS3Hash) then
-                -- Both header and CPP must be generated, the origin file has been changed
-                strWS3Hash = strtmpWS3Content -- Record current hash
-            else
-                -- The origin file is same, verify the header and the implementation file
-                if (strHHash == sha2.hash256(GetFileContent(strFileNameH))) then
-                    bGenerateH = false -- Same header, no need to generate it
-                end
-                if (strCPPHash == sha2.hash256(GetFileContent(strFileNameCPP))) then
-                    bGenerateCPP = false -- Same source file, no need to generate it
-                end
-            end
-        else
-            -- The hash file doens't exist or is not the good size, so it is invalid
-            strWS3Hash = strtmpWS3Content
-        end
-    end
-    -- Check Hash of each file to know if they need to be re-generated
-    -------------------------------------------------------------------
-
-    if (not (bGenerateH or bGenerateCPP)) then
-        -- No generation to do, all is up to date
-        print(string.format("%s is up to date...",strFileNameWS3))
-    elseif (string.len(strError) == 0) then
+    if (string.len(strError) == 0) then
         -- Need a generation : start it
         local strCPPContent,strHContent = "","" -- Generation contents
         local tabTypeMembers,tabTypeArgs,tabTypeMembersRef,tabTypeMembersCopy,tabTypeBind, tabDatabaseMembers, tabPrefixTypeMembers = {},{},{},{},{},{},{}
@@ -1960,32 +1918,13 @@ else
             strHContent   = string.gsub(strHContent,"$FILENAME_CPP%$",GetFileName(strFileNameCPP))
             strCPPContent = string.gsub(strCPPContent,"$FILENAME_CPP%$",GetFileName(strFileNameCPP))
 
-            -- Compute hash key
-            if (bGenerateHash) then
-                if (bGenerateH) then
-                    strHHash = sha2.hash256(strHContent)
-                end
-                if (bGenerateCPP) then
-                    strCPPHash = sha2.hash256(strCPPContent)
-                end
-                
-                -- Write new Hash keys
-                WriteFileContent(RemoveExtension(strFileNameWS3) .. ".hash",strWS3Hash .. "\n" .. strHHash .. "\n" .. strCPPHash)
-            end
-
             -- Write generated files
-            if (bGenerateH) then
-                print(string.format("Generate %s from %s file...",GetFileName(strFileNameH),GetFileName(strFileNameWS3)))
-
-                -- Write header
-                WriteFileContent(strFileNameH,strHContent)
-            end
-            if (bGenerateCPP) then
-                print(string.format("Generate %s from %s file...",GetFileName(strFileNameCPP),GetFileName(strFileNameWS3)))
-
-                -- Write implementation file
-                WriteFileContent(strFileNameCPP,strCPPContent)
-            end
+            -- Write header
+            print(string.format("Generate %s from %s file...",GetFileName(strFileNameH),GetFileName(strFileNameWS3)))
+            WriteFileContent(strFileNameH,strHContent)
+            -- Write implementation file
+            print(string.format("Generate %s from %s file...",GetFileName(strFileNameCPP),GetFileName(strFileNameWS3)))
+            WriteFileContent(strFileNameCPP,strCPPContent)
         end -- if (string.len(strError) ~= 0) then / else
     else -- // elseif (string.len(strError) == 0) then
         print(strError)

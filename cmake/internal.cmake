@@ -255,25 +255,37 @@ endfunction()
 # Function for lua install
 # =============================================================================
 function(lua_install)
+    #=====================================================
     # Install Lua executable and DLL depending of target
+    set(ETKSQLITE3_LUA_EXECUTABLE "ETKSQLite3Lua${CMAKE_EXECUTABLE_SUFFIX}")
     if(WIN32)
-        set(ETKSQLITE3_LUA_EXECUTABLE "lua52.exe")
         set(ETKSQLITE3_LUA_FOLDER "win32")
-        install(FILES "${CMAKE_SOURCE_DIR}/tools/lua/win32/lua52.exe"
-                      "${CMAKE_SOURCE_DIR}/tools/lua/win32/lua52.dll"
-                DESTINATION bin/lua/${ETKSQLITE3_LUA_FOLDER})
     elseif(UNIX AND NOT APPLE)
-        set(ETKSQLITE3_LUA_EXECUTABLE "lua52")
         set(ETKSQLITE3_LUA_FOLDER "linux")
-        install(FILES "${CMAKE_SOURCE_DIR}/tools/lua/linux/lua52"
-                DESTINATION bin/lua/${ETKSQLITE3_LUA_FOLDER})
     elseif(APPLE)
+        set(ETKSQLITE3_LUA_FOLDER "apple")
     endif()
 
+    #=======================================
+    # Install executable (only release)
+    install(TARGETS ETKSQLite3Lua
+            RUNTIME
+            DESTINATION    bin/lua/${ETKSQLITE3_LUA_FOLDER} # Where to put the binary executable
+            CONFIGURATIONS Release                          # Only Release
+    )
+
+    install(CODE "
+        if(NOT EXISTS \"${CMAKE_CURRENT_BINARY_DIR}/tools/lua/Release/${ETKSQLITE3_LUA_EXECUTABLE}\")
+            message(FATAL_ERROR \"[ETKSQLite3Lua] The Release version has not been build!\nThe release executable is expected in the following path: ${CMAKE_CURRENT_BINARY_DIR}/tools/lua/Release/${ETKSQLITE3_LUA_EXECUTABLE}\")
+        endif()
+    ")
+
+    #=======================================
     # Configure the ETKSQLite3Config.cmake for installation
     set(LUA_FOLDER ${ETKSQLITE3_LUA_FOLDER}     PARENT_SCOPE)
     set(LUA_EXE    ${ETKSQLITE3_LUA_EXECUTABLE} PARENT_SCOPE)
 
+    # Install Lua executable
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ETKSQLite3Config.cmake.in"   # fichier template
         "${CMAKE_CURRENT_BINARY_DIR}/ETKSQLite3Config.cmake"            # fichier généré

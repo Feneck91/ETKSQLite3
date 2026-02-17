@@ -88,9 +88,9 @@ option(SQLITE_ENABLE_SERIALIZE          "Enable database serialization"         
 option(wxUSE_REGEX                      "Use regex in wxSQLite3"                        OFF)
 option(wxUSE_THREADS                    "Use threads in wxSQLite3"                      OFF)
 
-# -----------------------------------------------------------------------------
+# =============================================================================
 # C++ compilation settings
-# -----------------------------------------------------------------------------
+# =============================================================================
 set(CMAKE_CXX_STANDARD                  11)
 set(CMAKE_CXX_STANDARD_REQUIRED         ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE     ON)
@@ -104,6 +104,12 @@ else()
     add_compile_options(-Wno-error=overloaded-virtual)
     add_compile_options(-Wno-error=deprecated-copy)
 endif()
+
+# =============================================================================
+# Lua compilation, this tools is needed to compile ws3 files
+#                  (Release compilation only)
+# =============================================================================
+add_subdirectory(tools/lua)
 
 # =============================================================================
 # Qt detection

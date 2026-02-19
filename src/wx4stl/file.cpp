@@ -13,14 +13,30 @@
  */
 /////////////////////////////////////////////////////////////////////////////
 #include <wx/file.h>
+#ifdef _WIN32
+    #include <sys/types.h>
+    #include <sys/stat.h>
+#else
+    #include <sys/stat.h>
+#endif
 
 bool wxFile::Exists(const wxChar *_pszFilePath)
 {
     bool bRet = false;
     if (_pszFilePath != nullptr && *_pszFilePath != 0)
     {
-        struct stat buffer;
-        bRet = (stat(_pszFilePath, &buffer) == 0);
+#ifdef _WIN32
+    #ifdef UNICODE
+        struct _stat buffer;
+        bRet = (_wstat(_pszFilePath, &buffer) == 0);
+    #else
+        struct _stat buffer;
+        bRet = (_stat(_pszFilePath, &buffer) == 0);
+    #endif
+#else
+    struct stat buffer;
+    bRet = (stat(_pszFilePath, &buffer) == 0);
+#endif        
     }
     return bRet;
 };

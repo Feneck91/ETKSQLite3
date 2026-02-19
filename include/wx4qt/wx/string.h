@@ -15,6 +15,7 @@
 #ifndef WX_STRING_HEADER
 #define WX_STRING_HEADER
 
+#include <wx/wxdefines.h>
 #include <wx/wxtype.h>
 #include <memory>
 #include <QString>
@@ -25,8 +26,11 @@
     #endif // UNICODE
 #endif // _UNICODE
 
-#define wxChar                              char
-extern EXPORT_IMPORT inline const wxChar *  wxGetEmptyStringPtr();
+inline const wxChar * wxGetEmptyStringPtr()
+{
+    static const wxChar empty[1] = { 0 };
+    return empty;
+}
 #define wxEmptyString                       wxGetEmptyStringPtr()
 #define wxNOT_FOUND (-1)
 

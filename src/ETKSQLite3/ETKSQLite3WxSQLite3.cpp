@@ -31,23 +31,25 @@
     #define __WIN32__
 #endif
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) // Only for MSVC compiler
     #pragma warning(push)
     #pragma warning(disable : 4267) // conversion, possible loss of data
     #pragma warning(disable : 4189) // local variable initialized but not referenced
     #pragma warning(disable : 4100) // unreferenced formal parameter
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__clang__)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+    #pragma GCC diagnostic ignored "-Wunused-variable"
+    #pragma GCC diagnostic ignored "-Wunused-parameter"
+    #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
     #pragma GCC diagnostic ignored "-Wattributes"
+    #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
 
 #include "wxsqlite3.cpp"
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) // Only for MSVC compiler
     #pragma warning(pop)
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__clang__)
     #pragma GCC diagnostic pop
 #endif

@@ -83,6 +83,17 @@ source_group(
 add_executable(ETKSQLite3Lua ${ETKSQLITE3_LUA_HEADERS} ${ETKSQLITE3_LUA_SOURCES})
 target_include_directories(ETKSQLite3Lua PRIVATE include)
 
+# Remove Wno-pedantic warning with gcc
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(ETKSQLite3Lua PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-pedantic>)
+    set_target_properties(ETKSQLite3Lua PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_CURRENT_BINARY_DIR}/Release
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${CMAKE_CURRENT_BINARY_DIR}/Debug
+        RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo
+        RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${CMAKE_CURRENT_BINARY_DIR}/MinSizeRel
+    )
+endif()
+
 if(UNIX)
     target_link_libraries(ETKSQLite3Lua PRIVATE m dl)
 endif()

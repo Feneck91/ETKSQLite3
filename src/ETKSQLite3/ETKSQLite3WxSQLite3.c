@@ -11,7 +11,9 @@
     #pragma warning(push) // Backup actual warning parameters
     #pragma warning(disable : 4996)
     #pragma warning(disable : 4457)
-#elif defined(__GNUC__)
+    #pragma warning(disable : 4013)
+    #pragma warning(disable : 4251)
+#elif defined(__GNUC__) || defined(__clang__)   // Linux
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wconversion"
     #pragma GCC diagnostic ignored "-Wunused-variable"

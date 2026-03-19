@@ -13,6 +13,14 @@
 
 #include "ETKSQLite3ImportExport.h"
 
+#ifdef MAKING_ETK_SQLITE3_SHARED
+    #ifdef _MSC_VER // Only for MSVC compiler
+        #pragma warning(disable : 4251) // Should have dll interface
+    #elif defined(__GNUC__) || defined(__clang__)   // Linux
+        #pragma GCC diagnostic ignored "-Wattributes"
+    #endif
+#endif
+
 // Visual Studio compatibility the precompiler header file don't work like mingw
 // Must add include into all C++ file ! So, the compiler is defined without precompiler
 // header file, but in this case the project MUST ADD the following files.

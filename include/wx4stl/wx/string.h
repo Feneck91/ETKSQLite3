@@ -17,7 +17,7 @@
 
 #include <wx/wxdefines.h>
 #include <wx/wxtype.h>
-#include <cstring>
+#include <string>
 #include <vector>
 #include <cstdarg>
 #include <codecvt>

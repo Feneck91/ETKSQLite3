@@ -14,10 +14,21 @@
 /////////////////////////////////////////////////////////////////////////////
 
 // Used to call all includes needed to access to all classes of wxETKSQLite3 library
-#pragma warning(push) // Backup actual warning parameters
-#pragma warning(disable : 4251) // Should have dll interface
+#ifdef _MSC_VER // Only for MSVC compiler
+    #pragma warning(push) // Backup actual warning parameters
+    #pragma warning(disable : 4251) // Should have dll interface
+#elif defined(__GNUC__) || defined(__clang__)   // Linux
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wattributes"
+#endif
+
 #include "ETKSQLite3Types.h"
 #include "ETKSQLite3Database.h"
 #include "ETKSQLite3Record.h"
 #include "ETKSQLite3VariantDatas.h"
-#pragma warning(pop) // Restaure warning parameters
+
+#ifdef _MSC_VER // Only for MSVC compiler
+    #pragma warning(pop) // Restaure warning parameters
+#elif defined(__GNUC__) || defined(__clang__)   // Linux
+    #pragma GCC diagnostic pop
+#endif

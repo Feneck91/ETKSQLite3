@@ -2,7 +2,7 @@
  * Name:      $FILENAME$
  * Library:
  * Purpose:   Code for database structure for all tables
- * Author:    StÈphane Ch‚teau
+ * Author:    St√©phane Ch√¢teau
  * Created:   2011-08-01
  * Copyright:
  * License:
@@ -100,7 +100,7 @@ $ONLY_HEADER_FILE$
  *
  * It's record the database schema version and the creation date.
  *
- * @author StÈphane Ch‚teau
+ * @author St√©phane Ch√¢teau
  * @version Name : TTGestLib<br>
  *          Revision : <b>1.0</b>
  */
@@ -128,7 +128,7 @@ $ONLY_HEADER_FILE$
  *
  * It's record the name / first name, etc.
  *
- * @author StÈphane Ch‚teau
+ * @author St√©phane Ch√¢teau
  */
 }
 ETK_SQLITE3_DECLARE_TABLE(TCustomer)
@@ -154,7 +154,7 @@ $ONLY_HEADER_FILE$
 /**
  * Class used to record all items.
  *
- * @author StÈphane Ch‚teau
+ * @author St√©phane Ch√¢teau
  */
 }
 ETK_SQLITE3_DECLARE_TABLE(TItem)
@@ -176,7 +176,7 @@ $ONLY_HEADER_FILE$
 /**
  * Class used to record all items.
  *
- * @author StÈphane Ch‚teau
+ * @author St√©phane Ch√¢teau
  */
 }
 ETK_SQLITE3_DECLARE_TABLE(TPurchase)

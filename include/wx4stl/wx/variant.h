@@ -81,7 +81,7 @@ public:
     void SetData(wxVariantData *_pData);
     bool IsNull() const;
     void Clear();
-
+    wxVariant& operator=(const wxVariant&) = default;
     // To be used with wxVariantData
     virtual bool Eq(const wxVariant& other) const;
     // What type is it? Return a string name.

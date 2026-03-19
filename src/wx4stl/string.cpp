@@ -14,6 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////
 #include <wx/wx.h>
 #include <wx/string.h>
+#include <cstring> // 'memcmp' / 'strlen' is defined in header '<cstring>' for linux
 
 wxCharBuffer::wxCharBuffer()
 {
@@ -24,13 +25,13 @@ wxCharBuffer::wxCharBuffer(const char *pData, size_t size)
     if (size == static_cast<size_t>(-1))
     {
         // If size not specified, compute string lenghte
-        size = std::strlen(pData);
+        size = strlen(pData);
     }
     // Alloue l'espace et copie les données
     resize(size);
     if (size > 0)
     {
-        std::memcpy(data(), pData, size);
+        memcpy(data(), pData, size);
     }
 }
 
@@ -177,9 +178,9 @@ bool wxString::IsSameAs(const wxString &_rstrString, bool _bIsCaseSensitive) con
         {
             return false;
         }
-        for (int i = 0; i < length(); ++i)
+        for (size_t i = 0; i < length(); ++i)
         {
-            if (tolower(static_cast<unsigned char>((*this)[i])) != tolower(static_cast<unsigned char>(_rstrString[i])))
+            if (tolower(static_cast<unsigned char>((*this)[static_cast<int>(i)])) != tolower(static_cast<unsigned char>(_rstrString[static_cast<int>(i)])))
             {
                 return false;
             }
@@ -295,37 +296,37 @@ size_t wxString::find_first_not_of(const wxChar* sz, size_t nStart) const
     }
     else
     {
-        wxASSERT( nStart <= (size_t) length() );
+        wxASSERT( nStart <= length() );
     }
 
     size_t len = strlen(sz);
 
     size_t i;
-    for(i = nStart; i < (size_t) this->length(); ++i)
+    for(i = nStart; i < length(); ++i)
     {
         if (!wxTmemchr(sz, *(c_str() + i), len))
             break;
     }
 
-    return (i == (size_t) this->length())
+    return (i == length())
         ? npos
         : i;
 }
 
 size_t wxString::find_first_of(const wxChar* sz, size_t nStart) const
 {
-    wxASSERT(nStart <= (size_t) length());
+    wxASSERT(nStart <= length());
 
     size_t len = wxStrlen(sz);
 
     size_t i;
-    for(i = nStart; i < (size_t) this->length(); ++i)
+    for(i = nStart; i < length(); ++i)
     {
         if (wxTmemchr(sz, *(c_str() + i), len))
             break;
     }
 
-    return (i == (size_t) this->length())
+    return (i == length())
         ? npos
         : i;
 }

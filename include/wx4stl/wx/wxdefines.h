@@ -41,7 +41,7 @@
             std::abort(); \
         } \
     } while (false)
-#define wxOnAssert(file,line,fn,cond,msg)       STL_ASSERT_X((cond),(wxString::Format("%s in line %d", fn, line)), msg)
+#define wxOnAssert(file,line,fn,cond,msg)       STL_ASSERT_X((cond),(wxString::Format("%s in line %d", fn, line)), wxString(msg))
 #define wxMax(a,b)                              (((a) > (b)) ? (a) : (b))
 #define WXUNUSED(x)
 #define DWORD                                   unsigned long
@@ -98,7 +98,7 @@
 #endif
 
 /*  special form of assert: always triggers it (in debug mode) */
-#define wxFAIL wxFAIL_MSG(NULL)
+#define wxFAIL wxFAIL_MSG(wxT(""))
 
 /*  FAIL with some message */
 #define wxFAIL_MSG(msg) wxFAIL_COND_MSG("wxAssertFailure", msg)
@@ -140,18 +140,17 @@
 //
 // wxASSERT
 //
-#if defined(_DEBUG) && !defined(__WXDEBUG__)
+#if (defined(_DEBUG) || defined(DEBUG)) && !defined(__WXDEBUG__)
     #define __WXDEBUG__
 #endif
 
-#ifdef DEBUG
+#ifdef __WXDEBUG__
     #define wxASSERT                STL_ASSERT
-    #define wxASSERT_MSG(cond,msg)  STL_ASSERT_X(cond, "", msg);
+    #define wxASSERT_MSG(cond,msg)  STL_ASSERT_X(cond, wxString(""), wxString(msg));
 #else
-    #define wxASSERT
-    #define wxASSERT_MSG(cond,msg)
+    #define wxASSERT(...)           ((void) 0)
+    #define wxASSERT_MSG(...)       ((void) 0)
 #endif // DEBUG
-
 
 //
 // wx Macros

@@ -13,13 +13,12 @@
     #pragma warning(disable : 4457)
     #pragma warning(disable : 4013)
     #pragma warning(disable : 4251)
-#elif defined(__GNUC__) || defined(__clang__)   // Linux
+#elif defined(__GNUC__) || defined(__clang__) // GCC/Clang (Linux/macOS)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wconversion"
     #pragma GCC diagnostic ignored "-Wunused-variable"
     #pragma GCC diagnostic ignored "-Wunused-parameter"
     #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-    #pragma GCC diagnostic ignored "-Wattributes"
     #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
     #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
     #pragma GCC diagnostic ignored "-Wtype-limits"
@@ -28,6 +27,9 @@
     #pragma GCC diagnostic ignored "-Wimplicit-fallthrough="
     #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
     #pragma GCC diagnostic ignored "-Wstringop-overread"
+    #ifdef MAKING_ETK_SQLITE3_SHARED
+        #pragma GCC diagnostic ignored "-Wattributes"
+    #endif
 #endif
 
 // Duplicate define with windows.h
@@ -42,6 +44,6 @@
 
 #ifdef _MSC_VER // Only for MSVC compiler
     #pragma warning(pop) // Restaure warning parameters
-#elif defined(__GNUC__) || defined(__clang__)
+#elif defined(__GNUC__) || defined(__clang__) // GCC/Clang (Linux/macOS)
     #pragma GCC diagnostic pop
 #endif

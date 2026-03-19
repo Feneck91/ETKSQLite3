@@ -17,9 +17,11 @@
 #ifdef _MSC_VER // Only for MSVC compiler
     #pragma warning(push) // Backup actual warning parameters
     #pragma warning(disable : 4251) // Should have dll interface
-#elif defined(__GNUC__) || defined(__clang__)   // Linux
+#elif defined(__GNUC__) || defined(__clang__) // GCC/Clang (Linux/macOS)
     #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wattributes"
+    #ifdef MAKING_ETK_SQLITE3_SHARED
+        #pragma GCC diagnostic ignored "-Wattributes"
+    #endif
 #endif
 
 #include "ETKSQLite3Types.h"
@@ -29,6 +31,6 @@
 
 #ifdef _MSC_VER // Only for MSVC compiler
     #pragma warning(pop) // Restaure warning parameters
-#elif defined(__GNUC__) || defined(__clang__)   // Linux
+#elif defined(__GNUC__) || defined(__clang__) // GCC/Clang (Linux/macOS)
     #pragma GCC diagnostic pop
 #endif

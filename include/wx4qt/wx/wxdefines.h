@@ -11,6 +11,8 @@
 #ifndef WX_DEFINES_HEADER
 #define WX_DEFINES_HEADER
 
+#include <QtGlobal>
+
 #define QT_ETKSQLITE3                           // For QT version
 #define wxCHECK_VERSION(major,minor,build)      0
 #define wxLongLong                              wxQLongLong
@@ -82,7 +84,7 @@
 #endif
 
 /*  special form of assert: always triggers it (in debug mode) */
-#define wxFAIL wxFAIL_MSG(NULL)
+#define wxFAIL wxFAIL_MSG(wxT(""))
 
 /*  FAIL with some message */
 #define wxFAIL_MSG(msg) wxFAIL_COND_MSG("wxAssertFailure", msg)
@@ -124,18 +126,17 @@
 //
 // wxASSERT
 //
-#if defined(_DEBUG) && !defined(__WXDEBUG__)
+#if (defined(_DEBUG) || defined(DEBUG)) && !defined(__WXDEBUG__)
     #define __WXDEBUG__
 #endif
 
-#ifdef DEBUG
+#ifdef __WXDEBUG__
     #define wxASSERT                Q_ASSERT
-    #define wxASSERT_MSG(cond,msg)  Q_ASSERT_X(cond, "", msg);
+    #define wxASSERT_MSG(cond,msg)  Q_ASSERT_X(cond, "", msg)
 #else
-    #define wxASSERT(x)
-    #define wxASSERT_MSG(cond,msg)
+    #define wxASSERT(...)           ((void) 0)
+    #define wxASSERT_MSG(...)       ((void) 0)
 #endif // DEBUG
-
 
 //
 // wx Macros

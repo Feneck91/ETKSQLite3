@@ -133,7 +133,7 @@ wxDateTime::wxDateTime(const struct tm &_rtmValue)
     std::tm tmCopy = _rtmValue; // Copie de la structure tm pour éviter les modifications
     std::time_t timeT = std::mktime(&tmCopy);
     m_timePoint = (timeT == -1)
-        ? m_timePoint = InvalidTimePoint // Invalid
+        ? InvalidTimePoint          // Invalid
         : Clock::from_time_t(timeT);
 }
 

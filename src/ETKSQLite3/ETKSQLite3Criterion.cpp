@@ -1386,7 +1386,7 @@ void ETKSQLite3Expression::InternalAsStringForNode(etkString & _rstrOperatorAsSt
             wxASSERT_MSG(!_rstrExpression1.IsEmpty(), wxT("Expression 1 is empty"));
             wxASSERT_MSG(!_rstrExpression2.IsEmpty(), wxT("Expression 2 is empty"));
             wxASSERT_MSG(_pExpression1->GetExpressionOrOperationType() == eExpressionColumnNameFull, wxT("Bad expression 1 type"));
-            wxASSERT_MSG(_pExpression2->GetExpressionOrOperationType() == eExpressionTypeSQL, wxT("Bad expression 1 type"));
+            wxASSERT_MSG(_pExpression2->GetExpressionOrOperationType() == eExpressionTypeSQL || _pExpression2->GetExpressionOrOperationType() == eExpressionTypeValue, wxT("Bad expression 1 type"));
             _rstrOperatorAsString.Printf(_T(" %s IN (%s)"), _rstrExpression1.c_str(), _rstrExpression2.c_str());
             break;
         }
@@ -1463,12 +1463,12 @@ void ETKSQLite3Expression::InternalAsStringForNode(etkString & _rstrOperatorAsSt
         }
         case eOperationIsNull :
         {
-            _rstrOperatorAsString.Printf(_T("(%s IS nullptr)"), _rstrExpression1.c_str());
+            _rstrOperatorAsString.Printf(_T("(%s IS NULL)"), _rstrExpression1.c_str());
             break;
         }
         case eOperationIsNotNull :
         {
-            _rstrOperatorAsString.Printf(_T("(%s IS NOT nullptr)"), _rstrExpression1.c_str());
+            _rstrOperatorAsString.Printf(_T("(%s IS NOT NULL)"), _rstrExpression1.c_str());
             break;
         }
         case eOperationDistinct :
@@ -2625,7 +2625,7 @@ ETKSQLite3Expression dbExists(const ETKSQLite3Criterion& _rCriterion)
 
 ETKSQLite3Expression dbExists(const ETKSQLite3Expression& _rExpression)
 {
-    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationExists, _rExpression, nullptr);
+    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationExists, _rExpression, ETKSQLite3Expression());
 }
 
 ETKSQLite3Expression dbCount(const ETKSQLite3Column& _rColumn)
@@ -2643,6 +2643,16 @@ ETKSQLite3Expression dbCount(const ETKSQLite3Expression& _rExpression)
 ETKSQLite3Expression dbDistinct(const ETKSQLite3Column& _rColumn)
 {
     return ETKSQLite3Expression(ETKSQLite3Expression::eOperationDistinct, ETKSQLite3Expression(_rColumn), ETKSQLite3Expression());
+}
+
+ETKSQLite3Expression dbDistinct(const ETKSQLite3Expression & _rExpression)
+{
+    return ETKSQLite3Expression(ETKSQLite3Expression::eOperationDistinct, _rExpression, ETKSQLite3Expression());
+}
+
+ETKSQLite3Expression dbIsTableNotEmpty(etkString _strTableName)
+{
+    return dbExists(dbSQL(etkString::Format(wxT("SELECT 1 FROM %s"), _strTableName.wx_str())));
 }
 
 ETKSQLite3Expression dbMax(const ETKSQLite3Column& _rColumn)

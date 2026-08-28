@@ -1563,11 +1563,13 @@ EXPORT_IMPORT ETKSQLite3Expression      operator<=(const ETKSQLite3Value &_rValu
 
 EXPORT_IMPORT ETKSQLite3Expression      dbCount();
 EXPORT_IMPORT ETKSQLite3Expression      dbCount(const ETKSQLite3Column& _rColumn);
+EXPORT_IMPORT ETKSQLite3Expression      dbCount(const ETKSQLite3Expression& _rExpression);
 EXPORT_IMPORT ETKSQLite3Expression      dbExists(const ETKSQLite3RequestSelector& _rSelector);
 EXPORT_IMPORT ETKSQLite3Expression      dbExists(const ETKSQLite3Criterion& _rCriterion);
 EXPORT_IMPORT ETKSQLite3Expression      dbExists(const ETKSQLite3Expression& _rExpression);
 EXPORT_IMPORT ETKSQLite3Expression      dbDistinct(const ETKSQLite3Column& _rColumn);
-EXPORT_IMPORT ETKSQLite3Expression      dbCount(const ETKSQLite3Expression& _rExpression);
+EXPORT_IMPORT ETKSQLite3Expression      dbDistinct(const ETKSQLite3Expression & _rExpression);
+EXPORT_IMPORT ETKSQLite3Expression      dbIsTableNotEmpty(etkString _strTableName); // Returns 1 if table contains at least one row, else 0
 EXPORT_IMPORT ETKSQLite3Expression      dbMax(const ETKSQLite3Column& _rColumn);
 EXPORT_IMPORT ETKSQLite3Expression      dbMin(const ETKSQLite3Column& _rColumn);
 EXPORT_IMPORT ETKSQLite3Expression      dbSum(const ETKSQLite3Column& _rColumn);

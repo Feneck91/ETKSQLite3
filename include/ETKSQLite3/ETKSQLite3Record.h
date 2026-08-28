@@ -210,20 +210,17 @@ public:
     const ETKSQLite3Column &            operator[](const ETKSQLite3Column &_rColumn) const;
 
     /**
+     * Operator = is not allowed.
+     */
+    const ETKSQLite3Record &            operator=(const ETKSQLite3Record &_rRecord) = delete;
+
+    /**
      * Get the columns attribute from the index column.
      *
      * @param _Index Index of the columns.
      * @return A column information corresponding to this index.
      */
     const ETKSQLite3ColumnAttributes &  GetColumnAttributes(int _Index) const;
-
-private:
-    /**
-     * Operator = is not allowed.
-     *
-     * Just defined here, no code into cpp, just to forbid it.
-     */
-    const ETKSQLite3Record &            operator=(const ETKSQLite3Record &_rRecord);
 };
 
 #endif // INCLUDE_ETK_SQLITE3_RECORD_H
